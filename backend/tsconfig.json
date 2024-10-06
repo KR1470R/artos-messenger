@@ -22,9 +22,9 @@
     "allowJs": false,
     "noImplicitOverride": true,
     "paths": {
-      "#api/*": ["src/backend/api/*"],
-      "#common/*": ["src/backend/common/*"],
-      "#core/*": ["src/backend/core/*"],
+      "#api/*": ["src/api/*"],
+      "#common/*": ["src/common/*"],
+      "#core/*": ["src/core/*"],
     }
   }
 }
