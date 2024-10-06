@@ -1,0 +1,32 @@
+name: artos-app
+
+services:
+  app:
+    build: 
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: artos_app
+    restart: always
+    ports:
+      - "3000:${APP_PORT}"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: artos_mysql
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:${DB_PORT}"
+
+volumes:
+  db-data:
