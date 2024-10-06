@@ -17,12 +17,22 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "migrate:make": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex migrate:make --knexfile src/backend/core/db/modules/knex/knexfile.ts",
+    "migrate:up": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex migrate:latest --knexfile src/backend/core/db/modules/knex/knexfile.ts",
+    "migrate:down": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex migrate:down --knexfile src/backend/core/db/modules/knex/knexfile.ts",
+    "migrate:rollback": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex migrate:rollback --knexfile src/backend/core/db/modules/knex/knexfile.ts",
+    "seed:make": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex seed:make --knexfile src/backend/core/db/modules/knex/knexfile.ts",
+    "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/.bin/knex seed:run --knexfile src/backend/core/db/modules/knex/knexfile.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "knex": "^3.1.0",
+    "mysql2": "^3.11.3",
+    "nest-knexjs": "^0.0.24",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
   },
