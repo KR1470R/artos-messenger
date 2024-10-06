@@ -44,4 +44,4 @@ Then create docker container:
 ```bash
 export NODE_ENV=development && docker-compose -f docker/docker-compose.yml --env-file .env up --build
 ```
-After running the following command, access <http://127.0.0.1/>.
+After running the following command, access <http://localhost:3000/>.
