@@ -13,7 +13,7 @@ Real-time chat application.
 <div>
 	<img alt="" src="https://badgen.net/badge/node.js/>=18/green">
 	<img alt="" src="https://badgen.net/badge/react/>=18/blue">
-  <img alt="" src="https://badgen.net/badge/docker/any">
+	<img alt="" src="https://badgen.net/badge/docker/any">
 </div>
 
 # Supported systems
@@ -45,3 +45,17 @@ Then create docker container:
 export NODE_ENV=development && docker-compose -f docker/docker-compose.yml --env-file .env up --build
 ```
 After running the command above, access <http://localhost:3000/>.
+
+# TODO
+- [x] Create base Nest.js project
+- [x] Create base React.js project
+- [x] Create Docker container and build there the whole application
+- [x] Implement DB schema & migrations
+- [ ] Implement App Authentication via JWT tokens on back-end side
+- [ ] Implement App Authentication via JWT tokens on front-end side
+- [ ] Implement endpoints for manage users, groups, chats, messages
+- [ ] Implement UI for manage users, groups, chats, messages
+- [ ] Implement chat websocket channel for real time messages sharing between users
+- [ ] Create ERD Diagram
+- [ ] Integrate Swagger
+- [ ] Deploy the application demo on a server
