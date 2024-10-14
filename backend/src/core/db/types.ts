@@ -1,7 +1,12 @@
-enum UserRoles {
-  ADMIN = 1,
-  MANAGER = 2,
-  USER = 3,
+enum UserChatRolesEnum {
+  USER = 1,
+  ADMIN = 2,
+  BANNED = 3,
 }
 
-export { UserRoles };
+enum ChatTypesEnum {
+  DIRECT = 1,
+  GROUP = 2,
+}
+
+export { UserChatRolesEnum, ChatTypesEnum };

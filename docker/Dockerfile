@@ -26,6 +26,10 @@ COPY --from=backend_builder /app/backend/tsconfig.* ./backend/
 COPY backend/package*.json ./backend/
 COPY --from=frontend_builder /app/frontend/build ./frontend/build
 
+ARG DB_HOST
+ARG NODE_ENV
+RUN echo -e '\nDB_HOST='${DB_HOST} >> ./backend/configs/.env.${NODE_ENV}
+
 # Expose the backend port
 EXPOSE ${APP_PORT}
 

@@ -105,9 +105,8 @@ web_modules/
 .yarn-integrity
 
 # dotenv environment variable files
-*.env
 .env*
-!sample.env
+!.env.example
 
 # temp directory
 .temp

@@ -24,7 +24,7 @@
     "paths": {
       "#api/*": ["src/api/*"],
       "#common/*": ["src/common/*"],
-      "#core/*": ["src/core/*"],
+      "#core/*": ["src/core/*"]
     }
   }
 }
