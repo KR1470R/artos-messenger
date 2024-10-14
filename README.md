@@ -29,7 +29,7 @@ Real-time chat application.
 git clone git@github.com:KR1470R/artos-messenger.git
 cd artos-messenger
 ```
-Create an `.env.development` file with variables in the following format(see [./backend/configs/.env.example](https://github.com/KR1470R/artos-messenger/blob/c0f738bd51c5c5090b73531c20581c1b83ae36f2/backend/configs/.env.example)):
+Create an `.env.development` file with variables in the following format(see [./backend/configs/.env.example](https://github.com/KR1470R/artos-messenger/blob/main/backend/configs/.env.example)):
 ```env
 APP_PORT=3000
 DB_NAME=artosdb
