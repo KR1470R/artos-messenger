@@ -5,12 +5,15 @@ services:
     build: 
       context: ../
       dockerfile: docker/Dockerfile
+      args:
+        DB_HOST: db # name of db container
+        NODE_ENV: development
     container_name: artos_app
     restart: always
     ports:
       - "3000:${APP_PORT}"
     environment:
-      NODE_ENV: ${NODE_ENV}
+      NODE_ENV: development
     depends_on:
       - db
 

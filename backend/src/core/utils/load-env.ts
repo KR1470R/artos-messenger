@@ -14,7 +14,7 @@ export default function loadEnv(defaultEnvType?: EnvTypes) {
       `Invalid NODE_ENV value provuded: "${env}". Expected ${validEnv.join(', ')}`,
     );
 
-  const configPath = path.join(getRootPath(), 'configs', `${env}.env`);
+  const configPath = path.join(getRootPath(), 'configs', `.env.${env}`);
   const config = configDotenv({ path: configPath });
   if (config?.error)
     throw new Error(

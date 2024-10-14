@@ -1,5 +1,5 @@
 import {
-  UserRoles,
+  ChatUserRoles,
   Users,
   Messages,
   Chats,
@@ -9,7 +9,7 @@ import {
 
 declare module 'knex/types/tables' {
   interface Tables {
-    user_roles: UserRoles;
+    chat_user_roles: ChatUserRoles;
     users: Users;
     messages: Messages;
     chats: Chats;
