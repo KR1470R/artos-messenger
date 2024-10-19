@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Public } from '#common/decorators';
+import { LogginedUserId, Public } from '#common/decorators';
 import { ExceptionResponseDto, SuccessResponseDto } from '#common/dto';
 import {
   ApiOperation,
@@ -50,10 +50,11 @@ export class UsersController {
   })
   public async create(@Body() data: CreateUserRequestDto) {
     const id = await this.usersService.processCreate(data);
+
     return { message: 'User created successfully.', id };
   }
 
-  @Patch('/:id')
+  @Patch()
   @Public()
   @ApiOperation({
     description: 'Update user information.',
@@ -67,14 +68,15 @@ export class UsersController {
     type: ExceptionResponseDto,
   })
   public async update(
-    @Param('id') id: number,
+    @LogginedUserId() logginedUserId: number,
     @Body() data: UpdateUserRequestDto,
   ) {
-    await this.usersService.processUpdate(id, data);
+    await this.usersService.processUpdate(logginedUserId, data);
+
     return { message: 'User updated successfully.' };
   }
 
-  @Delete('/:id')
+  @Delete()
   @ApiOperation({
     description: 'Delete user account.',
   })
@@ -86,8 +88,9 @@ export class UsersController {
     description: 'Something went wrong.',
     type: ExceptionResponseDto,
   })
-  public async delete(@Param('id') id: number) {
-    await this.usersService.processDelete(id);
+  public async delete(@LogginedUserId() logginedUserId: number) {
+    await this.usersService.processDelete(logginedUserId);
+
     return { message: 'User deleted successfully.' };
   }
 

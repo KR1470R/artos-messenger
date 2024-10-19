@@ -24,6 +24,7 @@ beforeAll(async () => {
   );
   db = testModule.get<Knex>('default');
 
+  await flushMockUsersDb(db);
   await prepareMockUsersDb(db);
 });
 
