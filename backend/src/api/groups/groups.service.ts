@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { GroupsRepository } from './groups.repository';
 import { ChatsRepository } from '#api/chats/chats.repository';
 import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
@@ -9,6 +13,7 @@ import {
 } from './dto/requests';
 import { ChatTypesEnum, UserChatRolesEnum } from '#core/db/types';
 import { GroupsChatsUsersRepository } from './groups-chats-users.repository';
+import { UsersService } from '#api/users/users.service';
 
 @Injectable()
 export class GroupsService {
@@ -17,12 +22,38 @@ export class GroupsService {
     private readonly chatsRepository: ChatsRepository,
     private readonly chatsUsersRepository: ChatsUsersRepository,
     private readonly groupsChatsUsersRepository: GroupsChatsUsersRepository,
+    private readonly usersService: UsersService,
   ) {}
+
+  private async accessMemberRole(
+    userId: number,
+    groupId: number,
+    requiredRoles: UserChatRolesEnum[],
+  ) {
+    const targetGroupMember = await this.groupsChatsUsersRepository.findOne(
+      userId,
+      groupId,
+    );
+    if (!targetGroupMember)
+      throw new ForbiddenException('The user is not a member of the group.');
+
+    const targetChatMember = await this.chatsUsersRepository.findOne(
+      userId,
+      targetGroupMember.chat_id,
+    );
+    if (!targetChatMember)
+      throw new ForbiddenException('The user is not a member of the chat.');
+
+    if (!requiredRoles.includes(targetChatMember.role_id))
+      throw new ForbiddenException('Access denied.');
+  }
 
   public async processCreate(
     logginedUserId: number,
     data: CreateGroupRequestDto,
   ) {
+    await this.usersService.processFindOne(logginedUserId);
+
     const chatId = await this.chatsRepository.create({
       type: ChatTypesEnum.GROUP,
     });
@@ -49,7 +80,15 @@ export class GroupsService {
     return groupId;
   }
 
-  public async processUpdate(id: number, data: UpdateGroupRequestDto) {
+  public async processUpdate(
+    logginedUserId: number,
+    id: number,
+    data: UpdateGroupRequestDto,
+  ) {
+    await this.accessMemberRole(logginedUserId, id, [
+      UserChatRolesEnum.OWNER,
+      UserChatRolesEnum.ADMIN,
+    ]);
     return await this.groupsRepository.update(id, data);
   }
 
@@ -58,6 +97,11 @@ export class GroupsService {
     id: number,
     targetUserId: number,
   ) {
+    await this.accessMemberRole(logginedUserId, id, [
+      UserChatRolesEnum.OWNER,
+      UserChatRolesEnum.ADMIN,
+    ]);
+
     const targetGroup = await this.processFindOne(logginedUserId, id);
     const chatId = targetGroup.chat_id;
     const user = {
@@ -74,6 +118,11 @@ export class GroupsService {
     id: number,
     targetUserId: number,
   ) {
+    await this.accessMemberRole(logginedUserId, id, [
+      UserChatRolesEnum.OWNER,
+      UserChatRolesEnum.ADMIN,
+    ]);
+
     const targetGroup = await this.processFindOne(logginedUserId, id);
     const chatId = targetGroup.chat_id;
 
@@ -86,6 +135,11 @@ export class GroupsService {
     targetUserId: number,
     roleId: number,
   ) {
+    await this.accessMemberRole(logginedUserId, id, [
+      UserChatRolesEnum.OWNER,
+      UserChatRolesEnum.ADMIN,
+    ]);
+
     const targetGroup = await this.processFindOne(logginedUserId, id);
     const chatId = targetGroup.chat_id;
 
@@ -95,6 +149,11 @@ export class GroupsService {
   }
 
   public async processDelete(logginedUserId: number, id: number) {
+    await this.accessMemberRole(logginedUserId, id, [
+      UserChatRolesEnum.OWNER,
+      UserChatRolesEnum.ADMIN,
+    ]);
+
     const targetGroup = await this.processFindOne(logginedUserId, id);
     await this.chatsUsersRepository.deleteMany(logginedUserId);
     await this.chatsRepository.delete(targetGroup.chat_id);

@@ -43,7 +43,7 @@ export class GroupsChatsUsersRepository implements Repository {
   public async findOne(
     logginedUserId: number,
     id: number,
-  ): Promise<GroupFullResponseDto> {
+  ): Promise<GroupFullResponseDto | undefined> {
     return await this.db('groups')
       .select(
         'groups.id',

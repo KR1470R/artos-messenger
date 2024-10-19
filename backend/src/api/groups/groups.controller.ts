@@ -67,10 +67,11 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async update(
+    @LogginedUserId() logginedUserId: number,
     @Param('id') id: number,
     @Body() data: CreateGroupRequestDto,
   ) {
-    await this.groupsService.processUpdate(id, data);
+    await this.groupsService.processUpdate(logginedUserId, id, data);
     return { message: 'Group updated successfully.', id };
   }
 

@@ -28,12 +28,12 @@ export class ChatsService {
       {
         user_id: logginedUserId,
         chat_id: chatId,
-        role_id: UserChatRolesEnum.ADMIN,
+        role_id: UserChatRolesEnum.OWNER,
       },
       {
         user_id: targetUserId,
         chat_id: chatId,
-        role_id: UserChatRolesEnum.ADMIN,
+        role_id: UserChatRolesEnum.OWNER,
       },
     ];
     await this.chatsUsersRepository.create(users);

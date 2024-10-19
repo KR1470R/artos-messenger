@@ -1,7 +1,8 @@
 enum UserChatRolesEnum {
-  USER = 1,
+  OWNER = 1,
   ADMIN = 2,
-  BANNED = 3,
+  USER = 3,
+  BANNED = 4,
 }
 
 enum ChatTypesEnum {

@@ -67,10 +67,13 @@ export class ChatsUsersRepository implements Repository {
       .first();
   }
 
-  public async findOne(id: number) {
+  public async findOne(userId: number, chatId: number) {
     return await this.db(this.entity)
       .select('id', 'chat_id', 'user_id', 'role_id', 'created_at', 'updated_at')
-      .where({ id })
+      .where({
+        user_id: userId,
+        chat_id: chatId,
+      })
       .first();
   }
 }
