@@ -50,6 +50,10 @@ const testFindOneNotFound = async (ownerUser: Member, groupId?: number) => {
     groupsController.findOne(ownerUser.id, groupId),
   ).rejects.toThrow();
 };
+const testFindMany = async (ownerUser: Member, expectedLength: number) => {
+  const result = await groupsController.findMany(ownerUser.id, {});
+  expect(result.data.length).toEqual(expectedLength);
+};
 const testAddMember = async (ownerUser: Member, targetUser: Member) => {
   const result = await groupsController.addMember(
     ownerUser.id,
@@ -177,6 +181,14 @@ describe('GroupsModule', () => {
 
   it('users should not be able to find groups they are not members of', async () => {
     await testFindOneNotFound(userMemberMock);
+  });
+
+  it('users should be able to list groups they are members of', async () => {
+    await testFindMany(ownerMemberMock, 1);
+  });
+
+  it('users should not be able to list groups they are not members of', async () => {
+    await testFindMany(userMemberMock, 0);
   });
 
   it('owners of group should be able to add new members', async () => {

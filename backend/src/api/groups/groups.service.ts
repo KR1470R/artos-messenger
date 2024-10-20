@@ -206,7 +206,7 @@ export class GroupsService {
       filters,
     );
 
-    return { data };
+    return data;
   }
 
   public async processFindOne(logginedUserId: number, groupId: number) {
