@@ -1,4 +1,4 @@
-import { UserChatRolesEnum } from '#core/db/types';
+import { ChatUserRolesEnum } from '#core/db/types';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, Max, Min } from 'class-validator';
 
@@ -12,5 +12,5 @@ export default class UpdateMemberRequestDto {
   @IsOptional()
   @Min(1)
   @Max(2)
-  role_id?: UserChatRolesEnum;
+  role_id?: ChatUserRolesEnum;
 }

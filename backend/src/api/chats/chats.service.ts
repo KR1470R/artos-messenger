@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ChatsRepository } from './chats.repository';
 import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
-import { ChatTypesEnum, UserChatRolesEnum } from '#core/db/types';
+import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 
 @Injectable()
 export class ChatsService {
@@ -28,12 +28,12 @@ export class ChatsService {
       {
         user_id: logginedUserId,
         chat_id: chatId,
-        role_id: UserChatRolesEnum.ADMIN,
+        role_id: ChatUserRolesEnum.OWNER,
       },
       {
         user_id: targetUserId,
         chat_id: chatId,
-        role_id: UserChatRolesEnum.ADMIN,
+        role_id: ChatUserRolesEnum.OWNER,
       },
     ];
     await this.chatsUsersRepository.create(users);

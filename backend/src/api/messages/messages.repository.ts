@@ -19,19 +19,19 @@ export class MessagesRepository implements Repository {
     }) as Promise<number>;
   }
 
-  public async update(id: number, data: Messages) {
-    return this.db(this.entity).where({ id }).update(data);
+  public async update(messageId: number, data: Messages) {
+    return this.db(this.entity).where({ id: messageId }).update(data);
   }
 
-  public delete(id: number) {
-    return this.db(this.entity).where({ id }).delete();
+  public delete(messageId: number) {
+    return this.db(this.entity).where({ id: messageId }).delete();
   }
 
   public findMany(filters: any) {
     return this.db(this.entity).select().where(filters);
   }
 
-  public async findOne(id: number) {
-    return this.db(this.entity).where({ id }).first();
+  public async findOne(messageId: number) {
+    return this.db(this.entity).where({ id: messageId }).first();
   }
 }

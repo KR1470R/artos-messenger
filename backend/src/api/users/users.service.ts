@@ -27,8 +27,11 @@ export class UsersService {
     return this.usersRepository.create(data);
   }
 
-  public async processUpdate(id: number, data: UpdateUserRequestDto) {
-    const target = await this.usersRepository.findOne(id, true);
+  public async processUpdate(
+    logginedUserId: number,
+    data: UpdateUserRequestDto,
+  ) {
+    const target = await this.usersRepository.findOne(logginedUserId, true);
     if (!target) throw new NotFoundException('User not found.');
     if (data.password) {
       if (!data.old_password) throw new Error('Old password is required.');
@@ -40,12 +43,12 @@ export class UsersService {
         throw new ForbiddenException('Passwords are not matched.');
       data.password = await Password.toHash(data.password);
     }
-    return this.usersRepository.update(id, data);
+    return this.usersRepository.update(logginedUserId, data);
   }
 
-  public async processDelete(id: number) {
-    await this.processFindOne(id);
-    return await this.usersRepository.delete(id);
+  public async processDelete(userId: number) {
+    await this.processFindOne(userId);
+    return await this.usersRepository.delete(userId);
   }
 
   public async processFindMany(
@@ -56,9 +59,9 @@ export class UsersService {
     return { data } as FindManyUsersResponseDto;
   }
 
-  public async processFindOne(id: number): Promise<UserFullResponseDto> {
+  public async processFindOne(userId: number): Promise<UserFullResponseDto> {
     const target = (await this.usersRepository.findOne(
-      id,
+      userId,
     )) as UserFullResponseDto;
     if (!target) throw new NotFoundException('User not found.');
 

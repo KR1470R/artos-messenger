@@ -42,8 +42,8 @@ export class GroupsChatsUsersRepository implements Repository {
 
   public async findOne(
     logginedUserId: number,
-    id: number,
-  ): Promise<GroupFullResponseDto> {
+    groupId: number,
+  ): Promise<GroupFullResponseDto | undefined> {
     return await this.db('groups')
       .select(
         'groups.id',
@@ -56,7 +56,7 @@ export class GroupsChatsUsersRepository implements Repository {
       )
       .innerJoin('chats_users', 'groups.chat_id', 'chats_users.chat_id')
       .where('chats_users.user_id', logginedUserId)
-      .andWhere('groups.id', id)
+      .andWhere('groups.id', groupId)
       .first();
   }
 }

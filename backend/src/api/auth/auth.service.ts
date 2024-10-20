@@ -55,9 +55,12 @@ export class AuthService {
   }
 
   public async processRefreshToken(previousToken: string) {
-    const { email, id } = (await this.jwtService.verifyAsync(previousToken, {
-      secret: this.JWT_REFRESH_SECRET,
-    })) as { email: string; id: number };
+    const { email, user_id: id } = (await this.jwtService.verifyAsync(
+      previousToken,
+      {
+        secret: this.JWT_REFRESH_SECRET,
+      },
+    )) as { email: string; user_id: number };
     const newToken = await this.jwtService.signAsync(
       { email, id },
       {

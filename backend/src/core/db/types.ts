@@ -1,7 +1,10 @@
-enum UserChatRolesEnum {
-  USER = 1,
+import { Users } from './entities.type';
+
+enum ChatUserRolesEnum {
+  OWNER = 1,
   ADMIN = 2,
-  BANNED = 3,
+  USER = 3,
+  BANNED = 4,
 }
 
 enum ChatTypesEnum {
@@ -9,4 +12,6 @@ enum ChatTypesEnum {
   GROUP = 2,
 }
 
-export { UserChatRolesEnum, ChatTypesEnum };
+type ChatMember = Pick<Users, 'id' | 'name'>;
+
+export { ChatUserRolesEnum, ChatTypesEnum, ChatMember };

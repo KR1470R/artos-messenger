@@ -1,4 +1,4 @@
-import { ChatTypesEnum, UserChatRolesEnum } from './types';
+import { ChatTypesEnum, ChatUserRolesEnum } from './types';
 
 class Timestamps {
   created_at: string;
@@ -6,7 +6,7 @@ class Timestamps {
 }
 
 export class ChatUserRoles {
-  id: UserChatRolesEnum;
+  id: ChatUserRolesEnum;
   name: string;
 }
 
@@ -27,7 +27,7 @@ export class ChatsUsers extends Timestamps {
   id: number;
   chat_id: number;
   user_id: number;
-  role_id: UserChatRolesEnum;
+  role_id: ChatUserRolesEnum;
 }
 
 export class Groups extends Timestamps {

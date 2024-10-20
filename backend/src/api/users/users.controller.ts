@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { Public } from '#common/decorators';
+import { LogginedUserId, Public } from '#common/decorators';
 import { ExceptionResponseDto, SuccessResponseDto } from '#common/dto';
 import {
   ApiOperation,
@@ -50,13 +50,14 @@ export class UsersController {
   })
   public async create(@Body() data: CreateUserRequestDto) {
     const id = await this.usersService.processCreate(data);
+
     return { message: 'User created successfully.', id };
   }
 
-  @Patch('/:id')
+  @Patch('/me')
   @Public()
   @ApiOperation({
-    description: 'Update user information.',
+    description: 'Update loggined user information.',
   })
   @ApiOkResponse({
     description: 'User updated successfully.',
@@ -67,14 +68,15 @@ export class UsersController {
     type: ExceptionResponseDto,
   })
   public async update(
-    @Param('id') id: number,
+    @LogginedUserId() logginedUserId: number,
     @Body() data: UpdateUserRequestDto,
   ) {
-    await this.usersService.processUpdate(id, data);
+    await this.usersService.processUpdate(logginedUserId, data);
+
     return { message: 'User updated successfully.' };
   }
 
-  @Delete('/:id')
+  @Delete('/me')
   @ApiOperation({
     description: 'Delete user account.',
   })
@@ -86,8 +88,9 @@ export class UsersController {
     description: 'Something went wrong.',
     type: ExceptionResponseDto,
   })
-  public async delete(@Param('id') id: number) {
-    await this.usersService.processDelete(id);
+  public async delete(@LogginedUserId() logginedUserId: number) {
+    await this.usersService.processDelete(logginedUserId);
+
     return { message: 'User deleted successfully.' };
   }
 
@@ -104,10 +107,26 @@ export class UsersController {
     type: ExceptionResponseDto,
   })
   public async findMany(@Query() filters: FindManyUsersRequestDto) {
-    return this.usersService.processFindMany(filters);
+    return await this.usersService.processFindMany(filters);
   }
 
-  @Get('/:id')
+  @Get('/me')
+  @ApiOperation({
+    description: 'Find loggined user.',
+  })
+  @ApiOkResponse({
+    description: 'User found successfully.',
+    type: UserShortResponseDto,
+  })
+  @ApiDefaultResponse({
+    description: 'Something went wrong.',
+    type: ExceptionResponseDto,
+  })
+  public async findMe(@LogginedUserId() logginedUserId: number) {
+    return await this.usersService.processFindOne(logginedUserId);
+  }
+
+  @Get('/:user_id')
   @ApiOperation({
     description: 'Find user by id.',
   })
@@ -119,7 +138,7 @@ export class UsersController {
     description: 'Something went wrong.',
     type: ExceptionResponseDto,
   })
-  public async findOne(@Param('id') id: number) {
-    return this.usersService.processFindOne(id);
+  public async findOne(@Param('user_id') userId: number) {
+    return await this.usersService.processFindOne(userId);
   }
 }
