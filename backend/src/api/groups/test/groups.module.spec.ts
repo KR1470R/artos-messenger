@@ -15,8 +15,7 @@ import {
   userMemberMock,
 } from '#common/test/mock';
 import groupMock from '#common/test/mock/group.mock';
-import { Users } from '#core/db/entities.type';
-import { ChatUserRolesEnum } from '#core/db/types';
+import { ChatUserRolesEnum, ChatMember } from '#core/db/types';
 import { GroupsChatsUsersRepository } from '../groups-chats-users.repository';
 import { ChatsModule } from '#api/chats/chats.module';
 import { UsersModule } from '#api/users/users.module';
@@ -28,9 +27,10 @@ const groupPayload = {
   ...groupMock,
 };
 
-type Member = Pick<Users, 'id' | 'name'>;
-
-const testCreate = async (ownerUser: Member, invitedUsersIds?: number[]) => {
+const testCreate = async (
+  ownerUser: ChatMember,
+  invitedUsersIds?: number[],
+) => {
   const result = await groupsController.create(ownerUser.id, {
     ...groupPayload,
     invited_users_ids: invitedUsersIds,
@@ -40,21 +40,21 @@ const testCreate = async (ownerUser: Member, invitedUsersIds?: number[]) => {
 
   groupPayload['id'] = result.id;
 };
-const testFindOne = async (ownerUser: Member) => {
+const testFindOne = async (ownerUser: ChatMember) => {
   const result = await groupsController.findOne(ownerUser.id, groupPayload.id);
   expect(result.id).toEqual(groupPayload.id);
 };
-const testFindOneNotFound = async (ownerUser: Member, groupId?: number) => {
+const testFindOneNotFound = async (ownerUser: ChatMember, groupId?: number) => {
   groupId = groupId ?? groupPayload.id;
   await expect(
     groupsController.findOne(ownerUser.id, groupId),
   ).rejects.toThrow();
 };
-const testFindMany = async (ownerUser: Member, expectedLength: number) => {
+const testFindMany = async (ownerUser: ChatMember, expectedLength: number) => {
   const result = await groupsController.findMany(ownerUser.id, {});
   expect(result.data.length).toEqual(expectedLength);
 };
-const testAddMember = async (ownerUser: Member, targetUser: Member) => {
+const testAddMember = async (ownerUser: ChatMember, targetUser: ChatMember) => {
   const result = await groupsController.addMember(
     ownerUser.id,
     groupPayload.id,
@@ -63,16 +63,16 @@ const testAddMember = async (ownerUser: Member, targetUser: Member) => {
   expect(result.message).toEqual('Member added successfully.');
 };
 const testAddMemberForbidden = async (
-  ownerUser: Member,
-  targetUser: Member,
+  ownerUser: ChatMember,
+  targetUser: ChatMember,
 ) => {
   await expect(
     groupsController.addMember(ownerUser.id, groupPayload.id, targetUser.id),
   ).rejects.toThrow();
 };
 const testUpdateMember = async (
-  ownerUser: Member,
-  targetUser: Member,
+  ownerUser: ChatMember,
+  targetUser: ChatMember,
   role: ChatUserRolesEnum,
 ) => {
   const result = await groupsController.updateMember(
@@ -84,8 +84,8 @@ const testUpdateMember = async (
   expect(result.message).toEqual('Member updated successfully.');
 };
 const testUpdateMemberForbidden = async (
-  ownerUser: Member,
-  targetUser: Member,
+  ownerUser: ChatMember,
+  targetUser: ChatMember,
   role: ChatUserRolesEnum,
 ) => {
   await expect(
@@ -97,7 +97,7 @@ const testUpdateMemberForbidden = async (
     ),
   ).rejects.toThrow();
 };
-const testUpdate = async (ownerUser: Member) => {
+const testUpdate = async (ownerUser: ChatMember) => {
   const newGroupName = 'newname';
   const result = await groupsController.update(ownerUser.id, groupPayload.id, {
     title: newGroupName,
@@ -112,14 +112,17 @@ const testUpdate = async (ownerUser: Member) => {
 
   groupPayload.title = newGroupName;
 };
-const testUpdateForbidden = async (ownerUser: Member) => {
+const testUpdateForbidden = async (ownerUser: ChatMember) => {
   await expect(
     groupsController.update(ownerUser.id, groupPayload.id, {
       title: 'newname',
     }),
   ).rejects.toThrow();
 };
-const testDeleteMember = async (ownerUser: Member, targetUser: Member) => {
+const testDeleteMember = async (
+  ownerUser: ChatMember,
+  targetUser: ChatMember,
+) => {
   const result = await groupsController.deleteMember(
     ownerUser.id,
     groupPayload.id,
@@ -128,18 +131,18 @@ const testDeleteMember = async (ownerUser: Member, targetUser: Member) => {
   expect(result.message).toEqual('Member deleted successfully.');
 };
 const testDeleteMemberForbidden = async (
-  ownerUser: Member,
-  targetUser: Member,
+  ownerUser: ChatMember,
+  targetUser: ChatMember,
 ) => {
   await expect(
     groupsController.deleteMember(ownerUser.id, groupPayload.id, targetUser.id),
   ).rejects.toThrow();
 };
-const testDelete = async (ownerUser: Member) => {
+const testDelete = async (ownerUser: ChatMember) => {
   const result = await groupsController.delete(ownerUser.id, groupPayload.id);
   expect(result.message).toEqual('Group deleted successfully.');
 };
-const testDeleteForbidden = async (ownerUser: Member) => {
+const testDeleteForbidden = async (ownerUser: ChatMember) => {
   await expect(
     groupsController.delete(ownerUser.id, groupPayload.id),
   ).rejects.toThrow();
