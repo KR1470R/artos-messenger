@@ -46,9 +46,9 @@ export class UsersService {
     return this.usersRepository.update(logginedUserId, data);
   }
 
-  public async processDelete(id: number) {
-    await this.processFindOne(id);
-    return await this.usersRepository.delete(id);
+  public async processDelete(userId: number) {
+    await this.processFindOne(userId);
+    return await this.usersRepository.delete(userId);
   }
 
   public async processFindMany(
@@ -59,9 +59,9 @@ export class UsersService {
     return { data } as FindManyUsersResponseDto;
   }
 
-  public async processFindOne(id: number): Promise<UserFullResponseDto> {
+  public async processFindOne(userId: number): Promise<UserFullResponseDto> {
     const target = (await this.usersRepository.findOne(
-      id,
+      userId,
     )) as UserFullResponseDto;
     if (!target) throw new NotFoundException('User not found.');
 

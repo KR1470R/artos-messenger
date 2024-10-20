@@ -23,18 +23,18 @@ export class UsersRepository implements Repository {
   }
 
   public async update(
-    id: number,
+    userId: number,
     data: Partial<Pick<Users, 'name' | 'password' | 'avatar_url'>>,
   ) {
-    return await this.db(this.entity).where({ id }).update({
+    return await this.db(this.entity).where({ id: userId }).update({
       name: data?.name,
       password: data?.password,
       avatar_url: data?.avatar_url,
     });
   }
 
-  public async delete(id: number) {
-    return await this.db(this.entity).where({ id }).delete();
+  public async delete(userId: number) {
+    return await this.db(this.entity).where({ id: userId }).delete();
   }
 
   public async findMany(
@@ -52,7 +52,7 @@ export class UsersRepository implements Repository {
       });
   }
 
-  public async findOne(id: number, includePassword = false) {
+  public async findOne(userId: number, includePassword = false) {
     const select: (keyof Users)[] = [
       'id',
       'name',
@@ -63,6 +63,9 @@ export class UsersRepository implements Repository {
     ];
     if (includePassword) select.push('password');
 
-    return await this.db(this.entity).select(select).where({ id }).first();
+    return await this.db(this.entity)
+      .select(select)
+      .where({ id: userId })
+      .first();
   }
 }

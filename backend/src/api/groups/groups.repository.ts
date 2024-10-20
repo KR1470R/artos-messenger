@@ -24,18 +24,18 @@ export class GroupsRepository implements Repository {
   }
 
   public async update(
-    id: number,
+    groupId: number,
     data: Partial<Pick<Groups, 'title' | 'description' | 'avatar_url'>>,
   ) {
-    return this.db(this.entity).where({ id }).update({
+    return this.db(this.entity).where({ id: groupId }).update({
       title: data?.title,
       description: data?.description,
       avatar_url: data?.avatar_url,
     });
   }
 
-  public delete(id: number) {
-    return this.db(this.entity).where({ id }).delete();
+  public delete(groupId: number) {
+    return this.db(this.entity).where({ id: groupId }).delete();
   }
 
   public findMany(): Promise<never> {

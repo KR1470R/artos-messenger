@@ -54,7 +54,7 @@ export class GroupsController {
     return { message: 'Group created successfully.', id };
   }
 
-  @Patch('/:id')
+  @Patch('/:group_id')
   @ApiOperation({
     description: 'Update group information.',
   })
@@ -68,14 +68,14 @@ export class GroupsController {
   })
   public async update(
     @LogginedUserId() logginedUserId: number,
-    @Param('id') id: number,
+    @Param('group_id') groupId: number,
     @Body() data: CreateGroupRequestDto,
   ) {
-    await this.groupsService.processUpdate(logginedUserId, id, data);
-    return { message: 'Group updated successfully.', id };
+    await this.groupsService.processUpdate(logginedUserId, groupId, data);
+    return { message: 'Group updated successfully.', id: groupId };
   }
 
-  @Post('/:id/members/:user_id')
+  @Post('/:group_id/members/:user_id')
   @ApiOperation({
     description: 'Add member to group.',
   })
@@ -89,14 +89,14 @@ export class GroupsController {
   })
   public async addMember(
     @LogginedUserId() logginedUserId: number,
-    @Param('id') id: number,
+    @Param('group_id') groupId: number,
     @Param('user_id') userId: number,
   ) {
-    await this.groupsService.processAddMember(logginedUserId, id, userId);
+    await this.groupsService.processAddMember(logginedUserId, groupId, userId);
     return { message: 'Member added successfully.' };
   }
 
-  @Patch('/:id/members/:user_id')
+  @Patch('/:group_id/members/:user_id')
   @ApiOperation({
     description: 'Update member in group.',
   })
@@ -110,20 +110,20 @@ export class GroupsController {
   })
   public async updateMember(
     @LogginedUserId() logginedUserId: number,
-    @Param('id') id: number,
+    @Param('group_id') groupId: number,
     @Param('user_id') userId: number,
     @Body('role_id') roleId: number,
   ) {
     await this.groupsService.processUpdateMember(
       logginedUserId,
-      id,
+      groupId,
       userId,
       roleId,
     );
     return { message: 'Member updated successfully.' };
   }
 
-  @Delete('/:id/members/:user_id')
+  @Delete('/:group_id/members/:user_id')
   @ApiOperation({
     description: 'Delete member from group.',
   })
@@ -137,14 +137,18 @@ export class GroupsController {
   })
   public async deleteMember(
     @LogginedUserId() logginedUserId: number,
-    @Param('id') id: number,
+    @Param('group_id') groupId: number,
     @Param('user_id') userId: number,
   ) {
-    await this.groupsService.processDeleteMember(logginedUserId, id, userId);
+    await this.groupsService.processDeleteMember(
+      logginedUserId,
+      groupId,
+      userId,
+    );
     return { message: 'Member deleted successfully.' };
   }
 
-  @Delete('/:id')
+  @Delete('/:group_id')
   @ApiOperation({
     description: 'Delete group.',
   })
@@ -158,13 +162,13 @@ export class GroupsController {
   })
   public async delete(
     @LogginedUserId() logginedUserId: number,
-    @Param('id') id: number,
+    @Param('group_id') groupId: number,
   ) {
-    await this.groupsService.processDelete(logginedUserId, id);
+    await this.groupsService.processDelete(logginedUserId, groupId);
     return { message: 'Group deleted successfully.' };
   }
 
-  @Get('/:id')
+  @Get('/:group_id')
   @ApiOperation({
     description: 'Find group by id.',
   })
@@ -178,9 +182,9 @@ export class GroupsController {
   })
   public async findOne(
     @LogginedUserId() logginedUserId: number,
-    @Param('id') id: number,
+    @Param('group_id') groupId: number,
   ) {
-    return await this.groupsService.processFindOne(logginedUserId, id);
+    return await this.groupsService.processFindOne(logginedUserId, groupId);
   }
 
   @Get()

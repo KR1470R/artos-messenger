@@ -20,12 +20,12 @@ export class ChatsRepository implements Repository {
       .then(([id]) => id);
   }
 
-  public async update(id: number, data: any) {
+  public async update(chatId: number, data: any) {
     throw new Error('Method not implemented.');
   }
 
-  public async delete(id: number) {
-    return await this.db(this.entity).where({ id }).delete();
+  public async delete(chatId: number) {
+    return await this.db(this.entity).where({ id: chatId }).delete();
   }
 
   public async findMany() {
@@ -34,10 +34,10 @@ export class ChatsRepository implements Repository {
       .where({ type: ChatTypesEnum.DIRECT });
   }
 
-  public async findOne(id: number) {
+  public async findOne(chatId: number) {
     return await this.db(this.entity)
       .select('id', 'type', 'created_at', 'updated_at')
-      .where({ id })
+      .where({ id: chatId })
       .first();
   }
 }
