@@ -35,7 +35,7 @@ describe('UsersModule', () => {
     expect(result.id).toBeDefined();
     expect(result.message).toEqual('User created successfully.');
 
-    userPayload.id = result.id;
+    userPayload['id'] = result.id;
   });
 
   it('users should be able to update account', async () => {

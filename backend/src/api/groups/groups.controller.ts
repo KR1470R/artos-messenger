@@ -120,7 +120,7 @@ export class GroupsController {
       userId,
       roleId,
     );
-    return { message: 'Member role updated successfully.' };
+    return { message: 'Member updated successfully.' };
   }
 
   @Delete('/:id/members/:user_id')

@@ -24,13 +24,15 @@ export class ChatsUsersRepository implements Repository {
   }
 
   public async update(
-    id: number,
+    chatId: number,
     userId: number,
     data: Partial<Pick<ChatsUsers, 'role_id'>>,
   ) {
-    await this.db(this.entity).where({ id, user_id: userId }).update({
-      chat_id: data.role_id,
-    });
+    return await this.db(this.entity)
+      .update({
+        role_id: data.role_id,
+      })
+      .where({ chat_id: chatId, user_id: userId });
   }
 
   public async delete(userId: number, chatId: number) {

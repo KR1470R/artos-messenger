@@ -1,4 +1,4 @@
-enum UserChatRolesEnum {
+enum ChatUserRolesEnum {
   OWNER = 1,
   ADMIN = 2,
   USER = 3,
@@ -10,4 +10,4 @@ enum ChatTypesEnum {
   GROUP = 2,
 }
 
-export { UserChatRolesEnum, ChatTypesEnum };
+export { ChatUserRolesEnum, ChatTypesEnum };

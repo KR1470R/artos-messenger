@@ -4,9 +4,10 @@ import { GroupsRepository } from './groups.repository';
 import { ChatsModule } from '#api/chats/chats.module';
 import { GroupsChatsUsersRepository } from './groups-chats-users.repository';
 import { GroupsController } from './groups.controller';
+import { UsersModule } from '#api/users/users.module';
 
 @Module({
-  imports: [ChatsModule],
+  imports: [ChatsModule, UsersModule],
   controllers: [GroupsController],
   providers: [GroupsService, GroupsRepository, GroupsChatsUsersRepository],
   exports: [GroupsService],

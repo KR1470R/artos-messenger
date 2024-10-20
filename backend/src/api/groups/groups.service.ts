@@ -11,9 +11,10 @@ import {
   FindManyGroupsRequestDto,
   UpdateGroupRequestDto,
 } from './dto/requests';
-import { ChatTypesEnum, UserChatRolesEnum } from '#core/db/types';
+import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import { GroupsChatsUsersRepository } from './groups-chats-users.repository';
 import { UsersService } from '#api/users/users.service';
+import { ChatsUsers } from '#core/db/entities.type';
 
 @Injectable()
 export class GroupsService {
@@ -26,23 +27,19 @@ export class GroupsService {
   ) {}
 
   private async accessMemberRole(
-    userId: number,
+    targetChatMember:
+      | number
+      | Pick<
+          ChatsUsers,
+          'id' | 'chat_id' | 'user_id' | 'role_id' | 'created_at' | 'updated_at'
+        >,
     groupId: number,
-    requiredRoles: UserChatRolesEnum[],
+    requiredRoles: ChatUserRolesEnum[],
   ) {
-    const targetGroupMember = await this.groupsChatsUsersRepository.findOne(
-      userId,
-      groupId,
-    );
-    if (!targetGroupMember)
-      throw new ForbiddenException('The user is not a member of the group.');
-
-    const targetChatMember = await this.chatsUsersRepository.findOne(
-      userId,
-      targetGroupMember.chat_id,
-    );
-    if (!targetChatMember)
-      throw new ForbiddenException('The user is not a member of the chat.');
+    targetChatMember =
+      typeof targetChatMember === 'number'
+        ? await this.processGetMember(targetChatMember, groupId)
+        : targetChatMember;
 
     if (!requiredRoles.includes(targetChatMember.role_id))
       throw new ForbiddenException('Access denied.');
@@ -66,12 +63,12 @@ export class GroupsService {
       {
         user_id: logginedUserId,
         chat_id: chatId,
-        role_id: UserChatRolesEnum.ADMIN,
+        role_id: ChatUserRolesEnum.OWNER,
       },
       ...(data.invited_users_ids?.map((userId) => ({
         user_id: userId,
         chat_id: chatId,
-        role_id: UserChatRolesEnum.USER,
+        role_id: ChatUserRolesEnum.USER,
       })) ?? []),
     ];
 
@@ -80,14 +77,38 @@ export class GroupsService {
     return groupId;
   }
 
+  private async processGetMember(userId: number, groupId: number) {
+    await this.processFindOne(userId, groupId);
+
+    const targetGroupMember = await this.groupsChatsUsersRepository.findOne(
+      userId,
+      groupId,
+    );
+    if (!targetGroupMember)
+      throw new ForbiddenException(
+        `The user "${userId}" is not a member of the group.`,
+      );
+
+    const targetChatMember = await this.chatsUsersRepository.findOne(
+      userId,
+      targetGroupMember.chat_id,
+    );
+    if (!targetChatMember)
+      throw new ForbiddenException(
+        `The user "${userId}" is not a member of the chat.`,
+      );
+
+    return targetChatMember;
+  }
+
   public async processUpdate(
     logginedUserId: number,
     id: number,
     data: UpdateGroupRequestDto,
   ) {
     await this.accessMemberRole(logginedUserId, id, [
-      UserChatRolesEnum.OWNER,
-      UserChatRolesEnum.ADMIN,
+      ChatUserRolesEnum.OWNER,
+      ChatUserRolesEnum.ADMIN,
     ]);
     return await this.groupsRepository.update(id, data);
   }
@@ -97,17 +118,25 @@ export class GroupsService {
     id: number,
     targetUserId: number,
   ) {
-    await this.accessMemberRole(logginedUserId, id, [
-      UserChatRolesEnum.OWNER,
-      UserChatRolesEnum.ADMIN,
+    const logginedUser = await this.processGetMember(logginedUserId, id);
+    await this.accessMemberRole(logginedUser, id, [
+      ChatUserRolesEnum.OWNER,
+      ChatUserRolesEnum.ADMIN,
     ]);
+
+    let targetUser;
+    try {
+      targetUser = await this.processGetMember(targetUserId, id);
+    } catch (e) {}
+    if (targetUser)
+      throw new ForbiddenException('User is already a member of the group.');
 
     const targetGroup = await this.processFindOne(logginedUserId, id);
     const chatId = targetGroup.chat_id;
     const user = {
       user_id: targetUserId,
       chat_id: chatId,
-      role_id: UserChatRolesEnum.USER,
+      role_id: ChatUserRolesEnum.USER,
     };
 
     return this.chatsUsersRepository.create(user);
@@ -118,15 +147,21 @@ export class GroupsService {
     id: number,
     targetUserId: number,
   ) {
-    await this.accessMemberRole(logginedUserId, id, [
-      UserChatRolesEnum.OWNER,
-      UserChatRolesEnum.ADMIN,
-    ]);
+    const logginedUser = await this.processGetMember(logginedUserId, id);
+    const targetUser = await this.processGetMember(targetUserId, id);
 
-    const targetGroup = await this.processFindOne(logginedUserId, id);
+    if (targetUser.role_id === ChatUserRolesEnum.OWNER)
+      throw new ForbiddenException('Owner can not be deleted.');
+    if (logginedUserId !== targetUserId)
+      await this.accessMemberRole(logginedUser.user_id, id, [
+        ChatUserRolesEnum.OWNER,
+        ChatUserRolesEnum.ADMIN,
+      ]);
+
+    const targetGroup = await this.processFindOne(logginedUser.user_id, id);
     const chatId = targetGroup.chat_id;
 
-    return this.chatsUsersRepository.delete(targetUserId, chatId);
+    return this.chatsUsersRepository.delete(targetUser.user_id, chatId);
   }
 
   public async processUpdateMember(
@@ -136,8 +171,8 @@ export class GroupsService {
     roleId: number,
   ) {
     await this.accessMemberRole(logginedUserId, id, [
-      UserChatRolesEnum.OWNER,
-      UserChatRolesEnum.ADMIN,
+      ChatUserRolesEnum.OWNER,
+      ChatUserRolesEnum.ADMIN,
     ]);
 
     const targetGroup = await this.processFindOne(logginedUserId, id);
@@ -149,15 +184,12 @@ export class GroupsService {
   }
 
   public async processDelete(logginedUserId: number, id: number) {
-    await this.accessMemberRole(logginedUserId, id, [
-      UserChatRolesEnum.OWNER,
-      UserChatRolesEnum.ADMIN,
-    ]);
+    await this.accessMemberRole(logginedUserId, id, [ChatUserRolesEnum.OWNER]);
 
     const targetGroup = await this.processFindOne(logginedUserId, id);
+    await this.groupsRepository.delete(id);
     await this.chatsUsersRepository.deleteMany(logginedUserId);
     await this.chatsRepository.delete(targetGroup.chat_id);
-    return this.groupsRepository.delete(id);
   }
 
   public async processFindMany(
@@ -177,7 +209,7 @@ export class GroupsService {
       logginedUserId,
       id,
     );
-    if (!target) throw new NotFoundException('Group not found.');
+    if (!target) throw new NotFoundException(`Group "${id}" not found.`);
 
     return target;
   }

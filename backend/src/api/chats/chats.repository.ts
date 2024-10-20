@@ -14,13 +14,10 @@ export class ChatsRepository implements Repository {
 
   public async create(data: Pick<Chats, 'type'>) {
     return await this.db(this.entity)
-      .insert(
-        {
-          type: data.type,
-        },
-        'id',
-      )
-      .then(([row]) => row.id);
+      .insert({
+        type: data.type,
+      })
+      .then(([id]) => id);
   }
 
   public async update(id: number, data: any) {
