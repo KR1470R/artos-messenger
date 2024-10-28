@@ -1,5 +1,7 @@
 import { Repository } from '#common/interfaces';
+import { Pagination } from '#common/types';
 import { Messages } from '#core/db/entities.type';
+import { getEntitiesPaginated } from '#core/db/modules/knex/utils';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
@@ -10,7 +12,7 @@ export class MessagesRepository implements Repository {
 
   constructor(@InjectConnection() private readonly db: Knex) {}
 
-  public create(data: Messages) {
+  public create(data: Pick<Messages, 'chat_id' | 'content' | 'sender_id'>) {
     return new Promise((resolve, reject) => {
       this.db(this.entity)
         .insert(data)
@@ -19,7 +21,10 @@ export class MessagesRepository implements Repository {
     }) as Promise<number>;
   }
 
-  public async update(messageId: number, data: Messages) {
+  public async update(
+    messageId: number,
+    data: Partial<Pick<Messages, 'content' | 'is_read'>>,
+  ) {
     return this.db(this.entity).where({ id: messageId }).update(data);
   }
 
@@ -27,8 +32,16 @@ export class MessagesRepository implements Repository {
     return this.db(this.entity).where({ id: messageId }).delete();
   }
 
-  public findMany(filters: any) {
-    return this.db(this.entity).select().where(filters);
+  public findMany(
+    filters: Pick<Messages, 'chat_id' | 'sender_id'> & Pagination,
+  ): Promise<Pick<Messages, 'id' | 'sender_id' | 'content' | 'is_read'>[]> {
+    return getEntitiesPaginated(
+      this.db(this.entity).select('id', 'sender_id', 'content').where({
+        chat_id: filters.chat_id,
+      }),
+      filters.pageNum,
+      filters.pageSize,
+    );
   }
 
   public async findOne(messageId: number) {

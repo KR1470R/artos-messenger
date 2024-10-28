@@ -1,6 +1,6 @@
 {
   "name": "artos-messenger",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "author": "KR1470R",
   "private": true,
@@ -34,8 +34,10 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-fastify": "^10.4.4",
+    "@nestjs/platform-socket.io": "^10.4.5",
     "@nestjs/serve-static": "^4.0.2",
     "@nestjs/swagger": "^7.4.2",
+    "@nestjs/websockets": "^10.4.5",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "fastify": "^4.7.0",
@@ -44,7 +46,8 @@
     "nest-knexjs": "^0.0.24",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.0",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "socket.io-client": "^4.8.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

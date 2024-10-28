@@ -1,3 +1,5 @@
+import { Pagination } from '#common/types';
+
 export interface UpdateOverload {}
 
 export default interface Repository {
@@ -11,7 +13,12 @@ export default interface Repository {
     | ((id: number, userId: number) => Promise<any | never>);
   findMany:
     | ((filters: any) => Promise<any[] | never>)
-    | ((logginedUserId: number, filters: any) => Promise<any[] | never>);
+    | ((logginedUserId: number, filters: any) => Promise<any[] | never>)
+    | ((
+        logginedUserId: number,
+        chatId: number,
+        filters: object & Pagination,
+      ) => Promise<any[] | never>);
   findOne:
     | ((id: number) => Promise<any | never>)
     | ((logginedUserId: number, id: number) => Promise<any | never>);

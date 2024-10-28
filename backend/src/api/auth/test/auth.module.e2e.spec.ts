@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import * as request from 'supertest';
 import { AuthService } from '../auth.service';
 import { AuthController } from '../auth.controller';
