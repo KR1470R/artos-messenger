@@ -61,7 +61,7 @@ After running the commands above, access <http://localhost:3000/>.
 - [ ] Implement App Authentication via JWT tokens on front-end side
 - [x] Implement endpoints for manage users, groups, chats, messages
 - [ ] Implement UI for manage users, groups, chats, messages
-- [ ] Implement chat websocket channel for real time messages sharing between users
+- [x] Implement chat websocket channel for real time messages sharing between users
 - [ ] Implement files attachments(i.e photos, files, etc) (optionally)
 - [ ] Implement fully adaptive UI/UX
 - [ ] Create ERD Diagram

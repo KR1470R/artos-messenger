@@ -1,3 +1,4 @@
 import { AllExceptionsFilter } from './all-exceptions.filter';
+import { WsExceptionsFilter } from './ws-exception.filter';
 
-export { AllExceptionsFilter };
+export { AllExceptionsFilter, WsExceptionsFilter };

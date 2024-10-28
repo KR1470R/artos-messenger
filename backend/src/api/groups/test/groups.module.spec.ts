@@ -1,6 +1,6 @@
 import {
   createBaseTestingModule,
-  flushMockGroupsDb,
+  flushMockGroupChatsDb,
   flushMockUsersDb,
   prepareMockUsersDb,
 } from '#common/test/utils';
@@ -14,7 +14,7 @@ import {
   ownerMemberMock,
   userMemberMock,
 } from '#common/test/mock';
-import groupMock from '#common/test/mock/group.mock';
+import { groupMock } from '#common/test/mock/group.mock';
 import { ChatUserRolesEnum, ChatMember } from '#core/db/types';
 import { GroupsChatsUsersRepository } from '../groups-chats-users.repository';
 import { ChatsModule } from '#api/chats/chats.module';
@@ -159,13 +159,13 @@ beforeAll(async () => {
   db = testModule.get<Knex>('default');
 
   await flushMockUsersDb(db);
-  await flushMockGroupsDb(db);
+  await flushMockGroupChatsDb(db);
   await prepareMockUsersDb(db);
 });
 
 afterAll(async () => {
   await flushMockUsersDb(db);
-  await flushMockGroupsDb(db);
+  await flushMockGroupChatsDb(db);
   await db.destroy();
 });
 

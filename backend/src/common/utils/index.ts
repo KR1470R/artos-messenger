@@ -1,3 +1,4 @@
 import Password from './password';
+import random from './random';
 
-export { Password };
+export { Password, random };
