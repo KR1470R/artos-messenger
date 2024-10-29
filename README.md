@@ -52,6 +52,11 @@ export NODE_ENV=development && npm run migrate:up
 ```
 After running the commands above, access <http://localhost:3000/>.
 
+# ERD Diagram
+<p align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/2b6de8a0824761f5fa01263d785a07d4b16b837d/assets/artosdb.erd.png" width=1065 height=867 align=center>
+</p>
+
 # TODO
 - [x] Create base Nest.js project
 - [x] Create base React.js project
@@ -64,6 +69,6 @@ After running the commands above, access <http://localhost:3000/>.
 - [x] Implement chat websocket channel for real time messages sharing between users
 - [ ] Implement files attachments(i.e photos, files, etc) (optionally)
 - [ ] Implement fully adaptive UI/UX
-- [ ] Create ERD Diagram
+- [x] Create ERD Diagram
 - [x] Integrate Swagger
 - [ ] Deploy the application demo on a server
