@@ -3,7 +3,6 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WsResponse,
-  // WsResponse,
 } from '@nestjs/websockets';
 import {
   CreateMessageRequestDto,
@@ -15,8 +14,6 @@ import UpdateMessageRequestDto from './dto/requests/update-message.request.dto';
 import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WsExceptionsFilter } from '#common/filters';
 import { Messages } from '#core/db/entities.type';
-// import { CreateMessageResponseDto } from './dto/responses';
-// import { from, Observable } from 'rxjs';
 
 @WebSocketGateway(80, {
   namespace: 'messages',

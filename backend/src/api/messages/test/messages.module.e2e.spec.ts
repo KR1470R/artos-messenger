@@ -62,19 +62,8 @@ const emitEvent = async <T>(event: string, payload: object): Promise<T> => {
       } = await (() =>
     new Promise((resolve) => {
       socket.emit(event, payload);
-
-      const handleResolve = (response: any) => {
-        cleanup();
-        resolve(response);
-      };
-
-      const cleanup = () => {
-        socket.off(event, handleResolve);
-        socket.off('error', handleResolve);
-      };
-
-      socket.on(event, handleResolve);
-      socket.on('error', handleResolve);
+      socket.once(event, resolve);
+      socket.once('error', resolve);
     }))();
 
   if (typeof res === 'object' && 'status' in res) throw new Error(res.message);

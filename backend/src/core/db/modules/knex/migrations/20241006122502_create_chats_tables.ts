@@ -63,6 +63,7 @@ export async function up(knex: Knex): Promise<void> {
       .integer('chat_id')
       .notNullable()
       .unsigned()
+      .unique()
       .index()
       .references('id')
       .inTable('chats');
