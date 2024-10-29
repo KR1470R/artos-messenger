@@ -54,7 +54,7 @@ After running the commands above, access <http://localhost:3000/>.
 
 # ERD Diagram
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/2b6de8a0824761f5fa01263d785a07d4b16b837d/assets/artosdb.erd.png" width=1065 height=867 align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/2b6de8a0824761f5fa01263d785a07d4b16b837d/assets/artosdb.erd.png" width=930 height=730 align=center>
 </p>
 
 # TODO
