@@ -55,7 +55,7 @@ After running the commands above, access <http://localhost:3000/>.
 # ERD Diagram
 [entity-relationship diagram](https://github.com/KR1470R/artos-messenger/blob/main/backend/configs/.env.example)
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/c0f738bd51c5c5090b73531c20581c1b83ae36f2/assets/artosdb.erd.png" width=300 height=300 align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/2b6de8a0824761f5fa01263d785a07d4b16b837d/assets/artosdb.erd.png" width=300 height=300 align=center>
 </p>
 
 # TODO
