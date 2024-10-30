@@ -1,0 +1,47 @@
+.toolbar {
+	display: flex;
+	align-items: center;
+	background-color: white;
+	font-weight: 500;
+	border-bottom: 1px solid #eeeef1;
+	position: sticky;
+	top: 0px;
+}
+
+@supports (backdrop-filter: blur(20px)) {
+	.toolbar {
+		border: none;
+		background-color: rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(20px);
+	}
+}
+
+.toolbarTitle {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 800;
+}
+
+.leftItems,
+.rightItems {
+	flex: 1;
+	padding: 10px;
+	display: flex;
+}
+
+.rightItems {
+	flex-direction: row-reverse;
+}
+
+.leftItems .toolbarButton {
+	margin-right: 20px;
+}
+
+.rightItems .toolbarButton {
+	margin-left: 20px;
+}
+
+.leftItems .toolbarButton:last-child,
+.rightItems .toolbarButton:last-child {
+	margin: 0;
+}
