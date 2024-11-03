@@ -1,4 +1,4 @@
-import { IConversation } from '@/types/Components.interface'
+import { IConversation } from '@/types/Messages.interface'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { ConversationListItem } from '../ConversationListItem/ConversationListItem'

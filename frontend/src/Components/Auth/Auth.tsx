@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const Auth = () => {
 	const [data, setData] = useState({
-		name: '',
+		username: '',
 		password: '',
 	})
 	const [type, setType] = useState('auth')
@@ -17,9 +17,9 @@ const Auth = () => {
 					name='username'
 					placeholder='Email Address'
 					required
-					value={data.name}
+					value={data.username}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-						setData({ ...data, name: e.target.value })
+						setData({ ...data, username: e.target.value })
 					}
 				/>
 				<input

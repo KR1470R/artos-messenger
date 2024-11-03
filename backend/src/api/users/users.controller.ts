@@ -55,7 +55,6 @@ export class UsersController {
   }
 
   @Patch('/me')
-  @Public()
   @ApiOperation({
     description: 'Update loggined user information.',
   })
