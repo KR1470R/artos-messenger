@@ -15,7 +15,9 @@ export type Config = {
 class ConfigServiceSubstitute extends ConfigService {
   constructor() {
     super();
-    loadEnv();
+    try {
+      loadEnv();
+    } catch (error) {}
   }
 
   public override getOrThrow(key: string) {
