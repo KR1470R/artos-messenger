@@ -1,8 +1,9 @@
+
 <p align=center>
   <img src="https://github.com/KR1470R/artos-messenger/blob/c0f738bd51c5c5090b73531c20581c1b83ae36f2/assets/logo.jpg" width=300 height=300 align=center>
 </p>
 <h1 align=center>Artos Messenger<h1>
-<h2 align=center>Fast, simple, connectable<h2>  
+<h2 align=center>Fast, simple, connectable<h2>
 
 <hr>
 
@@ -22,6 +23,11 @@ Real-time chat application.
 	<img alt="" src="https://badgen.net/badge/Linux/any/yellow">
 	<img alt="" src="https://badgen.net/badge/MacOS/any/red">
 </div>
+
+# Endpoints 
+https://artos-messanger.xyz/docs - access to the API documentation.
+https://artos-messanger.xyz - access to the main page of the SPA.
+https://artos-messanger.xyz/api/v1/ - root endpoint to access the API.
 
 # Usage
 ## Installation & Run
@@ -47,7 +53,7 @@ Then create docker container:
 export NODE_ENV=development && docker-compose -f docker/docker-compose.yml --env-file .env.development up --build
 ```
 Run database migrations when container is running:
-```bash 
+```bash
 export NODE_ENV=development && npm run migrate:up
 ```
 After running the commands above, access <http://localhost:3000/>.
