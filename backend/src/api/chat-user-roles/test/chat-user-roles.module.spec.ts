@@ -8,7 +8,7 @@ import { ChatUserRolesController } from '../chat-user-roles.controller';
 import { ChatUserRolesRepository } from '../chat-user-roles.repository';
 import { ChatUserRolesService } from '../chat-user-roles.service';
 import { chatUserRolesMock } from '#common/test/mock';
-import { ChatUserRoles } from '#core/db/entities.type';
+import { ChatUserRoles } from '#common/test/mock/chat-user-roles.entity';
 
 let chatUserRolesController: ChatUserRolesController;
 let db: Knex;
