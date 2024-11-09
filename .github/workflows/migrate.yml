@@ -33,7 +33,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -L 3306:127.0.0.1:3306 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -N &
+          ssh -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -L ${{ secrets.DB_PORT }}:127.0.0.1:${{ secrets.DB_PORT }} ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -N &
 
       - name: Run Migrations and Seeds
         run: |
