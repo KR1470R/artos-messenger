@@ -1,0 +1,51 @@
+name: Migrate & Seed Database On Remote Server
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+        description: 'Environment to deploy the application'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '20.x'
+
+      - name: Install Dependencies
+        run: |
+          cd backend
+          npm install
+
+      - name: Create SSH Tunnel for DB Migration
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -L 3306:127.0.0.1:3306 ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -N &
+
+      - name: Run Migrations and Seeds
+        run: |
+          npm run migrate:rollback
+          npm run migrate:up
+          npm run seed:run
+        env:
+          NODE_ENV: ${{ inputs.environment }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASS }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_MIN_CONNECTIONS: 2
+          DB_MAX_CONNECTIONS: 10
