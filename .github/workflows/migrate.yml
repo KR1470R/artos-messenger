@@ -37,6 +37,7 @@ jobs:
 
       - name: Run Migrations and Seeds
         run: |
+          pwd 
           npm run migrate:rollback
           npm run migrate:up
           npm run seed:run
