@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { InjectConnection } from 'nest-knexjs';
-import { Knex } from 'knex';
 import { Repository } from '#common/interfaces';
+import { Injectable } from '@nestjs/common';
+import { Knex } from 'knex';
+import { InjectConnection } from 'nest-knexjs';
 import { FindManyUsersRequestDto } from './dto/requests';
-import { Users } from '#core/db/entities.type';
+import { Users } from './users.entity';
 
 @Injectable()
 export class UsersRepository implements Repository {

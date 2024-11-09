@@ -1,4 +1,6 @@
-import { Chats, ChatsUsers, Groups } from '#core/db/entities.type';
+import { ChatsUsers } from '#api/chats/chats-users.entity';
+import { Chats } from '#api/chats/chats.entity';
+import { Groups } from '#api/groups/groups.entity';
 import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import {
   adminMemberMock,

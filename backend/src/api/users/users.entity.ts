@@ -1,9 +1,9 @@
-export class Groups {
+export class Users {
   id: number;
-  chat_id: number;
-  title: string;
-  description?: string;
+  name: string;
+  password: string;
   avatar_url?: string;
+  last_login_at?: string;
   created_at: string;
   updated_at: string;
 }
