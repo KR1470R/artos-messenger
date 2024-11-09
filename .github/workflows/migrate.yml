@@ -7,6 +7,13 @@ on:
         type: environment
         description: 'Environment to deploy the application'
         required: true
+      node_env: 
+          type: choice
+          description: 'Node environment to run the application'
+          default: 'development'
+          options:
+            - 'development'
+            - 'production'
 
 jobs:
   deploy:
@@ -37,8 +44,7 @@ jobs:
 
       - name: Run Migrations and Seeds
         run: |
-          cd backend
-          pwd 
+          export NODE_ENV=${{ inputs.node_env }}
           npm run migrate:rollback
           npm run migrate:up
           npm run seed:run
