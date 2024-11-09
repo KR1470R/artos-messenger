@@ -1,7 +1,8 @@
 import { ChatsUsers } from '#api/chats/chats-users.entity';
 import { Chats } from '#api/chats/chats.entity';
 import { Groups } from '#api/groups/groups.entity';
-import { ChatUserRoles, Messages, Users } from '#core/db/entities.type';
+import { Messages } from '#api/messages/messages.entity';
+import { ChatUserRoles, Users } from '#core/db/entities.type';
 
 declare module 'knex/types/tables' {
   interface Tables {

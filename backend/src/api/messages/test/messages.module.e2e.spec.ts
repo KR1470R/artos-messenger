@@ -34,7 +34,7 @@ import {
 } from '../dto/requests';
 import { WsResponse } from '@nestjs/websockets';
 import UpdateMessageRequestDto from '../dto/requests/update-message.request.dto';
-import { Messages } from '#core/db/entities.type';
+import { Messages } from '../messages.entity';
 
 let app: NestFastifyApplication;
 let socket: Socket;
