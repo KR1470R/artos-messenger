@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Repository } from '#common/interfaces';
-import { Chats } from '#core/db/entities.type';
 import { ChatTypesEnum } from '#core/db/types';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
+import { Chats } from './chats.entity';
 
 @Injectable()
 export class ChatsRepository implements Repository {
