@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 import { GroupFullResponseDto, GroupShortResponseDto } from './dto/responses';
-import { Groups } from '#core/db/entities.type';
+import { Groups } from './groups.entity';
 
 @Injectable()
 export class GroupsChatsUsersRepository implements Repository {

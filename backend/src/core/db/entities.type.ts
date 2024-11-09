@@ -18,14 +18,6 @@ export class Users extends Timestamps {
   last_login_at?: string;
 }
 
-export class Groups extends Timestamps {
-  id: number;
-  chat_id: number;
-  title: string;
-  description?: string;
-  avatar_url?: string;
-}
-
 export class Messages extends Timestamps {
   id: number;
   chat_id: number;
