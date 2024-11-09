@@ -17,11 +17,3 @@ export class Users extends Timestamps {
   avatar_url?: string;
   last_login_at?: string;
 }
-
-export class Messages extends Timestamps {
-  id: number;
-  chat_id: number;
-  sender_id: number;
-  content: string;
-  is_read: boolean;
-}

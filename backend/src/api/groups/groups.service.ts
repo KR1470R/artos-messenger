@@ -1,20 +1,20 @@
+import { ChatsUsers } from '#api/chats/chats-users.entity';
+import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
+import { ChatsRepository } from '#api/chats/chats.repository';
+import { UsersService } from '#api/users/users.service';
+import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import {
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { GroupsRepository } from './groups.repository';
-import { ChatsRepository } from '#api/chats/chats.repository';
-import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
 import {
   CreateGroupRequestDto,
   FindManyGroupsRequestDto,
   UpdateGroupRequestDto,
 } from './dto/requests';
-import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import { GroupsChatsUsersRepository } from './groups-chats-users.repository';
-import { UsersService } from '#api/users/users.service';
-import { ChatsUsers } from '#core/db/entities.type';
+import { GroupsRepository } from './groups.repository';
 
 @Injectable()
 export class GroupsService {
