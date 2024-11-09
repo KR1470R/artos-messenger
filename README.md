@@ -25,9 +25,9 @@ Real-time chat application.
 </div>
 
 # Endpoints 
-https://artos-messanger.xyz/docs - access to the API documentation.
-https://artos-messanger.xyz - access to the main page of the SPA.
-https://artos-messanger.xyz/api/v1/ - root endpoint to access the API.
+- https://artos-messanger.xyz/docs - access to the API documentation.
+- https://artos-messanger.xyz - access to the main page of the SPA.
+- https://artos-messanger.xyz/api/v1/ - root endpoint to access the API.
 
 # Usage
 ## Installation & Run
