@@ -26,18 +26,6 @@ jobs:
           cd backend
           npm install
 
-      - name: logs
-        run: |
-          echo ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
-          echo ${{ secrets.SERVER_USERNAME }}
-          echo ${{ secrets.SERVER_IP }}
-          echo ${{ secrets.SERVER_SSH_PORT }}
-          echo ${{ secrets.DB_PORT }}
-          echo ${{ secrets.DB_HOST }}
-          echo ${{ secrets.DB_USER }}
-          echo ${{ secrets.DB_PASS }}
-          echo ${{ secrets.DB_NAME }}
-
       - name: Create SSH Tunnel for DB Migration
         env:
           SSH_PRIVATE_KEY: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
