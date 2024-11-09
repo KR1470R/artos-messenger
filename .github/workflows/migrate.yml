@@ -7,6 +7,13 @@ on:
         type: environment
         description: 'Environment to deploy the application'
         required: true
+      node_env: 
+          type: choice
+          description: 'Node environment to run the application'
+          default: 'development'
+          options:
+            - 'development'
+            - 'production'
 
 jobs:
   deploy:
