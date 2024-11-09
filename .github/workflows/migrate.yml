@@ -44,8 +44,7 @@ jobs:
 
       - name: Run Migrations and Seeds
         run: |
-          cd backend
-          pwd 
+          export NODE_ENV=${{ inputs.node_env }}
           npm run migrate:rollback
           npm run migrate:up
           npm run seed:run
