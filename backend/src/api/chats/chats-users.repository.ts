@@ -1,8 +1,8 @@
 import { Repository } from '#common/interfaces';
-import { ChatsUsers } from '#core/db/entities.type';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
+import { ChatsUsers } from './chats-users.entity';
 
 @Injectable()
 export class ChatsUsersRepository implements Repository {
