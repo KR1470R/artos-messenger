@@ -40,7 +40,7 @@ jobs:
           cd backend
           npm run migrate:rollback
           npm run migrate:up
-          npm run seed:run
+          # npm run seed:run # no seeds yet
         env:
           NODE_ENV: ${{ inputs.environment }}
           DB_HOST: ${{ secrets.DB_HOST }}
