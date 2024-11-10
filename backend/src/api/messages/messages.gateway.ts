@@ -15,7 +15,7 @@ import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import { WsExceptionsFilter } from '#common/filters';
 import { Messages } from '#core/db/entities.type';
 
-@WebSocketGateway(80, {
+@WebSocketGateway(8080, {
   namespace: 'messages',
   cors: true,
 })
