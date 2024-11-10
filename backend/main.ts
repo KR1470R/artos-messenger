@@ -49,6 +49,8 @@ async function bootstrap() {
       },
       'jwt',
     )
+    .addServer('/api/', 'For remote server')
+    .addServer('/', 'For local server')
     .setVersion(version)
     .build();
 
