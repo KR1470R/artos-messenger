@@ -30,7 +30,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
-      - name: create pull request
+      - name: Create pull request
         if: env.pr_exists == 'false'
         run: gh pr create -B main -H ${{ github.ref_name }} --title '${{ github.ref_name }} to Remote' --body 'This PR was created automatically by GitHub Actions.'
         env:
