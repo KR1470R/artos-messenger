@@ -59,10 +59,11 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd artos-messenger
+            rm  -rf backend-configs frontend-configs
             mkdir backend-configs
             mkdir frontend-configs
-            cp backend/configs/.* ./backend-configs
-            cp frontend/configs/.* ./frontend-configs
+            cp backend/configs/.env.* ./backend-configs
+            cp frontend/.env.* ./frontend-configs
             rm -rf backend frontend docker assets
 
       - name: Deploy to Server
@@ -84,8 +85,8 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd artos-messenger
-            mv backend-configs/.* ./backend-configs
-            mv frontend-configs/.* ./frontend-configs
+            mv backend-configs/.env.* ./backend/configs
+            mv frontend-configs/.env.* ./frontend
             rm -rf backend-configs
             rm -rf frontend-configs
 
