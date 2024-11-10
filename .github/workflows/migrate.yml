@@ -38,6 +38,7 @@ jobs:
       - name: Run Migrations and Seeds
         run: |
           cd backend
+          env
           npm run migrate:rollback
           npm run migrate:up
           npm run seed:run
