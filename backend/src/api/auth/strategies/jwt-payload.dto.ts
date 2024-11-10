@@ -1,6 +1,6 @@
 export default interface JwtPayloadDto {
-  email: string;
-  user_id: number;
+  username: string;
+  id: number;
   iat: number;
   exp: number;
 }

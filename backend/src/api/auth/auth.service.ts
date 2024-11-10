@@ -35,14 +35,14 @@ export class AuthService {
     if (!user) throw new Error('Invalid credentials');
     if (await Password.compare(user.password, password)) {
       const token = await this.jwtService.signAsync(
-        { username, id: user.id },
+        { username: user.name, id: user.id },
         {
           secret: this.JWT_SECRET,
           expiresIn: this.JWT_TOKEN_EXPIRES_IN,
         },
       );
       const refreshToken = await this.jwtService.signAsync(
-        { username, id: user.id },
+        { username: user.name, id: user.id },
         {
           secret: this.JWT_REFRESH_SECRET,
           expiresIn: this.JWR_REFRESH_TOKEN_EXPIRES_IN,
@@ -55,21 +55,18 @@ export class AuthService {
   }
 
   public async processRefreshToken(previousToken: string) {
-    const { email, user_id: id } = (await this.jwtService.verifyAsync(
-      previousToken,
-      {
-        secret: this.JWT_REFRESH_SECRET,
-      },
-    )) as { email: string; user_id: number };
+    const { username, id } = (await this.jwtService.verifyAsync(previousToken, {
+      secret: this.JWT_REFRESH_SECRET,
+    })) as { username: string; id: number };
     const newToken = await this.jwtService.signAsync(
-      { email, id },
+      { username, id },
       {
         secret: this.JWT_SECRET,
         expiresIn: this.JWT_TOKEN_EXPIRES_IN,
       },
     );
     const newRefreshToken = await this.jwtService.signAsync(
-      { email, id },
+      { username, id },
       {
         secret: this.JWT_REFRESH_SECRET,
         expiresIn: this.JWR_REFRESH_TOKEN_EXPIRES_IN,
