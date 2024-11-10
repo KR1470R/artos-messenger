@@ -1,0 +1,82 @@
+name: Deploy Backend Application on Remote Server
+
+on: 
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+        description: 'Environment to deploy the application'
+        required: true
+      node_env: 
+        type: choice
+        description: 'Node environment to run the application'
+        default: 'development'
+        options:
+          - 'development'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up MySQL
+        run: |
+          sudo systemctl start mysql
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '20.x'
+
+      - name: Install Dependencies
+        run: |
+          cd backend
+          npm install
+      
+      - name: Create Database for tests
+        run: |
+          mysql -e 'CREATE DATABASE ${{ vars.DB_NAME_TEST }};' -uroot -proot
+        
+      - name: Migrate Test Database
+        run: |
+          cd backend
+          NODE_ENV=test npm run migrate:up
+
+      - name: Run tests
+        run: |
+          cd backend
+          npm run test:cov
+
+      - name: Clear old application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          script: |
+            cd artos-messenger
+            rm -rf backend frontend docker assets
+
+      - name: Deploy to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          source: 'backend, frontend, docker, assets'
+          target: '/${{ secrets.SERVER_USERNAME }}/artos-messenger'
+
+      - name: Restart or start the application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SERVER_SSH_PORT }}
+          script: |
+            pm2 startOrReload artos-messenger
