@@ -9,7 +9,7 @@ on:
         required: true
 
 jobs:
-  deploy:
+  migrate:
     runs-on: ubuntu-20.04
     environment: ${{ inputs.environment }}
     steps:
