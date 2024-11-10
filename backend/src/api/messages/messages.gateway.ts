@@ -1,3 +1,5 @@
+import { WsExceptionsFilter } from '#common/filters';
+import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   MessageBody,
   SubscribeMessage,
@@ -9,11 +11,9 @@ import {
   DeleteMessageRequestDto,
   FindManyMessagesRequestDto,
 } from './dto/requests';
-import { MessagesService } from './messages.service';
 import UpdateMessageRequestDto from './dto/requests/update-message.request.dto';
-import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
-import { WsExceptionsFilter } from '#common/filters';
-import { Messages } from '#core/db/entities.type';
+import { Messages } from './messages.entity';
+import { MessagesService } from './messages.service';
 
 @WebSocketGateway(8080, {
   namespace: 'messages',

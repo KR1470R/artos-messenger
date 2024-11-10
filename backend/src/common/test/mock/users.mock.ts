@@ -1,4 +1,4 @@
-import { Users } from '#core/db/entities.type';
+import { Users } from '#api/users/users.entity';
 
 const ownerMemberMock: Pick<Users, 'id' | 'name' | 'avatar_url'> = {
   id: 1,

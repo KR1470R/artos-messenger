@@ -1,10 +1,10 @@
 import { Repository } from '#common/interfaces';
 import { Pagination } from '#common/types';
-import { Messages } from '#core/db/entities.type';
 import { getEntitiesPaginated } from '#core/db/modules/knex/utils';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
+import { Messages } from './messages.entity';
 
 @Injectable()
 export class MessagesRepository implements Repository {

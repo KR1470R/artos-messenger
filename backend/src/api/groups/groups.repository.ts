@@ -1,8 +1,8 @@
 import { Repository } from '#common/interfaces';
-import { Groups } from '#core/db/entities.type';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
+import { Groups } from './groups.entity';
 
 @Injectable()
 export class GroupsRepository implements Repository {
