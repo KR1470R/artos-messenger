@@ -2,7 +2,7 @@
 import { Repository } from '#common/interfaces';
 import { Chats } from '#core/db/entities.type';
 import { ChatTypesEnum } from '#core/db/types';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 
@@ -35,9 +35,12 @@ export class ChatsRepository implements Repository {
   }
 
   public async findOne(chatId: number) {
-    return await this.db(this.entity)
+    const chat = await this.db(this.entity)
       .select('id', 'type', 'created_at', 'updated_at')
       .where({ id: chatId })
       .first();
+
+    if (!chat) throw new NotFoundException('Chat not found.');
+    return chat;
   }
 }
