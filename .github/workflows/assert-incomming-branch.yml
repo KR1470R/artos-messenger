@@ -1,0 +1,26 @@
+name: Assert incomming branch for the Main branch
+
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches:
+      - main
+
+jobs:
+  check-branch:
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Check if PR is from the correct branch 
+        run: |
+          shopt -s extglob
+          echo "SOURCE_BRANCH: $SOURCE_BRANCH"
+          echo "INCOMMING_BRANCH_PATTERN: $INCOMMING_BRANCH_PATTERN"
+          if [[ "$SOURCE_BRANCH" != @($INCOMMING_BRANCH_PATTERN)/* ]]; then
+            echo "Pull requests should be made from branches started by $INCOMMING_BRANCH_PATTERN/* pattern!"
+            exit 1
+          fi
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref || github.ref_name }} 
+          INCOMMING_BRANCH_PATTERN: 'release|hotfix|feature|bugfix'
+        shell: bash
