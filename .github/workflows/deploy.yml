@@ -90,7 +90,7 @@ jobs:
             rm -rf backend-configs
             rm -rf frontend-configs
 
-      - name: Restart or start the application
+      - name: Restart the application
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -98,4 +98,6 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh
             pm2 restart artos-messenger
