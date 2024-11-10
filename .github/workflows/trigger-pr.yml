@@ -1,0 +1,37 @@
+name: Trigger PR from branches to Main branch
+
+on:
+  push:
+    branches:
+      - release/**
+      - hotfix/**
+      - bugfix/**
+      - feature/**
+
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-latest
+    environment: development
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check if PR already exists
+        id: check_pr
+        run: |
+          pr_count=$(gh pr list --base main --head ${{ github.ref_name }} --state open --json number --jq '. | length')
+          echo "PR count: $pr_count"
+          
+          if [ "$pr_count" -gt 0 ]; then
+            echo "pr_exists=true" >> $GITHUB_ENV
+          else
+            echo "pr_exists=false" >> $GITHUB_ENV
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+      - name: create pull request
+        if: env.pr_exists == 'false'
+        run: gh pr create -B main -H ${{ github.ref_name }} --title '${{ github.ref_name }} to Remote' --body 'This PR was created automatically by GitHub Actions.'
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
