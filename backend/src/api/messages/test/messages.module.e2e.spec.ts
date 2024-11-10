@@ -48,7 +48,7 @@ let groupMessageId2: number;
 
 const initSocket = () => {
   return new Promise<void>((resolve) => {
-    socket = io('ws://localhost/messages');
+    socket = io('ws://localhost:8080/messages');
     socket.on('connect', resolve);
   });
 };
