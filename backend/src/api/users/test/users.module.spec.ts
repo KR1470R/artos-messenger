@@ -4,6 +4,7 @@ import { UsersService } from '../users.service';
 import { UsersRepository } from '../users.repository';
 import { UsersController } from '../users.controller';
 import { ownerMemberMock } from '#common/test/mock';
+import { UsersRepositoryToken } from '../constants';
 
 let usersController: UsersController;
 let db: Knex;
@@ -16,7 +17,13 @@ const userPayload = {
 beforeAll(async () => {
   const testModule = await createBaseTestingModule({
     controllers: [UsersController],
-    providers: [UsersService, UsersRepository],
+    providers: [
+      UsersService,
+      {
+        provide: UsersRepositoryToken,
+        useClass: UsersRepository,
+      },
+    ],
   });
 
   usersController = testModule.get<UsersController>(UsersController);

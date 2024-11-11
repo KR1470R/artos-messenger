@@ -35,10 +35,12 @@ import { WsResponse } from '@nestjs/websockets';
 import UpdateMessageRequestDto from '../dto/requests/update-message.request.dto';
 import { Messages } from '../messages.entity';
 import { JwtWsStrategy } from '#api/auth/strategies';
-import { UsersModule } from '#api/users/users.module';
 import { AuthModule } from '#api/auth/auth.module';
 import { AuthService } from '#api/auth/auth.service';
 import { MessagesService } from '../messages.service';
+import { MessagesRepositoryToken } from '../constants';
+import { UsersModule } from '#api/users/users.module';
+import { IMessagesRepository } from '../interfaces';
 
 let app: NestFastifyApplication;
 let adminToken: string;
@@ -50,7 +52,7 @@ const sockets = {
   [name in string]: Socket | undefined;
 };
 let db: Knex;
-let messagesRepository: MessagesRepository;
+let messagesRepository: IMessagesRepository;
 let authService: AuthService;
 
 let directMessageId1: number;
@@ -202,10 +204,12 @@ beforeAll(async () => {
     providers: [
       MessagesGateway,
       MessagesService,
-      MessagesRepository,
       JwtWsStrategy,
+      {
+        provide: MessagesRepositoryToken,
+        useClass: MessagesRepository,
+      },
     ],
-    exports: [MessagesService, MessagesRepository],
   });
 
   app = moduleRef.createNestApplication(new FastifyAdapter());
@@ -215,7 +219,9 @@ beforeAll(async () => {
 
   await setTimeout(500);
 
-  messagesRepository = moduleRef.get<MessagesRepository>(MessagesRepository);
+  messagesRepository = moduleRef.get<IMessagesRepository>(
+    MessagesRepositoryToken,
+  );
   db = moduleRef.get<Knex>('default');
   authService = moduleRef.get<AuthService>(AuthService);
 

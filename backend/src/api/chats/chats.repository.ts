@@ -1,13 +1,12 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Repository } from '#common/interfaces';
 import { ChatTypesEnum } from '#core/db/types';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 import { Chats } from './chats.entity';
+import { IChatsRepository } from './interfaces';
 
 @Injectable()
-export class ChatsRepository implements Repository {
+export class ChatsRepository implements IChatsRepository {
   public readonly entity = 'chats';
 
   constructor(@InjectConnection() private readonly db: Knex) {}
@@ -18,10 +17,6 @@ export class ChatsRepository implements Repository {
         type: data.type,
       })
       .then(([id]) => id);
-  }
-
-  public async update(chatId: number, data: any) {
-    throw new Error('Method not implemented.');
   }
 
   public async delete(chatId: number) {
