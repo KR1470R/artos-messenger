@@ -12,10 +12,15 @@ export class MessagesRepository implements Repository {
 
   constructor(@InjectConnection() private readonly db: Knex) {}
 
-  public create(data: Pick<Messages, 'chat_id' | 'content' | 'sender_id'>) {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  public create(senderId: number, data: Pick<Messages, 'chat_id' | 'content'>) {
     return new Promise((resolve, reject) => {
       this.db(this.entity)
-        .insert(data)
+        .insert({
+          sender_id: senderId,
+          ...data,
+        })
         .then(([id]) => resolve(id))
         .catch(reject);
     }) as Promise<number>;
@@ -33,7 +38,7 @@ export class MessagesRepository implements Repository {
   }
 
   public findMany(
-    filters: Pick<Messages, 'chat_id' | 'sender_id'> & Pagination,
+    filters: Pick<Messages, 'chat_id'> & Pagination,
   ): Promise<Pick<Messages, 'id' | 'sender_id' | 'content' | 'is_read'>[]> {
     return getEntitiesPaginated(
       this.db(this.entity).select('id', 'sender_id', 'content').where({
@@ -45,6 +50,6 @@ export class MessagesRepository implements Repository {
   }
 
   public async findOne(messageId: number) {
-    return this.db(this.entity).where({ id: messageId }).first();
+    return this.db(this.entity).select('*').where({ id: messageId }).first();
   }
 }

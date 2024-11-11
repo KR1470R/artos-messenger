@@ -2,9 +2,13 @@ import { Pagination } from '#common/types';
 
 export interface UpdateOverload {}
 
+// @TODO remove this bullshit and composite this interface for each repository domain
 export default interface Repository {
   readonly entity?: string;
-  create: ((data: any) => Promise<number>) | (() => Promise<never>);
+  create:
+    | ((data: any) => Promise<number>)
+    | ((senderId: number, data: any) => Promise<never>)
+    | (() => Promise<never>);
   update:
     | ((id: number, data: any) => Promise<any | never>)
     | ((id: number, userId: number, data: any) => Promise<any | never>);

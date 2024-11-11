@@ -9,7 +9,7 @@ import {
 } from '@nestjs/swagger';
 import { CreateChatResponseDto } from './dto/responses';
 import { ChatsService } from './chats.service';
-import { LogginedUserId } from '#common/decorators';
+import { LogginedUserIdHttp } from '#common/decorators';
 
 @Controller('chats')
 @ApiTags('chats')
@@ -30,7 +30,7 @@ export class ChatsController {
     type: ExceptionResponseDto,
   })
   public async create(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Param('target_user_id') targetUserId: number,
   ) {
     const id = await this.chatsService.processCreate(
@@ -54,7 +54,7 @@ export class ChatsController {
     type: ExceptionResponseDto,
   })
   public async delete(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Param('chat_id') chatId: number,
   ) {
     await this.chatsService.processDelete(logginedUserId, chatId);

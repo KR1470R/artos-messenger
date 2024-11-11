@@ -2,6 +2,7 @@ import { WsExceptionsFilter } from '#common/filters';
 import {
   ParseIntPipe,
   UseFilters,
+  UseGuards,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -23,6 +24,8 @@ import UpdateMessageRequestDto from './dto/requests/update-message.request.dto';
 import { Messages } from './messages.entity';
 import { MessagesService } from './messages.service';
 import { Server } from 'net';
+import { JwtAuthWsGuard } from '#api/auth/guards';
+import { LogginedUserIdWs } from '#common/decorators';
 
 @WebSocketGateway(8080, {
   namespace: 'messages',
@@ -30,6 +33,7 @@ import { Server } from 'net';
 })
 @UsePipes(new ValidationPipe())
 @UseFilters(WsExceptionsFilter)
+@UseGuards(JwtAuthWsGuard)
 export class MessagesGateway {
   @WebSocketServer()
   server: Server;
@@ -37,10 +41,10 @@ export class MessagesGateway {
   constructor(private readonly messagesService: MessagesService) {}
 
   @SubscribeMessage('join_chat')
-  public async handleJoinChat(
-    @MessageBody('chat_id', new ParseIntPipe()) chatId: number,
-    @MessageBody('user_id', new ParseIntPipe()) userId: number,
+  public async joinChat(
     @ConnectedSocket() client: Socket,
+    @LogginedUserIdWs() userId: number,
+    @MessageBody('chat_id', new ParseIntPipe()) chatId: number,
   ) {
     await this.messagesService.processJoinChatUserSocket(
       chatId,
@@ -55,9 +59,9 @@ export class MessagesGateway {
   }
 
   @SubscribeMessage('leave_chat')
-  public handleLeaveChat(
+  public leaveChat(
+    @LogginedUserIdWs() userId: number,
     @MessageBody('chat_id', new ParseIntPipe()) chatId: number,
-    @MessageBody('user_id', new ParseIntPipe()) userId: number,
   ) {
     this.messagesService.processLeaveChatUserSocket(chatId, userId);
 
@@ -69,9 +73,13 @@ export class MessagesGateway {
 
   @SubscribeMessage('create_message')
   public async createMessage(
+    @LogginedUserIdWs() logginedUserId: number,
     @MessageBody() data: CreateMessageRequestDto,
   ): Promise<WsResponse<number>> {
-    const newMessageId = await this.messagesService.processCreate(data);
+    const newMessageId = await this.messagesService.processCreate(
+      logginedUserId,
+      data,
+    );
 
     return {
       event: 'create_message',
@@ -81,9 +89,10 @@ export class MessagesGateway {
 
   @SubscribeMessage('update_message')
   public async updateMessage(
+    @LogginedUserIdWs() logginedUserId: number,
     @MessageBody() data: UpdateMessageRequestDto,
   ): Promise<WsResponse<string>> {
-    await this.messagesService.processUpdate(data);
+    await this.messagesService.processUpdate(logginedUserId, data);
 
     return {
       event: 'update_message',
@@ -93,9 +102,13 @@ export class MessagesGateway {
 
   @SubscribeMessage('find_many_messages')
   public async findManyMessages(
+    @LogginedUserIdWs() logginedUserId: number,
     @MessageBody() data: FindManyMessagesRequestDto,
   ): Promise<WsResponse<Pick<Messages, 'content' | 'sender_id' | 'id'>[]>> {
-    const messages = await this.messagesService.processFindMany(data);
+    const messages = await this.messagesService.processFindMany(
+      logginedUserId,
+      data,
+    );
 
     return {
       event: 'find_many_messages',
@@ -105,9 +118,10 @@ export class MessagesGateway {
 
   @SubscribeMessage('delete_message')
   public async deleteMessage(
+    @LogginedUserIdWs() logginedUserId: number,
     @MessageBody() data: DeleteMessageRequestDto,
   ): Promise<WsResponse<string>> {
-    await this.messagesService.processDelete(data);
+    await this.messagesService.processDelete(logginedUserId, data);
 
     return {
       event: 'delete_message',
