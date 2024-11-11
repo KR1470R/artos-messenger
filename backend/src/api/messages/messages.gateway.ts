@@ -1,11 +1,19 @@
 import { WsExceptionsFilter } from '#common/filters';
-import { UseFilters, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  ParseIntPipe,
+  UseFilters,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
   WsResponse,
+  WebSocketServer,
+  ConnectedSocket,
 } from '@nestjs/websockets';
+import { Socket } from 'socket.io';
 import {
   CreateMessageRequestDto,
   DeleteMessageRequestDto,
@@ -14,6 +22,7 @@ import {
 import UpdateMessageRequestDto from './dto/requests/update-message.request.dto';
 import { Messages } from './messages.entity';
 import { MessagesService } from './messages.service';
+import { Server } from 'net';
 
 @WebSocketGateway(8080, {
   namespace: 'messages',
@@ -22,7 +31,41 @@ import { MessagesService } from './messages.service';
 @UsePipes(new ValidationPipe())
 @UseFilters(WsExceptionsFilter)
 export class MessagesGateway {
+  @WebSocketServer()
+  server: Server;
+
   constructor(private readonly messagesService: MessagesService) {}
+
+  @SubscribeMessage('join_chat')
+  public async handleJoinChat(
+    @MessageBody('chat_id', new ParseIntPipe()) chatId: number,
+    @MessageBody('user_id', new ParseIntPipe()) userId: number,
+    @ConnectedSocket() client: Socket,
+  ) {
+    await this.messagesService.processJoinChatUserSocket(
+      chatId,
+      userId,
+      client,
+    );
+
+    return {
+      event: 'join_chat',
+      data: 'Joined chat successfully.',
+    };
+  }
+
+  @SubscribeMessage('leave_chat')
+  public handleLeaveChat(
+    @MessageBody('chat_id', new ParseIntPipe()) chatId: number,
+    @MessageBody('user_id', new ParseIntPipe()) userId: number,
+  ) {
+    this.messagesService.processLeaveChatUserSocket(chatId, userId);
+
+    return {
+      event: 'leave_chat',
+      data: 'Left chat successfully.',
+    };
+  }
 
   @SubscribeMessage('create_message')
   public async createMessage(
@@ -41,6 +84,7 @@ export class MessagesGateway {
     @MessageBody() data: UpdateMessageRequestDto,
   ): Promise<WsResponse<string>> {
     await this.messagesService.processUpdate(data);
+
     return {
       event: 'update_message',
       data: 'Message updated successfully.',
@@ -52,6 +96,7 @@ export class MessagesGateway {
     @MessageBody() data: FindManyMessagesRequestDto,
   ): Promise<WsResponse<Pick<Messages, 'content' | 'sender_id' | 'id'>[]>> {
     const messages = await this.messagesService.processFindMany(data);
+
     return {
       event: 'find_many_messages',
       data: messages,
@@ -63,6 +108,7 @@ export class MessagesGateway {
     @MessageBody() data: DeleteMessageRequestDto,
   ): Promise<WsResponse<string>> {
     await this.messagesService.processDelete(data);
+
     return {
       event: 'delete_message',
       data: 'Message deleted successfully.',

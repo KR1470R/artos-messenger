@@ -1,14 +1,7 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
+import BaseMessageRequestDto from './base-message.request.dto';
 
-export default class FindManyMessagesRequestDto {
-  @IsNumber()
-  @IsNotEmpty()
-  sender_id: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  chat_id: number;
-
+export default class FindManyMessagesRequestDto extends BaseMessageRequestDto {
   @IsNumber()
   @IsNotEmpty()
   page_size?: number;

@@ -142,6 +142,18 @@ const testFindMany = async (
 const testFindManyForbidden = async (payload: FindManyMessagesRequestDto) => {
   await expect(emitEvent('find_many_messages', payload)).rejects.toThrow();
 };
+const joinChat = async (chatId: number, userId: number) => {
+  await emitEvent('join_chat', {
+    chat_id: chatId,
+    user_id: userId,
+  });
+};
+const leaveChat = async (chatId: number, userId: number) => {
+  await emitEvent('leave_chat', {
+    chat_id: chatId,
+    user_id: userId,
+  });
+};
 
 beforeAll(async () => {
   const moduleRef = await createBaseTestingModule({
@@ -185,26 +197,52 @@ afterAll(async () => {
 
 describe('MessagesGateway', () => {
   it('users should be able to create message in a chat he is belong to', async () => {
+    const receivedDirect = [] as number[];
+    await joinChat(directChatMock.id, adminMemberMock.id);
+    await joinChat(directChatMock.id, userMemberMock.id);
+    socket.on('new_message', (data: any) => {
+      receivedDirect.push(data.receiver_id);
+    });
     directMessageId1 = await testCreate({
       chat_id: directChatMock.id,
       sender_id: adminMemberMock.id,
       content: 'Hi, how are you?',
     });
+    expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
     directMessageId2 = await testCreate({
       chat_id: directChatMock.id,
       sender_id: userMemberMock.id,
       content: 'Hi, I am fine, thanks!',
+    });
+    expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
+    await leaveChat(directChatMock.id, userMemberMock.id);
+    await leaveChat(directChatMock.id, adminMemberMock.id);
+
+    const receivedGroup = [] as number[];
+    await joinChat(groupChatMock.id, adminMemberMock.id);
+    await joinChat(groupChatMock.id, userMemberMock.id);
+    socket.on('new_message', (data: any) => {
+      receivedGroup.push(data.receiver_id);
     });
     groupMessageId1 = await testCreate({
       chat_id: groupChatMock.id,
       sender_id: adminMemberMock.id,
       content: 'Hello, everyone!',
     });
+    expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedGroup.length = 0;
     groupMessageId2 = await testCreate({
       chat_id: groupChatMock.id,
       sender_id: userMemberMock.id,
       content: 'Hello, admin!',
     });
+    expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
+    await leaveChat(groupChatMock.id, userMemberMock.id);
+    await leaveChat(groupChatMock.id, adminMemberMock.id);
+    socket.off('new_message');
   });
   it('users should not be able to create message in a chat he is not belong to', async () => {
     await testCreateForbidden({
@@ -215,11 +253,28 @@ describe('MessagesGateway', () => {
   });
 
   it('users should be able to update message in a chat he is belong to', async () => {
+    const receivedDirect = [] as number[];
+    await joinChat(directChatMock.id, adminMemberMock.id);
+    await joinChat(directChatMock.id, userMemberMock.id);
+    socket.on('updated_message', (data: any) => {
+      receivedDirect.push(data.receiver_id);
+    });
     await testUpdate({
       id: directMessageId1,
       chat_id: directChatMock.id,
       sender_id: adminMemberMock.id,
       content: "Actually, i don't give a fuck)",
+    });
+    expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
+    await leaveChat(directChatMock.id, userMemberMock.id);
+    await leaveChat(directChatMock.id, adminMemberMock.id);
+
+    const receivedGroup = [] as number[];
+    await joinChat(groupChatMock.id, adminMemberMock.id);
+    await joinChat(groupChatMock.id, userMemberMock.id);
+    socket.on('updated_message', (data: any) => {
+      receivedGroup.push(data.receiver_id);
     });
     await testUpdate({
       id: groupMessageId1,
@@ -227,6 +282,10 @@ describe('MessagesGateway', () => {
       sender_id: adminMemberMock.id,
       content: 'Hey, this is updated message',
     });
+    expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedGroup.length = 0;
+    await leaveChat(groupChatMock.id, userMemberMock.id);
+    await leaveChat(groupChatMock.id, adminMemberMock.id);
   });
   it('users should not be able to update message in a chat he is not belong to', async () => {
     await testUpdateForbidden({
@@ -267,16 +326,37 @@ describe('MessagesGateway', () => {
   });
 
   it('users should be able to delete message in a chat he is belong to', async () => {
+    const receivedDirect = [] as number[];
+    await joinChat(directChatMock.id, adminMemberMock.id);
+    await joinChat(directChatMock.id, userMemberMock.id);
+    socket.on('deleted_message', (data: any) => {
+      receivedDirect.push(data.receiver_id);
+    });
     await testDelete({
       id: directMessageId1,
       chat_id: directChatMock.id,
       sender_id: adminMemberMock.id,
+    });
+    expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
+    await leaveChat(directChatMock.id, userMemberMock.id);
+    await leaveChat(directChatMock.id, adminMemberMock.id);
+
+    const receivedGroup = [] as number[];
+    await joinChat(groupChatMock.id, adminMemberMock.id);
+    await joinChat(groupChatMock.id, userMemberMock.id);
+    socket.on('deleted_message', (data: any) => {
+      receivedGroup.push(data.receiver_id);
     });
     await testDelete({
       id: groupMessageId1,
       chat_id: groupChatMock.id,
       sender_id: adminMemberMock.id,
     });
+    expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedGroup.length = 0;
+    await leaveChat(groupChatMock.id, userMemberMock.id);
+    await leaveChat(groupChatMock.id, adminMemberMock.id);
   });
   it('users should not be able to delete message in a chat he is not belong to', async () => {
     await testDeleteForbidden({

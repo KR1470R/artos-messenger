@@ -1,15 +1,8 @@
 import { IsNotEmpty, IsNumber } from 'class-validator';
+import BaseMessageRequestDto from './base-message.request.dto';
 
-export default class DeleteMessageRequestDto {
+export default class DeleteMessageRequestDto extends BaseMessageRequestDto {
   @IsNumber()
   @IsNotEmpty()
   id: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  sender_id: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  chat_id: number;
 }
