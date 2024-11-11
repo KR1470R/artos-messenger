@@ -253,11 +253,28 @@ describe('MessagesGateway', () => {
   });
 
   it('users should be able to update message in a chat he is belong to', async () => {
+    const receivedDirect = [] as number[];
+    await joinChat(directChatMock.id, adminMemberMock.id);
+    await joinChat(directChatMock.id, userMemberMock.id);
+    socket.on('updated_message', (data: any) => {
+      receivedDirect.push(data.receiver_id);
+    });
     await testUpdate({
       id: directMessageId1,
       chat_id: directChatMock.id,
       sender_id: adminMemberMock.id,
       content: "Actually, i don't give a fuck)",
+    });
+    expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
+    await leaveChat(directChatMock.id, userMemberMock.id);
+    await leaveChat(directChatMock.id, adminMemberMock.id);
+
+    const receivedGroup = [] as number[];
+    await joinChat(groupChatMock.id, adminMemberMock.id);
+    await joinChat(groupChatMock.id, userMemberMock.id);
+    socket.on('updated_message', (data: any) => {
+      receivedGroup.push(data.receiver_id);
     });
     await testUpdate({
       id: groupMessageId1,
@@ -265,6 +282,10 @@ describe('MessagesGateway', () => {
       sender_id: adminMemberMock.id,
       content: 'Hey, this is updated message',
     });
+    expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedGroup.length = 0;
+    await leaveChat(groupChatMock.id, userMemberMock.id);
+    await leaveChat(groupChatMock.id, adminMemberMock.id);
   });
   it('users should not be able to update message in a chat he is not belong to', async () => {
     await testUpdateForbidden({
@@ -308,7 +329,7 @@ describe('MessagesGateway', () => {
     const receivedDirect = [] as number[];
     await joinChat(directChatMock.id, adminMemberMock.id);
     await joinChat(directChatMock.id, userMemberMock.id);
-    socket.on('delete_message', (data: any) => {
+    socket.on('deleted_message', (data: any) => {
       receivedDirect.push(data.receiver_id);
     });
     await testDelete({
@@ -324,7 +345,7 @@ describe('MessagesGateway', () => {
     const receivedGroup = [] as number[];
     await joinChat(groupChatMock.id, adminMemberMock.id);
     await joinChat(groupChatMock.id, userMemberMock.id);
-    socket.on('delete_message', (data: any) => {
+    socket.on('deleted_message', (data: any) => {
       receivedGroup.push(data.receiver_id);
     });
     await testDelete({

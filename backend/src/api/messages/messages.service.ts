@@ -107,7 +107,7 @@ export class MessagesService {
       is_read: data.is_read,
     });
 
-    await this.asyncMessageToAllChatUsers('update_message', data);
+    await this.asyncMessageToAllChatUsers('updated_message', data);
   }
 
   public async processDelete(data: DeleteMessageRequestDto) {
@@ -115,7 +115,7 @@ export class MessagesService {
 
     await this.messagesRepository.delete(data.id);
 
-    await this.asyncMessageToAllChatUsers('delete_message', data);
+    await this.asyncMessageToAllChatUsers('deleted_message', data);
   }
 
   public async processFindMany(data: FindManyMessagesRequestDto) {
