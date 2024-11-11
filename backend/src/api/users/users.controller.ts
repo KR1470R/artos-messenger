@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { LogginedUserId, Public } from '#common/decorators';
+import { LogginedUserIdHttp, Public } from '#common/decorators';
 import { ExceptionResponseDto, SuccessResponseDto } from '#common/dto';
 import {
   ApiOperation,
@@ -68,7 +68,7 @@ export class UsersController {
     type: ExceptionResponseDto,
   })
   public async update(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Body() data: UpdateUserRequestDto,
   ) {
     await this.usersService.processUpdate(logginedUserId, data);
@@ -88,7 +88,7 @@ export class UsersController {
     description: 'Something went wrong.',
     type: ExceptionResponseDto,
   })
-  public async delete(@LogginedUserId() logginedUserId: number) {
+  public async delete(@LogginedUserIdHttp() logginedUserId: number) {
     await this.usersService.processDelete(logginedUserId);
 
     return { message: 'User deleted successfully.' };
@@ -122,7 +122,7 @@ export class UsersController {
     description: 'Something went wrong.',
     type: ExceptionResponseDto,
   })
-  public async findMe(@LogginedUserId() logginedUserId: number) {
+  public async findMe(@LogginedUserIdHttp() logginedUserId: number) {
     return await this.usersService.processFindOne(logginedUserId);
   }
 

@@ -23,11 +23,14 @@ export class MessagesService {
   ) {}
 
   private async assertUserAccess(
-    senderId: number,
+    logginedUserId: number,
     chatId: number,
     checkRole = true,
   ) {
-    const chatUser = await this.chatsUsersRepository.findOne(senderId, chatId);
+    const chatUser = await this.chatsUsersRepository.findOne(
+      logginedUserId,
+      chatId,
+    );
     if (!chatUser) throw new Error('Access denied.');
 
     if (checkRole && chatUser.role_id === ChatUserRolesEnum.BANNED)
@@ -80,7 +83,7 @@ export class MessagesService {
     await this.leaveChatUserSocket(chatId, userId);
   }
 
-  public async asyncMessageToAllChatUsers(
+  public async syncMessageToAllChatUsersSockets(
     syncEvent: SyncMessagesEvents,
     data: BaseMessageRequestDto & { id: number },
   ) {
@@ -97,12 +100,18 @@ export class MessagesService {
     }
   }
 
-  public async processCreate(data: CreateMessageRequestDto) {
-    await this.assertUserAccess(data.sender_id, data.chat_id);
+  public async processCreate(
+    logginedUserId: number,
+    data: CreateMessageRequestDto,
+  ) {
+    await this.assertUserAccess(logginedUserId, data.chat_id);
 
-    const newMessageId = await this.messagesRepository.create(data);
+    const newMessageId = await this.messagesRepository.create(
+      logginedUserId,
+      data,
+    );
 
-    await this.asyncMessageToAllChatUsers('new_message', {
+    await this.syncMessageToAllChatUsersSockets('new_message', {
       ...data,
       id: newMessageId,
     });
@@ -110,27 +119,36 @@ export class MessagesService {
     return newMessageId;
   }
 
-  public async processUpdate(data: UpdateMessageRequestDto) {
-    await this.assertUserAccess(data.sender_id, data.chat_id);
+  public async processUpdate(
+    logginedUserId: number,
+    data: UpdateMessageRequestDto,
+  ) {
+    await this.assertUserAccess(logginedUserId, data.chat_id);
 
     await this.messagesRepository.update(data.id, {
       content: data.content,
       is_read: data.is_read,
     });
 
-    await this.asyncMessageToAllChatUsers('updated_message', data);
+    await this.syncMessageToAllChatUsersSockets('updated_message', data);
   }
 
-  public async processDelete(data: DeleteMessageRequestDto) {
-    await this.assertUserAccess(data.sender_id, data.chat_id);
+  public async processDelete(
+    logginedUserId: number,
+    data: DeleteMessageRequestDto,
+  ) {
+    await this.assertUserAccess(logginedUserId, data.chat_id);
 
     await this.messagesRepository.delete(data.id);
 
-    await this.asyncMessageToAllChatUsers('deleted_message', data);
+    await this.syncMessageToAllChatUsersSockets('deleted_message', data);
   }
 
-  public async processFindMany(data: FindManyMessagesRequestDto) {
-    await this.assertUserAccess(data.sender_id, data.chat_id, false);
+  public async processFindMany(
+    logginedUserId: number,
+    data: FindManyMessagesRequestDto,
+  ) {
+    await this.assertUserAccess(logginedUserId, data.chat_id, false);
 
     return await this.messagesRepository.findMany(data);
   }

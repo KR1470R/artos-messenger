@@ -73,6 +73,7 @@ After running the commands above, access <http://localhost:3000/>.
 - [x] Implement endpoints for manage users, groups, chats, messages
 - [ ] Implement UI for manage users, groups, chats, messages
 - [x] Implement chat websocket channel for real time messages sharing between users
+- [x] Implement jwt guards over messages sockets
 - [ ] Implement files attachments(i.e photos, files, etc) (optionally)
 - [ ] Implement fully adaptive UI/UX
 - [x] Create ERD Diagram

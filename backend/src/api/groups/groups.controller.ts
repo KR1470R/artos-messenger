@@ -26,7 +26,7 @@ import {
   CreateGroupRequestDto,
   FindManyGroupsRequestDto,
 } from './dto/requests';
-import { LogginedUserId } from '#common/decorators';
+import { LogginedUserIdHttp } from '#common/decorators';
 
 @Controller('groups')
 @ApiTags('groups')
@@ -47,7 +47,7 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async create(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Body() data: CreateGroupRequestDto,
   ) {
     const id = await this.groupsService.processCreate(logginedUserId, data);
@@ -67,7 +67,7 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async update(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Param('group_id') groupId: number,
     @Body() data: CreateGroupRequestDto,
   ) {
@@ -88,7 +88,7 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async addMember(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Param('group_id') groupId: number,
     @Param('user_id') userId: number,
   ) {
@@ -109,7 +109,7 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async updateMember(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Param('group_id') groupId: number,
     @Param('user_id') userId: number,
     @Body('role_id') roleId: number,
@@ -136,7 +136,7 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async deleteMember(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Param('group_id') groupId: number,
     @Param('user_id') userId: number,
   ) {
@@ -161,7 +161,7 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async delete(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Param('group_id') groupId: number,
   ) {
     await this.groupsService.processDelete(logginedUserId, groupId);
@@ -181,7 +181,7 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async findOne(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Param('group_id') groupId: number,
   ) {
     return await this.groupsService.processFindOne(logginedUserId, groupId);
@@ -200,7 +200,7 @@ export class GroupsController {
     type: ExceptionResponseDto,
   })
   public async findMany(
-    @LogginedUserId() logginedUserId: number,
+    @LogginedUserIdHttp() logginedUserId: number,
     @Query() filters: FindManyGroupsRequestDto,
   ) {
     const data = await this.groupsService.processFindMany(
