@@ -36,6 +36,33 @@ export class MessagesService {
       throw new Error('Access denied.');
   }
 
+  public async processJoinChatUserSocket(
+    chatId: number,
+    userId: number,
+    socket: Socket,
+  ) {
+    await this.assertUserAccess(userId, chatId);
+
+    const targetChatUsers = this.chatsUsersListeners.get(chatId);
+    if (!targetChatUsers)
+      this.chatsUsersListeners.set(chatId, { [userId]: socket });
+    else {
+      const targetChatUsersSocket = targetChatUsers[userId];
+      if (targetChatUsersSocket)
+        throw new ConflictException('User already joined this chat.');
+
+      targetChatUsers[userId] = socket;
+    }
+  }
+
+  public async processLeaveChatUserSocket(chatId: number, userId: number) {
+    await this.assertUserAccess(userId, chatId);
+
+    const targetChat = this.chatsUsersListeners.get(chatId);
+    if (!targetChat) throw new NotFoundException('Chat not found.');
+    delete targetChat[userId];
+  }
+
   public async processCreate(data: CreateMessageRequestDto) {
     await this.assertUserAccess(data.sender_id, data.chat_id);
 
@@ -74,29 +101,5 @@ export class MessagesService {
     await this.assertUserAccess(data.sender_id, data.chat_id, false);
 
     return await this.messagesRepository.findMany(data);
-  }
-
-  public async processJoinChatUserSocket(
-    chatId: number,
-    userId: number,
-    socket: Socket,
-  ) {
-    await this.assertUserAccess(userId, chatId);
-    const targetChatUsers = this.chatsUsersListeners.get(chatId);
-    if (!targetChatUsers)
-      this.chatsUsersListeners.set(chatId, { [userId]: socket });
-    else {
-      const targetChatUsersSocket = targetChatUsers[userId];
-      if (targetChatUsersSocket)
-        throw new ConflictException('User already joined this chat.');
-      targetChatUsers[userId] = socket;
-    }
-  }
-
-  public async processLeaveChatUserSocket(chatId: number, userId: number) {
-    await this.assertUserAccess(userId, chatId);
-    const targetChat = this.chatsUsersListeners.get(chatId);
-    if (!targetChat) throw new NotFoundException('Chat not found.');
-    delete targetChat[userId];
   }
 }

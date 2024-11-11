@@ -36,18 +36,6 @@ export class MessagesGateway {
 
   constructor(private readonly messagesService: MessagesService) {}
 
-  @SubscribeMessage('create_message')
-  public async createMessage(
-    @MessageBody() data: CreateMessageRequestDto,
-  ): Promise<WsResponse<number>> {
-    const newMessageId = await this.messagesService.processCreate(data);
-
-    return {
-      event: 'create_message',
-      data: newMessageId,
-    };
-  }
-
   @SubscribeMessage('join_chat')
   public async handleJoinChat(
     @MessageBody('chat_id', new ParseIntPipe()) chatId: number,
@@ -79,13 +67,24 @@ export class MessagesGateway {
     };
   }
 
+  @SubscribeMessage('create_message')
+  public async createMessage(
+    @MessageBody() data: CreateMessageRequestDto,
+  ): Promise<WsResponse<number>> {
+    const newMessageId = await this.messagesService.processCreate(data);
+
+    return {
+      event: 'create_message',
+      data: newMessageId,
+    };
+  }
+
   @SubscribeMessage('update_message')
   public async updateMessage(
     @MessageBody() data: UpdateMessageRequestDto,
-    @ConnectedSocket() client: Socket,
   ): Promise<WsResponse<string>> {
     await this.messagesService.processUpdate(data);
-    client.emit('new_message', data);
+
     return {
       event: 'update_message',
       data: 'Message updated successfully.',
@@ -97,6 +96,7 @@ export class MessagesGateway {
     @MessageBody() data: FindManyMessagesRequestDto,
   ): Promise<WsResponse<Pick<Messages, 'content' | 'sender_id' | 'id'>[]>> {
     const messages = await this.messagesService.processFindMany(data);
+
     return {
       event: 'find_many_messages',
       data: messages,
@@ -108,6 +108,7 @@ export class MessagesGateway {
     @MessageBody() data: DeleteMessageRequestDto,
   ): Promise<WsResponse<string>> {
     await this.messagesService.processDelete(data);
+
     return {
       event: 'delete_message',
       data: 'Message deleted successfully.',
