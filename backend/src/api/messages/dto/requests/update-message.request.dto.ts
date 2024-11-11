@@ -5,19 +5,12 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import BaseMessageRequestDto from './base-message.request.dto';
 
-export default class UpdateMessageRequestDto {
+export default class UpdateMessageRequestDto extends BaseMessageRequestDto {
   @IsNumber()
   @IsNotEmpty()
   id: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  sender_id: number;
-
-  @IsNumber()
-  @IsNotEmpty()
-  chat_id: number;
 
   @IsString()
   @IsOptional()

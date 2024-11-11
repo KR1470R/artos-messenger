@@ -13,10 +13,12 @@ import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
 import { ChatUserRolesEnum } from '#core/db/types';
 import UpdateMessageRequestDto from './dto/requests/update-message.request.dto';
 import { Socket } from 'socket.io';
+import { SyncMessagesEvents } from './types';
+import BaseMessageRequestDto from './dto/requests/base-message.request.dto';
 
 @Injectable()
 export class MessagesService {
-  private readonly chatsUsersListeners: Map<number, Record<number, Socket>> =
+  private readonly chatsUsersListeners: Map<number, Map<number, Socket>> =
     new Map();
 
   constructor(
@@ -44,14 +46,17 @@ export class MessagesService {
     await this.assertUserAccess(userId, chatId);
 
     const targetChatUsers = this.chatsUsersListeners.get(chatId);
-    if (!targetChatUsers)
-      this.chatsUsersListeners.set(chatId, { [userId]: socket });
-    else {
-      const targetChatUsersSocket = targetChatUsers[userId];
+    if (!targetChatUsers) {
+      const newChatUsers = new Map();
+      newChatUsers.set(userId, socket);
+
+      this.chatsUsersListeners.set(chatId, newChatUsers);
+    } else {
+      const targetChatUsersSocket = targetChatUsers.get(userId);
       if (targetChatUsersSocket)
         throw new ConflictException('User already joined this chat.');
 
-      targetChatUsers[userId] = socket;
+      targetChatUsers.set(userId, socket);
     }
   }
 
@@ -60,24 +65,36 @@ export class MessagesService {
 
     const targetChat = this.chatsUsersListeners.get(chatId);
     if (!targetChat) throw new NotFoundException('Chat not found.');
-    delete targetChat[userId];
+
+    targetChat.delete(userId);
+  }
+
+  public async asyncMessageToAllChatUsers(
+    syncEvent: SyncMessagesEvents,
+    data: BaseMessageRequestDto & { id: number },
+  ) {
+    const targetChat = this.chatsUsersListeners.get(data.chat_id);
+    if (targetChat) {
+      for (const receiverId of targetChat.keys()) {
+        const socket = targetChat.get(receiverId)!;
+        if (data.chat_id === data.chat_id)
+          socket.emit(syncEvent, {
+            receiver_id: receiverId,
+            ...data,
+          });
+      }
+    }
   }
 
   public async processCreate(data: CreateMessageRequestDto) {
     await this.assertUserAccess(data.sender_id, data.chat_id);
 
     const newMessageId = await this.messagesRepository.create(data);
-    const targetChat = this.chatsUsersListeners.get(data.chat_id);
-    if (targetChat) {
-      for (const [receiverId, socket] of Object.entries(targetChat)) {
-        if (data.chat_id === data.chat_id)
-          socket.emit('new_message', {
-            id: newMessageId,
-            receiver_id: parseInt(receiverId),
-            ...data,
-          });
-      }
-    }
+
+    await this.asyncMessageToAllChatUsers('new_message', {
+      ...data,
+      id: newMessageId,
+    });
 
     return newMessageId;
   }
@@ -85,16 +102,20 @@ export class MessagesService {
   public async processUpdate(data: UpdateMessageRequestDto) {
     await this.assertUserAccess(data.sender_id, data.chat_id);
 
-    return await this.messagesRepository.update(data.id, {
+    await this.messagesRepository.update(data.id, {
       content: data.content,
       is_read: data.is_read,
     });
+
+    await this.asyncMessageToAllChatUsers('update_message', data);
   }
 
   public async processDelete(data: DeleteMessageRequestDto) {
     await this.assertUserAccess(data.sender_id, data.chat_id);
 
     await this.messagesRepository.delete(data.id);
+
+    await this.asyncMessageToAllChatUsers('delete_message', data);
   }
 
   public async processFindMany(data: FindManyMessagesRequestDto) {

@@ -195,7 +195,6 @@ describe('MessagesGateway', () => {
       user_id: userMemberMock.id,
     });
     socket.on('new_message', (data: any) => {
-      console.log('new message', data);
       receivedDirect.push(data.receiver_id);
     });
     directMessageId1 = await testCreate({
@@ -318,15 +317,60 @@ describe('MessagesGateway', () => {
   });
 
   it('users should be able to delete message in a chat he is belong to', async () => {
+    const receivedDirect = [] as number[];
+    await emitEvent('join_chat', {
+      chat_id: directChatMock.id,
+      user_id: adminMemberMock.id,
+    });
+    await emitEvent('join_chat', {
+      chat_id: directChatMock.id,
+      user_id: userMemberMock.id,
+    });
+    socket.on('delete_message', (data: any) => {
+      receivedDirect.push(data.receiver_id);
+    });
     await testDelete({
       id: directMessageId1,
       chat_id: directChatMock.id,
       sender_id: adminMemberMock.id,
     });
+    expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
+    await emitEvent('leave_chat', {
+      chat_id: directChatMock.id,
+      user_id: userMemberMock.id,
+    });
+    await emitEvent('leave_chat', {
+      chat_id: directChatMock.id,
+      user_id: adminMemberMock.id,
+    });
+
+    const receivedGroup = [] as number[];
+    await emitEvent('join_chat', {
+      chat_id: groupChatMock.id,
+      user_id: adminMemberMock.id,
+    });
+    await emitEvent('join_chat', {
+      chat_id: groupChatMock.id,
+      user_id: userMemberMock.id,
+    });
+    socket.on('delete_message', (data: any) => {
+      receivedGroup.push(data.receiver_id);
+    });
     await testDelete({
       id: groupMessageId1,
       chat_id: groupChatMock.id,
       sender_id: adminMemberMock.id,
+    });
+    expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedGroup.length = 0;
+    await emitEvent('leave_chat', {
+      chat_id: groupChatMock.id,
+      user_id: userMemberMock.id,
+    });
+    await emitEvent('leave_chat', {
+      chat_id: groupChatMock.id,
+      user_id: adminMemberMock.id,
     });
   });
   it('users should not be able to delete message in a chat he is not belong to', async () => {
