@@ -185,26 +185,77 @@ afterAll(async () => {
 
 describe('MessagesGateway', () => {
   it('users should be able to create message in a chat he is belong to', async () => {
+    const receivedDirect = [] as number[];
+    await emitEvent('join_chat', {
+      chat_id: directChatMock.id,
+      user_id: adminMemberMock.id,
+    });
+    await emitEvent('join_chat', {
+      chat_id: directChatMock.id,
+      user_id: userMemberMock.id,
+    });
+    socket.on('new_message', (data: any) => {
+      console.log('new message', data);
+      receivedDirect.push(data.receiver_id);
+    });
     directMessageId1 = await testCreate({
       chat_id: directChatMock.id,
       sender_id: adminMemberMock.id,
       content: 'Hi, how are you?',
     });
+    expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
     directMessageId2 = await testCreate({
       chat_id: directChatMock.id,
       sender_id: userMemberMock.id,
       content: 'Hi, I am fine, thanks!',
+    });
+    expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
+    await emitEvent('leave_chat', {
+      chat_id: directChatMock.id,
+      user_id: userMemberMock.id,
+    });
+    await emitEvent('leave_chat', {
+      chat_id: directChatMock.id,
+      user_id: adminMemberMock.id,
+    });
+
+    const receivedGroup = [] as number[];
+    await emitEvent('join_chat', {
+      chat_id: groupChatMock.id,
+      user_id: adminMemberMock.id,
+    });
+    await emitEvent('join_chat', {
+      chat_id: groupChatMock.id,
+      user_id: userMemberMock.id,
+    });
+    socket.on('new_message', (data: any) => {
+      receivedGroup.push(data.receiver_id);
     });
     groupMessageId1 = await testCreate({
       chat_id: groupChatMock.id,
       sender_id: adminMemberMock.id,
       content: 'Hello, everyone!',
     });
+    expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedGroup.length = 0;
     groupMessageId2 = await testCreate({
       chat_id: groupChatMock.id,
       sender_id: userMemberMock.id,
       content: 'Hello, admin!',
     });
+    expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
+    receivedDirect.length = 0;
+    await emitEvent('leave_chat', {
+      chat_id: groupChatMock.id,
+      user_id: userMemberMock.id,
+    });
+    await emitEvent('leave_chat', {
+      chat_id: groupChatMock.id,
+      user_id: adminMemberMock.id,
+    });
+    socket.off('new_message');
   });
   it('users should not be able to create message in a chat he is not belong to', async () => {
     await testCreateForbidden({

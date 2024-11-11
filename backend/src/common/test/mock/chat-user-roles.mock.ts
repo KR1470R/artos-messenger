@@ -1,4 +1,4 @@
-import { ChatUserRoles } from './chat-user-roles.entity';
+import { ChatUserRoles } from '#api/chat-user-roles/chat-user-roles.entity';
 
 const chatUserRolesMock: Pick<ChatUserRoles, 'id' | 'name'>[] = [
   {

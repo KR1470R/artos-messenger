@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateMessageRequestDto,
   DeleteMessageRequestDto,
@@ -8,9 +12,13 @@ import { MessagesRepository } from './messages.repository';
 import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
 import { ChatUserRolesEnum } from '#core/db/types';
 import UpdateMessageRequestDto from './dto/requests/update-message.request.dto';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class MessagesService {
+  private readonly chatsUsersListeners: Map<number, Record<number, Socket>> =
+    new Map();
+
   constructor(
     private readonly messagesRepository: MessagesRepository,
     private readonly chatsUsersRepository: ChatsUsersRepository,
@@ -31,7 +39,20 @@ export class MessagesService {
   public async processCreate(data: CreateMessageRequestDto) {
     await this.assertUserAccess(data.sender_id, data.chat_id);
 
-    return await this.messagesRepository.create(data);
+    const newMessageId = await this.messagesRepository.create(data);
+    const targetChat = this.chatsUsersListeners.get(data.chat_id);
+    if (targetChat) {
+      for (const [receiverId, socket] of Object.entries(targetChat)) {
+        if (data.chat_id === data.chat_id)
+          socket.emit('new_message', {
+            id: newMessageId,
+            receiver_id: parseInt(receiverId),
+            ...data,
+          });
+      }
+    }
+
+    return newMessageId;
   }
 
   public async processUpdate(data: UpdateMessageRequestDto) {
@@ -53,5 +74,29 @@ export class MessagesService {
     await this.assertUserAccess(data.sender_id, data.chat_id, false);
 
     return await this.messagesRepository.findMany(data);
+  }
+
+  public async processJoinChatUserSocket(
+    chatId: number,
+    userId: number,
+    socket: Socket,
+  ) {
+    await this.assertUserAccess(userId, chatId);
+    const targetChatUsers = this.chatsUsersListeners.get(chatId);
+    if (!targetChatUsers)
+      this.chatsUsersListeners.set(chatId, { [userId]: socket });
+    else {
+      const targetChatUsersSocket = targetChatUsers[userId];
+      if (targetChatUsersSocket)
+        throw new ConflictException('User already joined this chat.');
+      targetChatUsers[userId] = socket;
+    }
+  }
+
+  public async processLeaveChatUserSocket(chatId: number, userId: number) {
+    await this.assertUserAccess(userId, chatId);
+    const targetChat = this.chatsUsersListeners.get(chatId);
+    if (!targetChat) throw new NotFoundException('Chat not found.');
+    delete targetChat[userId];
   }
 }
