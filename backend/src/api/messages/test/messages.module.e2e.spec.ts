@@ -47,6 +47,7 @@ let groupMessageId1: number;
 let groupMessageId2: number;
 
 const initSocket = () => {
+  if (socket) socket.disconnect();
   return new Promise<void>((resolve) => {
     socket = io('ws://localhost:8080/messages');
     socket.on('connect', resolve);
@@ -153,6 +154,8 @@ const leaveChat = async (chatId: number, userId: number) => {
     chat_id: chatId,
     user_id: userId,
   });
+
+  await initSocket(); // Socket should be reconnected after leave for further tests
 };
 
 beforeAll(async () => {
@@ -192,6 +195,7 @@ afterAll(async () => {
   await flushMockMessagesDb(db);
 
   socket.disconnect();
+
   await app.close();
 });
 
@@ -240,9 +244,9 @@ describe('MessagesGateway', () => {
     });
     expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
     receivedDirect.length = 0;
+    socket.off('new_message');
     await leaveChat(groupChatMock.id, userMemberMock.id);
     await leaveChat(groupChatMock.id, adminMemberMock.id);
-    socket.off('new_message');
   });
   it('users should not be able to create message in a chat he is not belong to', async () => {
     await testCreateForbidden({
@@ -284,6 +288,7 @@ describe('MessagesGateway', () => {
     });
     expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
     receivedGroup.length = 0;
+    socket.off('updated_message');
     await leaveChat(groupChatMock.id, userMemberMock.id);
     await leaveChat(groupChatMock.id, adminMemberMock.id);
   });
@@ -355,6 +360,7 @@ describe('MessagesGateway', () => {
     });
     expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
     receivedGroup.length = 0;
+    socket.off('deleted_message');
     await leaveChat(groupChatMock.id, userMemberMock.id);
     await leaveChat(groupChatMock.id, adminMemberMock.id);
   });

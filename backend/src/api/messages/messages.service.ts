@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import {
   CreateMessageRequestDto,
   DeleteMessageRequestDto,
@@ -45,6 +41,11 @@ export class MessagesService {
   ) {
     await this.assertUserAccess(userId, chatId);
 
+    // handle scenario when user disconnects unexpectedly
+    socket.on('disconnect', async () => {
+      await this.leaveChatUserSocket(chatId, userId);
+    });
+
     const targetChatUsers = this.chatsUsersListeners.get(chatId);
     if (!targetChatUsers) {
       const newChatUsers = new Map();
@@ -60,13 +61,23 @@ export class MessagesService {
     }
   }
 
-  public async processLeaveChatUserSocket(chatId: number, userId: number) {
-    await this.assertUserAccess(userId, chatId);
-
+  private async leaveChatUserSocket(chatId: number, userId: number) {
     const targetChat = this.chatsUsersListeners.get(chatId);
-    if (!targetChat) throw new NotFoundException('Chat not found.');
+    if (!targetChat) return;
+
+    const targetSocket = targetChat.get(userId);
+    if (targetSocket) {
+      targetSocket.removeAllListeners('disconnect');
+      targetSocket.disconnect(true);
+    }
 
     targetChat.delete(userId);
+    if (!targetChat.size) this.chatsUsersListeners.delete(chatId);
+  }
+
+  public async processLeaveChatUserSocket(chatId: number, userId: number) {
+    await this.assertUserAccess(userId, chatId);
+    await this.leaveChatUserSocket(chatId, userId);
   }
 
   public async asyncMessageToAllChatUsers(
