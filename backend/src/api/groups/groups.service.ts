@@ -1,28 +1,40 @@
-import { ChatsUsers } from '#api/chats/chats-users.entity';
-import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
-import { ChatsRepository } from '#api/chats/chats.repository';
-import { UsersService } from '#api/users/users.service';
-import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ChatsUsers } from '#api/chats/chats-users.entity';
+import { UsersService } from '#api/users/users.service';
+import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import {
   CreateGroupRequestDto,
   FindManyGroupsRequestDto,
   UpdateGroupRequestDto,
 } from './dto/requests';
-import { GroupsChatsUsersRepository } from './groups-chats-users.repository';
-import { GroupsRepository } from './groups.repository';
+import {
+  GroupsChatsUsersRepositoryToken,
+  GroupsRepositoryToken,
+} from './constants';
+import {
+  ChatsRepositoryToken,
+  ChatsUsersRepositoryToken,
+} from '#api/chats/constants';
+import IGroupsRepository from './interfaces/groups.repository.interface';
+import { IChatsRepository, IChatsUsersRepository } from '#api/chats/interfaces';
+import IGroupsChatsUsersRepository from './interfaces/groups-chats-users.repository.interface';
 
 @Injectable()
 export class GroupsService {
   constructor(
-    private readonly groupsRepository: GroupsRepository,
-    private readonly chatsRepository: ChatsRepository,
-    private readonly chatsUsersRepository: ChatsUsersRepository,
-    private readonly groupsChatsUsersRepository: GroupsChatsUsersRepository,
+    @Inject(GroupsRepositoryToken)
+    private readonly groupsRepository: IGroupsRepository,
+    @Inject(ChatsRepositoryToken)
+    private readonly chatsRepository: IChatsRepository,
+    @Inject(ChatsUsersRepositoryToken)
+    private readonly chatsUsersRepository: IChatsUsersRepository,
+    @Inject(GroupsChatsUsersRepositoryToken)
+    private readonly groupsChatsUsersRepository: IGroupsChatsUsersRepository,
     private readonly usersService: UsersService,
   ) {}
 
@@ -110,6 +122,7 @@ export class GroupsService {
       ChatUserRolesEnum.OWNER,
       ChatUserRolesEnum.ADMIN,
     ]);
+
     return await this.groupsRepository.update(groupId, data);
   }
 

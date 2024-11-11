@@ -1,16 +1,18 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import {
   CreateMessageRequestDto,
   DeleteMessageRequestDto,
   FindManyMessagesRequestDto,
 } from './dto/requests';
-import { MessagesRepository } from './messages.repository';
-import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
 import { ChatUserRolesEnum } from '#core/db/types';
 import UpdateMessageRequestDto from './dto/requests/update-message.request.dto';
 import { Socket } from 'socket.io';
 import { SyncMessagesEvents } from './types';
 import BaseMessageRequestDto from './dto/requests/base-message.request.dto';
+import { MessagesRepositoryToken } from './constants';
+import { IMessagesRepository } from './interfaces';
+import { IChatsUsersRepository } from '#api/chats/interfaces';
+import { ChatsUsersRepositoryToken } from '#api/chats/constants';
 
 @Injectable()
 export class MessagesService {
@@ -18,8 +20,10 @@ export class MessagesService {
     new Map();
 
   constructor(
-    private readonly messagesRepository: MessagesRepository,
-    private readonly chatsUsersRepository: ChatsUsersRepository,
+    @Inject(MessagesRepositoryToken)
+    private readonly messagesRepository: IMessagesRepository,
+    @Inject(ChatsUsersRepositoryToken)
+    private readonly chatsUsersRepository: IChatsUsersRepository,
   ) {}
 
   private async assertUserAccess(

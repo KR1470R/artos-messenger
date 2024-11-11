@@ -1,11 +1,11 @@
-import { Repository } from '#common/interfaces';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 import { Groups } from './groups.entity';
+import IGroupsRepository from './interfaces/groups.repository.interface';
 
 @Injectable()
-export class GroupsRepository implements Repository {
+export class GroupsRepository implements IGroupsRepository {
   public readonly entity = 'groups';
 
   constructor(@InjectConnection() private readonly db: Knex) {}
@@ -34,15 +34,7 @@ export class GroupsRepository implements Repository {
     });
   }
 
-  public delete(groupId: number) {
-    return this.db(this.entity).where({ id: groupId }).delete();
-  }
-
-  public findMany(): Promise<never> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async findOne() {
-    throw new Error('Method not implemented.');
+  public async delete(groupId: number) {
+    return await this.db(this.entity).where({ id: groupId }).delete();
   }
 }

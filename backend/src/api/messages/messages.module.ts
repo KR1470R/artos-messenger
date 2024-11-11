@@ -4,6 +4,7 @@ import { MessagesService } from './messages.service';
 import { MessagesGateway } from './messages.gateway';
 import { ChatsModule } from '#api/chats/chats.module';
 import { JwtWsStrategy } from '#api/auth/strategies';
+import { MessagesRepositoryToken } from './constants';
 import { UsersModule } from '#api/users/users.module';
 
 @Module({
@@ -11,9 +12,11 @@ import { UsersModule } from '#api/users/users.module';
   providers: [
     MessagesGateway,
     MessagesService,
-    MessagesRepository,
     JwtWsStrategy,
+    {
+      provide: MessagesRepositoryToken,
+      useClass: MessagesRepository,
+    },
   ],
-  exports: [MessagesService, MessagesRepository],
 })
 export class MessagesModule {}

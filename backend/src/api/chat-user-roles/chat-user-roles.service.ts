@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
-import { ChatUserRolesRepository } from './chat-user-roles.repository';
+import { Inject, Injectable } from '@nestjs/common';
+import { ChatUserRolesRepositoryToken } from './constants';
+import { IChatUserRolesRepository } from './interfaces';
 
 @Injectable()
 export class ChatUserRolesService {
   constructor(
-    private readonly chatUserRolesRepository: ChatUserRolesRepository,
+    @Inject(ChatUserRolesRepositoryToken)
+    private readonly chatUserRolesRepository: IChatUserRolesRepository,
   ) {}
 
   public async processFindMany() {

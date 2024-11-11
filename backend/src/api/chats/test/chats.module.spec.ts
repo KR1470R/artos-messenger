@@ -14,6 +14,7 @@ import {
 } from '#common/test/mock';
 import { ChatMember } from '#core/db/types';
 import { ChatsUsersRepository } from '../chats-users.repository';
+import { ChatsRepositoryToken, ChatsUsersRepositoryToken } from '../constants';
 
 let chatsController: ChatsController;
 let db: Knex;
@@ -37,7 +38,17 @@ const testDeleteNotFound = async (user: ChatMember, chatId: number) => {
 beforeAll(async () => {
   const testModule = await createBaseTestingModule({
     controllers: [ChatsController],
-    providers: [ChatsService, ChatsRepository, ChatsUsersRepository],
+    providers: [
+      ChatsService,
+      {
+        provide: ChatsRepositoryToken,
+        useClass: ChatsRepository,
+      },
+      {
+        provide: ChatsUsersRepositoryToken,
+        useClass: ChatsUsersRepository,
+      },
+    ],
   });
 
   chatsController = testModule.get<ChatsController>(ChatsController);
