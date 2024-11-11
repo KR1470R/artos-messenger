@@ -142,6 +142,18 @@ const testFindMany = async (
 const testFindManyForbidden = async (payload: FindManyMessagesRequestDto) => {
   await expect(emitEvent('find_many_messages', payload)).rejects.toThrow();
 };
+const joinChat = async (chatId: number, userId: number) => {
+  await emitEvent('join_chat', {
+    chat_id: chatId,
+    user_id: userId,
+  });
+};
+const leaveChat = async (chatId: number, userId: number) => {
+  await emitEvent('leave_chat', {
+    chat_id: chatId,
+    user_id: userId,
+  });
+};
 
 beforeAll(async () => {
   const moduleRef = await createBaseTestingModule({
@@ -186,14 +198,8 @@ afterAll(async () => {
 describe('MessagesGateway', () => {
   it('users should be able to create message in a chat he is belong to', async () => {
     const receivedDirect = [] as number[];
-    await emitEvent('join_chat', {
-      chat_id: directChatMock.id,
-      user_id: adminMemberMock.id,
-    });
-    await emitEvent('join_chat', {
-      chat_id: directChatMock.id,
-      user_id: userMemberMock.id,
-    });
+    await joinChat(directChatMock.id, adminMemberMock.id);
+    await joinChat(directChatMock.id, userMemberMock.id);
     socket.on('new_message', (data: any) => {
       receivedDirect.push(data.receiver_id);
     });
@@ -211,24 +217,12 @@ describe('MessagesGateway', () => {
     });
     expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
     receivedDirect.length = 0;
-    await emitEvent('leave_chat', {
-      chat_id: directChatMock.id,
-      user_id: userMemberMock.id,
-    });
-    await emitEvent('leave_chat', {
-      chat_id: directChatMock.id,
-      user_id: adminMemberMock.id,
-    });
+    await leaveChat(directChatMock.id, userMemberMock.id);
+    await leaveChat(directChatMock.id, adminMemberMock.id);
 
     const receivedGroup = [] as number[];
-    await emitEvent('join_chat', {
-      chat_id: groupChatMock.id,
-      user_id: adminMemberMock.id,
-    });
-    await emitEvent('join_chat', {
-      chat_id: groupChatMock.id,
-      user_id: userMemberMock.id,
-    });
+    await joinChat(groupChatMock.id, adminMemberMock.id);
+    await joinChat(groupChatMock.id, userMemberMock.id);
     socket.on('new_message', (data: any) => {
       receivedGroup.push(data.receiver_id);
     });
@@ -246,14 +240,8 @@ describe('MessagesGateway', () => {
     });
     expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
     receivedDirect.length = 0;
-    await emitEvent('leave_chat', {
-      chat_id: groupChatMock.id,
-      user_id: userMemberMock.id,
-    });
-    await emitEvent('leave_chat', {
-      chat_id: groupChatMock.id,
-      user_id: adminMemberMock.id,
-    });
+    await leaveChat(groupChatMock.id, userMemberMock.id);
+    await leaveChat(groupChatMock.id, adminMemberMock.id);
     socket.off('new_message');
   });
   it('users should not be able to create message in a chat he is not belong to', async () => {
@@ -318,14 +306,8 @@ describe('MessagesGateway', () => {
 
   it('users should be able to delete message in a chat he is belong to', async () => {
     const receivedDirect = [] as number[];
-    await emitEvent('join_chat', {
-      chat_id: directChatMock.id,
-      user_id: adminMemberMock.id,
-    });
-    await emitEvent('join_chat', {
-      chat_id: directChatMock.id,
-      user_id: userMemberMock.id,
-    });
+    await joinChat(directChatMock.id, adminMemberMock.id);
+    await joinChat(directChatMock.id, userMemberMock.id);
     socket.on('delete_message', (data: any) => {
       receivedDirect.push(data.receiver_id);
     });
@@ -336,24 +318,12 @@ describe('MessagesGateway', () => {
     });
     expect(receivedDirect).toEqual([adminMemberMock.id, userMemberMock.id]);
     receivedDirect.length = 0;
-    await emitEvent('leave_chat', {
-      chat_id: directChatMock.id,
-      user_id: userMemberMock.id,
-    });
-    await emitEvent('leave_chat', {
-      chat_id: directChatMock.id,
-      user_id: adminMemberMock.id,
-    });
+    await leaveChat(directChatMock.id, userMemberMock.id);
+    await leaveChat(directChatMock.id, adminMemberMock.id);
 
     const receivedGroup = [] as number[];
-    await emitEvent('join_chat', {
-      chat_id: groupChatMock.id,
-      user_id: adminMemberMock.id,
-    });
-    await emitEvent('join_chat', {
-      chat_id: groupChatMock.id,
-      user_id: userMemberMock.id,
-    });
+    await joinChat(groupChatMock.id, adminMemberMock.id);
+    await joinChat(groupChatMock.id, userMemberMock.id);
     socket.on('delete_message', (data: any) => {
       receivedGroup.push(data.receiver_id);
     });
@@ -364,14 +334,8 @@ describe('MessagesGateway', () => {
     });
     expect(receivedGroup).toEqual([adminMemberMock.id, userMemberMock.id]);
     receivedGroup.length = 0;
-    await emitEvent('leave_chat', {
-      chat_id: groupChatMock.id,
-      user_id: userMemberMock.id,
-    });
-    await emitEvent('leave_chat', {
-      chat_id: groupChatMock.id,
-      user_id: adminMemberMock.id,
-    });
+    await leaveChat(groupChatMock.id, userMemberMock.id);
+    await leaveChat(groupChatMock.id, adminMemberMock.id);
   });
   it('users should not be able to delete message in a chat he is not belong to', async () => {
     await testDeleteForbidden({
