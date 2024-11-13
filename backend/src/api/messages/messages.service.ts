@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
@@ -137,12 +138,15 @@ export class MessagesService {
 
     const targetMessage = await this.messagesRepository.findOne(data.id);
     if (!targetMessage) throw new NotFoundException('Message not found.');
-    if (targetMessage.sender_id !== logginedUserId)
-      throw new Error('Access denied.');
+
+    if (data?.content) {
+      if (targetMessage.sender_id !== logginedUserId)
+        throw new ForbiddenException('Only sender can update message content.');
+    }
 
     await this.messagesRepository.update(data.id, {
-      content: data.content ?? targetMessage.content,
-      is_read: data.is_read ?? targetMessage.is_read,
+      content: data?.content ?? targetMessage.content,
+      is_read: data?.is_read ?? targetMessage.is_read,
     });
 
     await this.syncMessageToAllChatUsersSockets('updated_message', {
@@ -160,7 +164,7 @@ export class MessagesService {
     const targetMessage = await this.messagesRepository.findOne(data.id);
     if (!targetMessage) throw new NotFoundException('Message not found.');
     if (targetMessage.sender_id !== logginedUserId)
-      throw new Error('Access denied.');
+      throw new ForbiddenException('Only sender can delete message.');
 
     await this.messagesRepository.delete(data.id);
 
