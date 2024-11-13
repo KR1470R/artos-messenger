@@ -7,6 +7,27 @@
 
 <hr>
 
+# Documentation Content
+1. [About](#about)
+2. [Requirements](#requirements)
+3. [Supported Systems](#supported-systems)
+4. [Endpoints](#endpoints)
+5. [Documentation](#documentation)
+	1) [HTTP API](#http-api)
+	2) [Websockets API](#websockets-api)
+		1) [/messages](#messages-namespace)
+			1) [Bind user to the chat in the system](bind-user-to-the-chat-in-the-system)
+			2) [Unbind user from a chat in the system](unbind-user-from-a-chat-in-the-system)
+			3) [CRUD events](crud-events)
+				1) [create_message](create_message)
+				2) [update_message](update_message)
+				3) [delete_message](delete_message)
+				4) [find_many_messages](find_many_messages)
+6. [Usage](usage)
+	1) [Installation & Run](installation--run)
+7. [ERD Diagram](erd-diagram)
+8. [TODO](todo)
+
 # About
 Real-time chat application.
 
@@ -24,10 +45,54 @@ Real-time chat application.
 	<img alt="" src="https://badgen.net/badge/MacOS/any/red">
 </div>
 
-# Endpoints 
-- https://artos-messanger.xyz/docs - access to the API documentation.
-- https://artos-messanger.xyz - access to the main page of the SPA.
-- https://artos-messanger.xyz/api/v1/ - root endpoint to access the API.
+# Demo
+https://artos-messanger.xyz 
+
+# API
+## HTTP API
+The HTTP REST API docs illustrated via Swagger UI [here](https://artos-messanger.xyz/docs).
+Production REST API URL - `https://artos-messanger.xyz/api/v1/` 
+## Websockets API
+Production Websocket URL - `ws://artos-messanger.xyz:8080/`
+### /messages namespace
+This application uses websocket gateway for real-time messages exchange between chat members.
+
+Diagrams below illustrates test-cases, when members communicate with each other in the same chat, what events they should emit and what events they should subscribe.
+#### Bind user to a chat in the system
+First of all, when user opens a chat, the client should connect to the WS, and ask the server to join the target chat.
+<p align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/join_chat.event.png" align=center>
+</p>
+
+#### Unbind user from a chat in the system
+When user disconnects from the socket, the server automatically deletes from the joined(binded) sockets related to the chat and the user, thus events of any manipulation with the chat messages will be stopped.
+
+The user can also manually leave from the chat:
+<p align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/leave_chat.event.png" align=center>
+</p>
+
+#### CRUD events
+When client connected and joined to the chat, the WS server is ready to listen for events and process operations.
+##### create_mesage:
+<p align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/create_message.event.png" align=center>
+</p>
+
+##### update_mesage:
+<p align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/update_message.event.png" align=center>
+</p>
+
+##### delete_mesage:
+<p align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/delete_message.event.png" align=center>
+</p>
+
+##### find_many_messages:
+<p align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/find_many_messages.event.png" align=center>
+</p>
 
 # Usage
 ## Installation & Run
@@ -60,7 +125,7 @@ After running the commands above, access <http://localhost:3000/>.
 
 # ERD Diagram
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/2b6de8a0824761f5fa01263d785a07d4b16b837d/assets/artosdb.erd.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/persistence-diagrams/artosdb.erd.png" align=center>
 </p>
 
 # TODO
@@ -78,4 +143,4 @@ After running the commands above, access <http://localhost:3000/>.
 - [ ] Implement fully adaptive UI/UX
 - [x] Create ERD Diagram
 - [x] Integrate Swagger
-- [ ] Deploy the application demo on a server
+- [ ] Deploy the application demo on a serve
