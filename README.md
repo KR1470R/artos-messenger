@@ -18,7 +18,7 @@
 			1) [join_chat](#join_chat)
 			2) [leave_chat](#leave_chat)
 			3) [CRUD events](#crud-events)
-				1) [create_message](#create_mesage)
+				1) [create_message](#create_message)
 				2) [update_message](#update_message)
 				3) [delete_message](#delete_message)
 				4) [find_many_messages](#find_many_messages)
@@ -75,17 +75,17 @@ The user can also manually leave from the chat:
 
 #### CRUD events
 When client connected and joined to the chat, the WS server is ready to listen for events and process operations.
-##### create_mesage:
+##### create_message:
 <p align=center>
   <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/create_message.event.png" align=center>
 </p>
 
-##### update_mesage:
+##### update_message:
 <p align=center>
   <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/update_message.event.png" align=center>
 </p>
 
-##### delete_mesage:
+##### delete_message:
 <p align=center>
   <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/delete_message.event.png" align=center>
 </p>
