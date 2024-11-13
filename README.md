@@ -171,6 +171,5 @@ Feel free to create issues.
 
 # License
 <div>
-	<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Cc.logo.circle.svg/1920px-Cc.logo.circle.svg.png">
 	<img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/License_icon-mit-88x31-2.svg">
 </div>
