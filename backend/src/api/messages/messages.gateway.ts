@@ -104,7 +104,9 @@ export class MessagesGateway {
   public async findManyMessages(
     @LogginedUserIdWs() logginedUserId: number,
     @MessageBody() data: FindManyMessagesRequestDto,
-  ): Promise<WsResponse<Pick<Messages, 'content' | 'sender_id' | 'id'>[]>> {
+  ): Promise<
+    WsResponse<Pick<Messages, 'content' | 'sender_id' | 'id' | 'is_read'>[]>
+  > {
     const messages = await this.messagesService.processFindMany(
       logginedUserId,
       data,
