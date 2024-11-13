@@ -1,4 +1,9 @@
-import { ConflictException, Inject, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateMessageRequestDto,
   DeleteMessageRequestDto,
@@ -89,7 +94,7 @@ export class MessagesService {
 
   public async syncMessageToAllChatUsersSockets(
     syncEvent: SyncMessagesEvents,
-    data: BaseMessageRequestDto & { id: number },
+    data: BaseMessageRequestDto & { id: number; initiator_id: number },
   ) {
     const targetChat = this.chatsUsersListeners.get(data.chat_id);
     if (targetChat) {
@@ -118,6 +123,7 @@ export class MessagesService {
     await this.syncMessageToAllChatUsersSockets('new_message', {
       ...data,
       id: newMessageId,
+      initiator_id: logginedUserId,
     });
 
     return newMessageId;
@@ -129,12 +135,20 @@ export class MessagesService {
   ) {
     await this.assertUserAccess(logginedUserId, data.chat_id);
 
+    const targetMessage = await this.messagesRepository.findOne(data.id);
+    if (!targetMessage) throw new NotFoundException('Message not found.');
+    if (targetMessage.sender_id !== logginedUserId)
+      throw new Error('Access denied.');
+
     await this.messagesRepository.update(data.id, {
-      content: data.content,
-      is_read: data.is_read,
+      content: data.content ?? targetMessage.content,
+      is_read: data.is_read ?? targetMessage.is_read,
     });
 
-    await this.syncMessageToAllChatUsersSockets('updated_message', data);
+    await this.syncMessageToAllChatUsersSockets('updated_message', {
+      ...data,
+      initiator_id: logginedUserId,
+    });
   }
 
   public async processDelete(
@@ -143,9 +157,17 @@ export class MessagesService {
   ) {
     await this.assertUserAccess(logginedUserId, data.chat_id);
 
+    const targetMessage = await this.messagesRepository.findOne(data.id);
+    if (!targetMessage) throw new NotFoundException('Message not found.');
+    if (targetMessage.sender_id !== logginedUserId)
+      throw new Error('Access denied.');
+
     await this.messagesRepository.delete(data.id);
 
-    await this.syncMessageToAllChatUsersSockets('deleted_message', data);
+    await this.syncMessageToAllChatUsersSockets('deleted_message', {
+      ...data,
+      initiator_id: logginedUserId,
+    });
   }
 
   public async processFindMany(
