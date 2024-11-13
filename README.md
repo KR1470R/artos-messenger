@@ -128,7 +128,7 @@ Run database migrations when container is running:
 export NODE_ENV=development && npm run migrate:up
 ```
 
-### Runnning without Docker
+### Running without Docker
 Install dependencies:
 ```bash
 npm install
