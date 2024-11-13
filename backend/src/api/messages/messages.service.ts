@@ -145,8 +145,8 @@ export class MessagesService {
     }
 
     await this.messagesRepository.update(data.id, {
-      content: targetMessage.content ?? data?.content,
-      is_read: targetMessage.is_read ?? data?.is_read,
+      content: data?.content ?? targetMessage.content,
+      is_read: data?.is_read ?? targetMessage.is_read,
     });
 
     await this.syncMessageToAllChatUsersSockets('updated_message', {
