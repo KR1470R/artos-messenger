@@ -23,9 +23,13 @@
 				3) [delete_message](#delete_message)
 				4) [find_many_messages](#find_many_messages)
 6. [Usage](#usage)
-	1) [Installation & Run](#installation--run)
+	1) [Installation](#installation)
+	2) [Running using Docker](running-using-docker)
+	3) [Running without Docket](running-without-docker)
 7. [ERD Diagram](#erd-diagram)
 8. [TODO](#todo)
+9. [Contribution](#contribution)
+10. [License](#license)
 
 # About
 Real-time chat application.
@@ -96,7 +100,7 @@ When client connected and joined to the chat, the WS server is ready to listen f
 </p>
 
 # Usage
-## Installation & Run
+## Installation
 ```bash
 git clone git@github.com:KR1470R/artos-messenger.git
 cd artos-messenger
@@ -114,7 +118,8 @@ DB_MAX_CONN=10
 JWT_TOKEN_SECRET=secret
 JWT_REFRESH_TOKEN_SECRET=secret
 ```
-Then create docker container:
+### Running using Docker
+Create docker container:
 ```bash
 export NODE_ENV=development && docker-compose -f docker/docker-compose.yml --env-file .env.development up --build
 ```
@@ -122,6 +127,21 @@ Run database migrations when container is running:
 ```bash
 export NODE_ENV=development && npm run migrate:up
 ```
+
+### Runnning without Docker
+Install dependencies:
+```bash
+npm install
+```
+Run database migrations when container is running:
+```bash
+export NODE_ENV=development && npm run migrate:up
+```
+Now run the application:
+```bash
+npm run build && NODE_ENV=development npm run start:dev
+```
+
 After running the commands above, access <http://localhost:3000/>.
 
 # ERD Diagram
@@ -145,3 +165,12 @@ After running the commands above, access <http://localhost:3000/>.
 - [x] Create ERD Diagram
 - [x] Integrate Swagger
 - [ ] Deploy the application demo on a serve
+
+# Contribution
+Feel free to create issues.
+
+# License
+<div>
+	<img src="https://camo.githubusercontent.com/d5b96d374ea9039f533b8fbb39e8e56964e9281dbf80315b7cef7242a1a21512/68747470733a2f2f6d6972726f72732e6372656174697665636f6d6d6f6e732e6f72672f70726573736b69742f627574746f6e732f38387833312f7376672f62792d6e632e737667">
+	<img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/License_icon-mit-88x31-2.svg">
+</div>
