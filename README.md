@@ -86,12 +86,12 @@ When client connected and joined to the chat, the WS server is ready to listen f
 
 ##### update_message:
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/update_message.event.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/4037f9b359cf7089fcbdb24381d8c85a51dc6b43/assets/ws-diagrams/messages/crud/create_message.event.png" align=center>
 </p>
 
 ##### delete_message:
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/delete_message.event.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/4037f9b359cf7089fcbdb24381d8c85a51dc6b43/assets/ws-diagrams/messages/crud/delete_message.event.png" align=center>
 </p>
 
 ##### find_many_messages:
