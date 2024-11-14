@@ -53,7 +53,7 @@ https://artos-messanger.xyz
 
 # API
 ## HTTP API
-The HTTP REST API docs illustrated via Swagger UI [here](https://artos-messanger.xyz/docs).
+The HTTP REST API docs illustrated via Swagger UI [here](https://artos-messanger.xyz/docs).\
 Production REST API URL - `https://artos-messanger.xyz/api/v1/` 
 ## Websockets API
 Production Websocket URL - `ws://artos-messanger.xyz:8080/`
@@ -62,14 +62,14 @@ This application uses websocket gateway for real-time messages exchange between 
 
 Diagrams below illustrates test-cases, when members communicate with each other in the same chat, what events they should emit and what events they should subscribe.
 #### join_chat:
-Bind user to a chat in the system.
+Bind user to a chat in the system.\
 First of all, when user opens a chat, the client should connect to the WS, and ask the server to join the target chat.
 <p align=center>
   <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/join_chat.event.png" align=center>
 </p>
 
 #### leave_chat:
-Unbind user from a chat in the system.
+Unbind user from a chat in the system.\
 When user disconnects from the socket, the server automatically deletes from the joined(binded) sockets related to the chat and the user, thus events of any manipulation with the chat messages will be stopped.
 
 The user can also manually leave from the chat:
