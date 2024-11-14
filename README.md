@@ -129,11 +129,18 @@ export NODE_ENV=development && npm run migrate:up
 ```
 
 ### Running without Docker
-Install dependencies:
+Install dependencies for frontend side and build it:
 ```bash
+cd frontend
+npm install
+npm run build
+```
+Install dependencies for backend side:
+```bash
+cd ../backend
 npm install
 ```
-Run database migrations when container is running:
+Run database migrations when DB is running(don't forget put your local DB creds into the created .env above):
 ```bash
 export NODE_ENV=development && npm run migrate:up
 ```
