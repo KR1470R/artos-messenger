@@ -19,6 +19,5 @@
 		"paths": {
 			"@/*": ["*"]
 		}
-	},
-	"include": ["src", "src/hooks/useRenderMessages.tsx"]
+	}
 }

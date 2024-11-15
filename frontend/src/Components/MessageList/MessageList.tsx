@@ -1,4 +1,4 @@
-import { IMessageType } from '@/types/Components.interface'
+import { IMessageType } from '@/Types/Messages.interface'
 import moment from 'moment'
 import { useCallback, useEffect, useState } from 'react'
 import { Compose } from '../Compose/Compose'

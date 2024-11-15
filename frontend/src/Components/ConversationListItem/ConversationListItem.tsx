@@ -1,4 +1,4 @@
-import { IConversationItem } from '@/types/Components.interface'
+import { IConversationItem } from '@/Types/Components.interface'
 import React, { useEffect } from 'react'
 import './ConversationListItem.css'
 
