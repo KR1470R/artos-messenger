@@ -147,7 +147,7 @@ export NODE_ENV=development && npm run migrate:up
 ```
 Now run the application:
 ```bash
-npm run build && NODE_ENV=development npm run start:dev
+npm run build && npm run start:dev
 ```
 
 After running the commands above, access <http://localhost:3000/>.
