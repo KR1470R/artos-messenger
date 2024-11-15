@@ -1,3 +1,4 @@
+import { IMessageType } from '@/Types/Messages.interface'
 import moment from 'moment'
 import { useCallback, useEffect, useState } from 'react'
 import { Compose } from '../Compose/Compose'
@@ -5,7 +6,6 @@ import { Message } from '../Message/Message'
 import { Toolbar } from '../Toolbar/Toolbar'
 import { ToolbarButton } from '../ToolbarButton/ToolbarButton'
 import './MessageList.css'
-import { IMessageType } from '@/types/Messages.interface'
 
 const MY_USER_ID = 'apple'
 

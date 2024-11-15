@@ -1,7 +1,7 @@
+import { IMessage } from '@/Types/Messages.interface'
 import moment from 'moment'
 import React from 'react'
 import './Message.css'
-import { IMessage } from '@/types/Messages.interface'
 
 const Message: React.FC<IMessage> = ({
 	data,

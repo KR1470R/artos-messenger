@@ -11,7 +11,6 @@ const Messenger = () => {
 			<div className='scrollable sidebar'>
 				<ConversationList />
 			</div>
-
 			<div className='scrollable content'>
 				<MessageList />
 			</div>
