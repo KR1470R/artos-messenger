@@ -8,7 +8,8 @@ import { ChatUserRolesController } from '../chat-user-roles.controller';
 import { ChatUserRolesRepository } from '../chat-user-roles.repository';
 import { ChatUserRolesService } from '../chat-user-roles.service';
 import { chatUserRolesMock } from '#common/test/mock';
-import { ChatUserRoles } from '#common/test/mock/chat-user-roles.entity';
+import { ChatUserRoles } from '#api/chat-user-roles/chat-user-roles.entity';
+import { ChatUserRolesRepositoryToken } from '../constants';
 
 let chatUserRolesController: ChatUserRolesController;
 let db: Knex;
@@ -16,7 +17,13 @@ let db: Knex;
 beforeAll(async () => {
   const testModule = await createBaseTestingModule({
     controllers: [ChatUserRolesController],
-    providers: [ChatUserRolesService, ChatUserRolesRepository],
+    providers: [
+      ChatUserRolesService,
+      {
+        provide: ChatUserRolesRepositoryToken,
+        useClass: ChatUserRolesRepository,
+      },
+    ],
   });
 
   chatUserRolesController = testModule.get<ChatUserRolesController>(

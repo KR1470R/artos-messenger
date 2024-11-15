@@ -1,4 +1,5 @@
-import LogginedUserId from './loggined-user-id.decorator';
+import LogginedUserIdHttp from './loggined-user-id.http.decorator';
+import LogginedUserIdWs from './loggined-user-id.ws.decorator';
 import Public from './public.decorator';
 
-export { LogginedUserId, Public };
+export { LogginedUserIdHttp, Public, LogginedUserIdWs };

@@ -2,16 +2,16 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { UnauthorizedException } from '@nestjs/common';
 
 /**
- * Decorator for controllers' methods
+ * Decorator for ws gateways' methods
  * Extracts loggined user id from verified JWT token payloads.
  */
-const LogginedUserId = createParamDecorator(
+const LogginedUserIdWs = createParamDecorator(
   (data: string[], ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
+    const request = ctx.switchToWs().getClient();
     const id = request?.user?.id;
     if (!id) throw new UnauthorizedException('Invalid token payload!');
     return parseInt(id);
   },
 );
 
-export default LogginedUserId;
+export default LogginedUserIdWs;

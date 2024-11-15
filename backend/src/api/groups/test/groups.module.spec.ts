@@ -19,6 +19,10 @@ import { ChatUserRolesEnum, ChatMember } from '#core/db/types';
 import { GroupsChatsUsersRepository } from '../groups-chats-users.repository';
 import { ChatsModule } from '#api/chats/chats.module';
 import { UsersModule } from '#api/users/users.module';
+import {
+  GroupsRepositoryToken,
+  GroupsChatsUsersRepositoryToken,
+} from '../constants';
 
 let groupsController: GroupsController;
 let db: Knex;
@@ -152,7 +156,17 @@ beforeAll(async () => {
   const testModule = await createBaseTestingModule({
     imports: [ChatsModule, UsersModule],
     controllers: [GroupsController],
-    providers: [GroupsService, GroupsRepository, GroupsChatsUsersRepository],
+    providers: [
+      GroupsService,
+      {
+        provide: GroupsRepositoryToken,
+        useClass: GroupsRepository,
+      },
+      {
+        provide: GroupsChatsUsersRepositoryToken,
+        useClass: GroupsChatsUsersRepository,
+      },
+    ],
   });
 
   groupsController = testModule.get<GroupsController>(GroupsController);

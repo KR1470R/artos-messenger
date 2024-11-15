@@ -1,17 +1,20 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ChatsRepository } from './chats.repository';
-import { ChatsUsersRepository } from '#api/chats/chats-users.repository';
 import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
+import { ChatsRepositoryToken, ChatsUsersRepositoryToken } from './constants';
+import { IChatsRepository, IChatsUsersRepository } from './interfaces';
 
 @Injectable()
 export class ChatsService {
   constructor(
-    private readonly chatsRepository: ChatsRepository,
-    private readonly chatsUsersRepository: ChatsUsersRepository,
+    @Inject(ChatsRepositoryToken)
+    private readonly chatsRepository: IChatsRepository,
+    @Inject(ChatsUsersRepositoryToken)
+    private readonly chatsUsersRepository: IChatsUsersRepository,
   ) {}
 
   public async processCreate(logginedUserId: number, targetUserId: number) {

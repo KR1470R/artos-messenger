@@ -1,12 +1,12 @@
-import { Repository } from '#common/interfaces';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 import { FindManyUsersRequestDto } from './dto/requests';
 import { Users } from './users.entity';
+import IUsersRepository from './interfaces/users.repository.interface';
 
 @Injectable()
-export class UsersRepository implements Repository {
+export class UsersRepository implements IUsersRepository {
   public readonly entity = 'users';
 
   constructor(@InjectConnection() private readonly db: Knex) {}

@@ -1,11 +1,11 @@
-import { Repository } from '#common/interfaces';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
 import { ChatsUsers } from './chats-users.entity';
+import { IChatsUsersRepository } from './interfaces';
 
 @Injectable()
-export class ChatsUsersRepository implements Repository {
+export class ChatsUsersRepository implements IChatsUsersRepository {
   public readonly entity = 'chats_users';
 
   constructor(@InjectConnection() private readonly db: Knex) {}
@@ -45,7 +45,7 @@ export class ChatsUsersRepository implements Repository {
   }
 
   public async deleteMany(chatId: number) {
-    return await this.db(this.entity)
+    await this.db(this.entity)
       .where({
         chat_id: chatId,
       })

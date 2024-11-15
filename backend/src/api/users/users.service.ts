@@ -1,9 +1,9 @@
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UsersRepository } from './users.repository';
 import {
   CreateUserRequestDto,
   FindManyUsersRequestDto,
@@ -11,10 +11,15 @@ import {
 } from './dto/requests';
 import { FindManyUsersResponseDto, UserFullResponseDto } from './dto/responses';
 import { Password } from '#common/utils';
+import { UsersRepositoryToken } from './constants';
+import IUsersRepository from './interfaces/users.repository.interface';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly usersRepository: UsersRepository) {}
+  constructor(
+    @Inject(UsersRepositoryToken)
+    private readonly usersRepository: IUsersRepository,
+  ) {}
 
   public async processCreate(data: CreateUserRequestDto) {
     const existentUser = await this.usersRepository.findMany({

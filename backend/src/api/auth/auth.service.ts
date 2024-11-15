@@ -1,9 +1,10 @@
-import { Users } from '#api/users/users.entity';
-import { UsersRepository } from '#api/users/users.repository';
-import { Password } from '#common/utils';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { Password } from '#common/utils';
+import { Users } from '#api/users/users.entity';
+import { UsersRepositoryToken } from '#api/users/constants';
+import IUsersRepository from '#api/users/interfaces/users.repository.interface';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +16,8 @@ export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    private readonly usersRepository: UsersRepository,
+    @Inject(UsersRepositoryToken)
+    private readonly usersRepository: IUsersRepository,
   ) {
     this.JWT_SECRET = this.configService.getOrThrow('JWT_TOKEN_SECRET');
     this.JWT_REFRESH_SECRET = this.configService.getOrThrow(

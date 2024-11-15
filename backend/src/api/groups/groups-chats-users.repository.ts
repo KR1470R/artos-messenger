@@ -1,30 +1,17 @@
-import { Repository } from '#common/interfaces';
 import { Injectable } from '@nestjs/common';
 import { Knex } from 'knex';
 import { InjectConnection } from 'nest-knexjs';
-import { GroupFullResponseDto, GroupShortResponseDto } from './dto/responses';
 import { Groups } from './groups.entity';
+import IGroupsChatsUsersRepository from './interfaces/groups-chats-users.repository.interface';
 
 @Injectable()
-export class GroupsChatsUsersRepository implements Repository {
+export class GroupsChatsUsersRepository implements IGroupsChatsUsersRepository {
   constructor(@InjectConnection() private readonly db: Knex) {}
-
-  public async create(): Promise<never> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async update(): Promise<never> {
-    throw new Error('Method not implemented.');
-  }
-
-  public async delete(): Promise<never> {
-    throw new Error('Method not implemented.');
-  }
 
   public async findMany(
     logginedUserId: number,
     filters: Partial<Pick<Groups, 'title'>>,
-  ): Promise<GroupShortResponseDto[]> {
+  ) {
     return await this.db('groups')
       .select(
         'groups.id',
@@ -40,10 +27,7 @@ export class GroupsChatsUsersRepository implements Repository {
       });
   }
 
-  public async findOne(
-    logginedUserId: number,
-    groupId: number,
-  ): Promise<GroupFullResponseDto | undefined> {
+  public async findOne(logginedUserId: number, groupId: number) {
     return await this.db('groups')
       .select(
         'groups.id',
