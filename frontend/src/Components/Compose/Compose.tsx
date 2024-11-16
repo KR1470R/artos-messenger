@@ -1,4 +1,4 @@
-import { ICompose } from '@/Types/Components.interface'
+import { ICompose } from '../../Types/Components.interface'
 import './Compose.css'
 const Compose: React.FC<ICompose> = ({ rightItems }) => {
 	return (
