@@ -1,4 +1,4 @@
-import { IMessage } from '@/types/Components.interface'
+import { IMessage } from '@/Types/Messages.interface'
 import moment from 'moment'
 import React from 'react'
 import './Message.css'
