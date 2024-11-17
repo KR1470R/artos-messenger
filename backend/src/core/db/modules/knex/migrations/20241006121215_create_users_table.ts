@@ -4,7 +4,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.schema
     .createTable('users', (table) => {
       table.increments('id').notNullable().unsigned().primary();
-      table.string('name', 255).notNullable();
+      table.string('username', 255).notNullable();
       table.string('password', 255).notNullable();
       table.string('avatar_url', 1024).nullable();
       table
@@ -21,7 +21,7 @@ export async function up(knex: Knex): Promise<void> {
         .defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
     })
     .raw(
-      'ALTER TABLE `users` ADD FULLTEXT INDEX `users_name_text_index` (`name`) WITH PARSER `ngram`',
+      'ALTER TABLE `users` ADD FULLTEXT INDEX `users_username_text_index` (`username`) WITH PARSER `ngram`',
     );
 }
 

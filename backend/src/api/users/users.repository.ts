@@ -13,7 +13,7 @@ export class UsersRepository implements IUsersRepository {
 
   public async create(
     data: Omit<
-      Pick<Users, 'name' | 'password' | 'avatar_url'>,
+      Pick<Users, 'username' | 'password' | 'avatar_url'>,
       'avatar_url'
     > & { avatar_url?: string },
   ) {
@@ -24,10 +24,10 @@ export class UsersRepository implements IUsersRepository {
 
   public async update(
     userId: number,
-    data: Partial<Pick<Users, 'name' | 'password' | 'avatar_url'>>,
+    data: Partial<Pick<Users, 'username' | 'password' | 'avatar_url'>>,
   ) {
     return await this.db(this.entity).where({ id: userId }).update({
-      name: data?.name,
+      username: data?.username,
       password: data?.password,
       avatar_url: data?.avatar_url,
     });
@@ -41,21 +41,21 @@ export class UsersRepository implements IUsersRepository {
     filters: FindManyUsersRequestDto,
     includePassword = false,
   ) {
-    const select: (keyof Users)[] = ['id', 'name', 'avatar_url'];
+    const select: (keyof Users)[] = ['id', 'username', 'avatar_url'];
     if (includePassword) select.push('password');
 
     return await this.db(this.entity)
       .select(select)
       .where(function () {
         if (filters.username)
-          this.orWhereRaw('MATCH(name) AGAINST (?)', filters.username);
+          this.orWhereRaw('MATCH(username) AGAINST (?)', filters.username);
       });
   }
 
   public async findOne(userId: number, includePassword = false) {
     const select: (keyof Users)[] = [
       'id',
-      'name',
+      'username',
       'avatar_url',
       'last_login_at',
       'created_at',

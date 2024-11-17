@@ -6,11 +6,11 @@ import { useState } from 'react'
 
 const useRegistration = () => {
 	const [data, setData] = useState<{
-		name: string
+		username: string
 		password: string
 		avatar_url?: string
 	}>({
-		name: '',
+		username: '',
 		password: '',
 	})
 
@@ -21,7 +21,7 @@ const useRegistration = () => {
 	const { mutateAsync: registerAsync } = useMutation<
 		IResponse,
 		Error,
-		{ name: string; password: string; avatar_url?: string }
+		{ username: string; password: string; avatar_url?: string }
 	>({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
@@ -32,7 +32,7 @@ const useRegistration = () => {
 		},
 		onSuccess: response => {
 			console.log('User created:', response)
-			login(data.name)
+			login(data.username)
 		},
 	})
 

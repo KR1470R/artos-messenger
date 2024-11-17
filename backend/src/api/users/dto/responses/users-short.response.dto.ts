@@ -13,7 +13,7 @@ export default class UserShortResponseDto {
     description: 'Name of user.',
     required: true,
   })
-  name: string;
+  username: string;
 
   @ApiProperty({
     type: 'string',
