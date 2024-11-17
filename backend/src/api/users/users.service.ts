@@ -23,7 +23,7 @@ export class UsersService {
 
   public async processCreate(data: CreateUserRequestDto) {
     const existentUser = await this.usersRepository.findMany({
-      username: data.name,
+      username: data.username,
     });
     if (existentUser.length)
       throw new ForbiddenException('User with such username already exists.');

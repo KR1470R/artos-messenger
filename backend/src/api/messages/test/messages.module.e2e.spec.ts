@@ -237,9 +237,10 @@ beforeAll(async () => {
   await prepareMockDirectChatsDb(db);
   await prepareMockGroupChatsDb(db);
 
-  adminToken = (await authService.processSignIn(adminMemberMock.name, '123'))
-    .token;
-  userToken = (await authService.processSignIn(userMemberMock.name, '123'))
+  adminToken = (
+    await authService.processSignIn(adminMemberMock.username, '123')
+  ).token;
+  userToken = (await authService.processSignIn(userMemberMock.username, '123'))
     .token;
   await initSocket('adminSocket', adminToken);
   await initSocket('userSocket', userToken);

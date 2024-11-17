@@ -4,14 +4,14 @@ import { Users } from '../users.entity';
 export default class IUsersRepository {
   create: (
     data: Omit<
-      Pick<Users, 'name' | 'password' | 'avatar_url'>,
+      Pick<Users, 'username' | 'password' | 'avatar_url'>,
       'avatar_url'
     > & { avatar_url?: string },
   ) => Promise<number>;
 
   update: (
     userId: number,
-    data: Partial<Pick<Users, 'name' | 'password' | 'avatar_url'>>,
+    data: Partial<Pick<Users, 'username' | 'password' | 'avatar_url'>>,
   ) => Promise<number>;
 
   delete: (userId: number) => Promise<number>;
@@ -21,7 +21,7 @@ export default class IUsersRepository {
     includePassword?: boolean,
   ) => Promise<
     (Omit<
-      Pick<Users, 'id' | 'name' | 'avatar_url' | 'password'>,
+      Pick<Users, 'id' | 'username' | 'avatar_url' | 'password'>,
       'password'
     > & {
       password?: string;

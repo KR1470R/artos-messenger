@@ -37,14 +37,14 @@ export class AuthService {
     if (!user) throw new Error('Invalid credentials');
     if (await Password.compare(user.password, password)) {
       const token = await this.jwtService.signAsync(
-        { username: user.name, id: user.id },
+        { username: user.username, id: user.id },
         {
           secret: this.JWT_SECRET,
           expiresIn: this.JWT_TOKEN_EXPIRES_IN,
         },
       );
       const refreshToken = await this.jwtService.signAsync(
-        { username: user.name, id: user.id },
+        { username: user.username, id: user.id },
         {
           secret: this.JWT_REFRESH_SECRET,
           expiresIn: this.JWR_REFRESH_TOKEN_EXPIRES_IN,

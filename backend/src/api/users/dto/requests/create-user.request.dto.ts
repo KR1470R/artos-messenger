@@ -9,7 +9,7 @@ export default class CreateUserRequestDto {
   })
   @IsString()
   @IsNotEmpty()
-  name: string;
+  username: string;
 
   @ApiProperty({
     type: 'string',

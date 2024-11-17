@@ -60,6 +60,7 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, swaggerDoc, {
     customSiteTitle: 'Artos API Docs',
     customCss: '.topbar { display: none }',
+    jsonDocumentUrl: '/docs/json',
   });
 
   await app.listen(
