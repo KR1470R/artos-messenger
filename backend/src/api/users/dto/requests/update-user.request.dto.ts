@@ -9,7 +9,7 @@ export default class UpdateUserRequestDto {
   })
   @IsString()
   @IsOptional()
-  name?: string;
+  username?: string;
 
   @ApiProperty({
     type: 'string',

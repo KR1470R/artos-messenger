@@ -48,19 +48,19 @@ describe('UsersModule', () => {
   it('users should be able to update account', async () => {
     const newUsername = 'newname';
     const result = await usersController.update(userPayload.id, {
-      name: newUsername,
+      username: newUsername,
     });
     expect(result.message).toEqual('User updated successfully.');
 
     const updatedUser = await usersController.findOne(userPayload.id);
-    expect(updatedUser.name).toEqual(newUsername);
+    expect(updatedUser.username).toEqual(newUsername);
 
-    userPayload.name = newUsername;
+    userPayload.username = newUsername;
   });
 
   it('users should be able to get all users', async () => {
     const result = await usersController.findMany({
-      username: userPayload.name,
+      username: userPayload.username,
     });
 
     expect(result.data.length).toBeGreaterThan(0);
@@ -69,7 +69,7 @@ describe('UsersModule', () => {
   it('users should be able to get one user', async () => {
     const result = await usersController.findOne(userPayload.id);
 
-    expect(result.name).toEqual(userPayload.name);
+    expect(result.username).toEqual(userPayload.username);
   });
 
   it('users should be able to delete account', async () => {
@@ -78,7 +78,7 @@ describe('UsersModule', () => {
     expect(result.message).toEqual('User deleted successfully.');
 
     const foundResult = await usersController.findMany({
-      username: userPayload.name,
+      username: userPayload.username,
     });
 
     expect(foundResult.data.length).toEqual(0);

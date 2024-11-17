@@ -12,6 +12,6 @@ enum ChatTypesEnum {
   GROUP = 2,
 }
 
-type ChatMember = Pick<Users, 'id' | 'name'>;
+type ChatMember = Pick<Users, 'id' | 'username'>;
 
 export { ChatMember, ChatTypesEnum, ChatUserRolesEnum };
