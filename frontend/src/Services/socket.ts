@@ -1,17 +1,28 @@
 import { io } from 'socket.io-client'
+import { useAuthStore } from '../Store/useAuthStore'
+import { RefreshToken } from './RefreshToken.service'
 
-const socket = io('http://localhost:3000')
+const socket = io(process.env.REACT_APP_API_URL, {
+	autoConnect: false,
+})
 
 socket.on('connect', () => {
-	console.log('Connected to WebSocket server')
+	console.log('Connected to WebSocket')
 })
 
-socket.on('connect_error', err => {
-	console.error('Connection Error:', err)
-})
+socket.on('token_expired', async () => {
+	console.log('Token expired, attempting refresh...')
+	const logout = useAuthStore(state => state.logout)
 
-socket.on('error', err => {
-	console.error('Socket Error:', err)
+	try {
+		const newAccessToken = await RefreshToken()
+		socket.emit('authenticate', { token: newAccessToken })
+	} catch (error) {
+		console.error('Failed to refresh token:', error)
+		localStorage.removeItem('accessToken')
+		localStorage.removeItem('refreshToken')
+		logout()
+	}
 })
 
 export { socket }

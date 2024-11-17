@@ -1,8 +1,10 @@
+import { useMutation } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { RegisterUser } from '../Services/RegisterUser.service'
+import { SignInUser } from '../Services/SignInUser.service'
+import { socket } from '../Services/socket'
 import { useAuthStore } from '../Store/useAuthStore'
 import { IResponse } from '../Types/Services.interface'
-import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
 
 const useRegistration = () => {
 	const [data, setData] = useState<{
@@ -30,20 +32,47 @@ const useRegistration = () => {
 			console.log(data)
 			alert(errorMessage)
 		},
-		onSuccess: response => {
+		onSuccess: async response => {
 			console.log('User created:', response)
-			login(data.name)
+			try {
+				await SignInUser({
+					name: data.name,
+					password: data.password,
+				})
+				login(data.name)
+			} catch (error) {
+				console.log(data)
+				console.error('Sign-in failed after registration:', error)
+			}
 		},
 	})
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		const requestData = { ...data }
-		if (!requestData.avatar_url) delete requestData.avatar_url
+		const requestData = { ...data, avatar_url: data.avatar_url || undefined }
+
 		if (!isAuthType) {
 			await registerAsync(requestData)
+		} else {
+			await SignInUser(requestData).then(() => login(data.name))
 		}
 	}
+
+	const [token, setToken] = useState<string | null>(localStorage.getItem('accessToken'))
+
+	useEffect(() => {
+		const token = localStorage.getItem('accessToken')
+		setToken(token)
+	}, [])
+
+	useEffect(() => {
+		if (token) {
+			socket.connect()
+			socket.emit('authenticate', { token })
+		}
+	}, [token])
+
 	return { handleSubmit, isAuthType, setData, data, setType }
 }
+
 export { useRegistration }

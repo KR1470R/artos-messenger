@@ -1,5 +1,5 @@
-import { useRegistration } from '../../Hooks/useRegistration'
 import React from 'react'
+import { useRegistration } from '../../Hooks/useRegistration'
 import './Auth.css'
 
 const Auth = () => {
