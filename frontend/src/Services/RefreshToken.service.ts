@@ -1,5 +1,5 @@
-import { useAuthStore } from '../Store/useAuthStore'
 import axios from 'axios'
+import { useAuthStore } from '../Store/useAuthStore'
 import { socket } from './socket'
 
 const refreshUrl = process.env.REACT_APP_AUTH_REFRESH_TOKEN_ROUTE
@@ -16,7 +16,7 @@ const RefreshToken = async (): Promise<string> => {
 	const logout = useAuthStore(state => state.logout)
 
 	try {
-		const response = await axios.post(
+		const response = await axios.post<{ token: string }>(
 			refreshUrl,
 			{},
 			{
@@ -25,19 +25,18 @@ const RefreshToken = async (): Promise<string> => {
 		)
 		const newAccessToken = response.data.token
 		localStorage.setItem('accessToken', newAccessToken)
+		console.log('accessToken' + newAccessToken)
 
 		socket.emit('authenticate', { token: newAccessToken })
-
-		console.log('New Access Token:', newAccessToken)
-
 		return newAccessToken
-	} catch (error) {
+	} catch (error: any) {
 		logout()
-		console.error('Failed to refresh token:', error)
+		const errorMessage = error.response?.data?.message || 'Failed to refresh token'
+		console.error(errorMessage)
 		localStorage.removeItem('accessToken')
 		localStorage.removeItem('refreshToken')
-
 		throw error
 	}
 }
+
 export { RefreshToken }

@@ -8,11 +8,11 @@ import { IResponse } from '../Types/Services.interface'
 
 const useRegistration = () => {
 	const [data, setData] = useState<{
-		name: string
+		username: string
 		password: string
 		avatar_url?: string
 	}>({
-		name: '',
+		username: '',
 		password: '',
 	})
 
@@ -23,7 +23,7 @@ const useRegistration = () => {
 	const { mutateAsync: registerAsync } = useMutation<
 		IResponse,
 		Error,
-		{ name: string; password: string; avatar_url?: string }
+		{ username: string; password: string; avatar_url?: string }
 	>({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
@@ -36,10 +36,10 @@ const useRegistration = () => {
 			console.log('User created:', response)
 			try {
 				await SignInUser({
-					name: data.name,
+					username: data.username,
 					password: data.password,
 				})
-				login(data.name)
+				login(data.username)
 			} catch (error) {
 				console.log(data)
 				console.error('Sign-in failed after registration:', error)
@@ -54,7 +54,7 @@ const useRegistration = () => {
 		if (!isAuthType) {
 			await registerAsync(requestData)
 		} else {
-			await SignInUser(requestData).then(() => login(data.name))
+			await SignInUser(requestData).then(() => login(data.username))
 		}
 	}
 

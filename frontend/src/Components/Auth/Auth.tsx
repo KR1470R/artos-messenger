@@ -14,9 +14,9 @@ const Auth = () => {
 					name='username'
 					placeholder='User name'
 					required
-					value={data.name}
+					value={data.username}
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-						setData({ ...data, name: e.target.value })
+						setData({ ...data, username: e.target.value })
 					}
 				/>
 				<input
