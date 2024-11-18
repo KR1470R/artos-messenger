@@ -2,12 +2,10 @@ import { io } from 'socket.io-client'
 import { useAuthStore } from '../Store/useAuthStore'
 import { RefreshToken } from './RefreshToken.service'
 
-const socket = io(process.env.REACT_APP_API_URL, {
-	autoConnect: false,
-})
+const socket = io(process.env.REACT_APP_API_URL, {})
 
 socket.on('connect', () => {
-	console.log('Connected to WebSocket')
+	console.log('Socket connected')
 })
 
 socket.on('token_expired', async () => {
@@ -16,6 +14,7 @@ socket.on('token_expired', async () => {
 
 	try {
 		const newAccessToken = await RefreshToken()
+		console.log('Новий Access Token після поновлення:', newAccessToken)
 		socket.emit('authenticate', { token: newAccessToken })
 	} catch (error) {
 		console.error('Failed to refresh token:', error)

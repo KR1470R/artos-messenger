@@ -23,7 +23,7 @@ const useRegistration = () => {
 	const { mutateAsync: registerAsync } = useMutation<
 		IResponse,
 		Error,
-		{ username: string; password: string; avatar_url?: string }
+		{ username: string; password: string }
 	>({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
@@ -49,7 +49,11 @@ const useRegistration = () => {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		const requestData = { ...data, avatar_url: data.avatar_url || undefined }
+		if (!data.avatar_url) {
+			alert('Please provide an avatar URL.')
+			return
+		}
+		const requestData = { ...data }
 
 		if (!isAuthType) {
 			await registerAsync(requestData)
@@ -67,8 +71,7 @@ const useRegistration = () => {
 
 	useEffect(() => {
 		if (token) {
-			socket.connect()
-			socket.emit('authenticate', { token })
+			socket.emit('authenticate', token)
 		}
 	}, [token])
 

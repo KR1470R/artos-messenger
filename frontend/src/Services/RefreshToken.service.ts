@@ -25,7 +25,8 @@ const RefreshToken = async (): Promise<string> => {
 		)
 		const newAccessToken = response.data.token
 		localStorage.setItem('accessToken', newAccessToken)
-		console.log('accessToken' + newAccessToken)
+
+		console.log('New Access Token:', newAccessToken)
 
 		socket.emit('authenticate', { token: newAccessToken })
 		return newAccessToken
@@ -33,8 +34,10 @@ const RefreshToken = async (): Promise<string> => {
 		logout()
 		const errorMessage = error.response?.data?.message || 'Failed to refresh token'
 		console.error(errorMessage)
+
 		localStorage.removeItem('accessToken')
 		localStorage.removeItem('refreshToken')
+
 		throw error
 	}
 }
