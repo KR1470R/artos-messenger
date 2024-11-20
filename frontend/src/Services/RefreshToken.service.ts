@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { useAuthStore } from '../Store/useAuthStore'
+import { setAccessToken } from './AccessTokenMemory'
 import { socket } from './socket'
 
 const refreshUrl = process.env.REACT_APP_AUTH_REFRESH_TOKEN_ROUTE
@@ -11,34 +12,26 @@ if (!refreshUrl) {
 }
 
 const RefreshToken = async (): Promise<string> => {
-	const refreshToken = localStorage.getItem('refreshToken')
-	if (!refreshToken) throw new Error('No refresh token found')
-	const logout = useAuthStore(state => state.logout)
+	const logout = useAuthStore.getState().logout
 
 	try {
 		const response = await axios.post<{ token: string }>(
 			refreshUrl,
 			{},
-			{
-				headers: { Authorization: `Bearer ${refreshToken}` },
-			},
+			{ withCredentials: true },
 		)
+
 		const newAccessToken = response.data.token
-		localStorage.setItem('accessToken', newAccessToken)
 
-		console.log('New Access Token:', newAccessToken)
+		setAccessToken(newAccessToken)
 
-		socket.emit('authenticate', { token: newAccessToken })
+		socket.emit('authenticate', newAccessToken)
+
 		return newAccessToken
-	} catch (error: any) {
+	} catch (err: any) {
+		console.error('Failed to refresh token. Logging out...', err.response?.data || err)
 		logout()
-		const errorMessage = error.response?.data?.message || 'Failed to refresh token'
-		console.error(errorMessage)
-
-		localStorage.removeItem('accessToken')
-		localStorage.removeItem('refreshToken')
-
-		throw error
+		throw new Error('Failed to refresh token')
 	}
 }
 

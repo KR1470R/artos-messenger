@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { IResponse, IUserData } from '../Types/Services.interface'
+import { setAccessToken } from './AccessTokenMemory'
 
 const signInUrl = process.env.REACT_APP_AUTH_SIGN_IN_ROUTE
 
@@ -10,21 +11,14 @@ if (!signInUrl) {
 const SignInUser = async (userData: IUserData): Promise<IResponse> => {
 	try {
 		const response = await axios.post(signInUrl, userData)
-		const { token, refreshToken } = response.data
+		const { token } = response.data
 
-		localStorage.setItem('accessToken', token)
-		localStorage.setItem('refreshToken', refreshToken)
-
-		console.log('Access Token after sign-in:', token)
-		console.log('Refresh Token after sign-in:', refreshToken)
+		setAccessToken(token)
 
 		return response.data
-	} catch (error) {
-		if (axios.isAxiosError(error)) {
-			throw new Error(error?.response?.data?.message || 'Sign-in failed')
-		} else {
-			throw new Error('An unexpected error occurred during sign-in')
-		}
+	} catch (err: any) {
+		console.error('Sign-in failed:', err.response?.data || err)
+		throw new Error('Sign-in failed, please check credentials')
 	}
 }
 

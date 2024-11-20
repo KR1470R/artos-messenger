@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { getAccessToken } from '../Services/AccessTokenMemory'
 import { RegisterUser } from '../Services/RegisterUser.service'
 import { SignInUser } from '../Services/SignInUser.service'
 import { socket } from '../Services/socket'
@@ -27,53 +28,49 @@ const useRegistration = () => {
 	>({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
-		onError: (err: any) => {
-			const errorMessage = err.response?.data?.message || 'Registration error'
-			console.log(data)
-			alert(errorMessage)
+		onError: err => {
+			console.error('Error during registration:', err)
 		},
-		onSuccess: async response => {
-			console.log('User created:', response)
+		onSuccess: async () => {
 			try {
-				await SignInUser({
-					username: data.username,
-					password: data.password,
-				})
+				await SignInUser({ username: data.username, password: data.password })
 				login(data.username)
-			} catch (error) {
-				console.log(data)
-				console.error('Sign-in failed after registration:', error)
+			} catch (err) {
+				console.error('Sign-in failed after registration:', err)
 			}
 		},
 	})
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-		if (!data.avatar_url) {
+
+		if (!isAuthType && !data.avatar_url) {
 			alert('Please provide an avatar URL.')
 			return
 		}
-		const requestData = { ...data }
 
-		if (!isAuthType) {
-			await registerAsync(requestData)
-		} else {
-			await SignInUser(requestData).then(() => login(data.username))
+		try {
+			if (isAuthType) {
+				await SignInUser(data)
+				login(data.username)
+			} else {
+				await registerAsync(data)
+			}
+		} catch (err) {
+			console.error('Error during submission:', err)
 		}
 	}
 
-	const [token, setToken] = useState<string | null>(localStorage.getItem('accessToken'))
-
 	useEffect(() => {
-		const token = localStorage.getItem('accessToken')
-		setToken(token)
-	}, [])
-
-	useEffect(() => {
-		if (token) {
-			socket.emit('authenticate', token)
+		const authenticateSocket = async () => {
+			const token = getAccessToken()
+			if (token) {
+				socket.emit('authenticate', token)
+			} else {
+			}
 		}
-	}, [token])
+		authenticateSocket()
+	}, [])
 
 	return { handleSubmit, isAuthType, setData, data, setType }
 }
