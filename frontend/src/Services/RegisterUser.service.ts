@@ -13,10 +13,9 @@ const RegisterUser = async (userData: IUserData): Promise<IResponse> => {
 			headers: { 'Content-Type': 'application/json' },
 		})
 		return data
-	} catch (error: any) {
-		throw new Error(
-			error.response?.data.message || 'Error during registration. Please try again.',
-		)
+	} catch (err: any) {
+		console.error('Registration failed:', err.response?.data || err)
+		throw new Error('Registration failed')
 	}
 }
 

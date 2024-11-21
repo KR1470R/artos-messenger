@@ -1,17 +1,34 @@
 import { io } from 'socket.io-client'
+import { TokenService } from './AccessTokenMemory'
 
-const socket = io('http://localhost:3000')
+export const socket = io(`${process.env.REACT_APP_WS_URL}${process.env.REACT_APP_WS_MESSAGES_ROUTE}`, {
+	// autoConnect: false
+	extraHeaders: {
+		token: `${TokenService.getToken()}`,
+	},
+})
 
 socket.on('connect', () => {
-	console.log('Connected to WebSocket server')
+	console.log('connect success')
 })
 
-socket.on('connect_error', err => {
-	console.error('Connection Error:', err)
+socket.on('connect_error', error => {
+	console.error('Connection error:', error)
 })
 
-socket.on('error', err => {
-	console.error('Socket Error:', err)
+socket.on('error', error => {
+	console.error('Socket error:', error)
 })
 
-export { socket }
+export const connectSocket = () => {
+	const token = TokenService.getToken()
+	if (!token) {
+		console.error('Cannot connect socket: No access token')
+		return
+	}
+
+	socket.io.opts.extraHeaders = {
+		token,
+	}
+	socket.connect()
+}
