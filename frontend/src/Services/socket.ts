@@ -1,6 +1,5 @@
 import { io } from 'socket.io-client'
 import { TokenService } from './AccessTokenMemory'
-import { RefreshToken } from './RefreshToken.service'
 
 export const socket = io(process.env.REACT_APP_API_URL || '', {
 	autoConnect: false,
@@ -18,21 +17,8 @@ const setupSocketListeners = () => {
 		console.error('Connection error:', error)
 	})
 
-	socket.on('token_expired', async () => {
-		try {
-			const newAccessToken = await RefreshToken()
-
-			socket.io.opts.extraHeaders = {
-				Authorization: `Bearer ${newAccessToken}`,
-			}
-
-			socket.disconnect()
-			socket.connect()
-		} catch (error) {
-			console.error('Failed to refresh token:', error)
-			TokenService.clearToken()
-			socket.disconnect()
-		}
+	socket.on('error', error => {
+		console.error('Socket error:', error)
 	})
 }
 

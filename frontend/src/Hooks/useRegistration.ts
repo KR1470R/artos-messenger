@@ -2,7 +2,6 @@ import { IUser } from '@/Types/User.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { TokenService } from '../Services/AccessTokenMemory'
-import { RefreshToken } from '../Services/RefreshToken.service'
 import { RegisterUser } from '../Services/RegisterUser.service'
 import { SignInUser } from '../Services/SignInUser.service'
 import { connectSocket, socket } from '../Services/socket'
@@ -62,31 +61,13 @@ const useRegistration = () => {
 	}
 
 	useEffect(() => {
-		const authenticateSocket = async () => {
-			const token = TokenService.getToken()
-
-			if (token) {
-				socket.io.opts.extraHeaders = { Authorization: `Bearer ${token}` }
-				socket.connect()
-			} else {
-				console.error('No token found. Socket connection is not established.')
-			}
-
-			socket.on('token_expired', async () => {
-				try {
-					const newToken = await RefreshToken()
-					TokenService.setToken(newToken)
-
-					socket.io.opts.extraHeaders = { Authorization: `Bearer ${newToken}` }
-					socket.disconnect()
-					socket.connect()
-				} catch (err) {
-					console.error('Failed to refresh token:', err)
-				}
-			})
+		const token = TokenService.getToken()
+		if (token) {
+			socket.io.opts.extraHeaders = { Authorization: `Bearer ${token}` }
+			socket.connect()
+		} else {
+			console.error('No token found. Socket connection is not established.')
 		}
-
-		authenticateSocket()
 
 		return () => {
 			socket.disconnect()

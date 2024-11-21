@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { TokenService } from './AccessTokenMemory'
-import { socket } from './socket'
+import { handle401Error } from './ErrorHandlingService'
 
 const refreshUrl = process.env.REACT_APP_AUTH_REFRESH_TOKEN_ROUTE
 
@@ -20,10 +20,6 @@ export const RefreshToken = async (): Promise<string> => {
 
 		const newAccessToken = response.data.token
 		TokenService.setToken(newAccessToken)
-		socket.io.opts.extraHeaders = {
-			Authorization: `Bearer ${newAccessToken}`,
-		}
-
 		return newAccessToken
 	} catch (err: any) {
 		console.error('Failed to refresh token:', err.response?.data || err)
@@ -31,3 +27,5 @@ export const RefreshToken = async (): Promise<string> => {
 		throw new Error('Failed to refresh token')
 	}
 }
+
+axios.interceptors.response.use(response => response, handle401Error)
