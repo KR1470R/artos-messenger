@@ -1,23 +1,21 @@
+import { IUser } from '@/Types/User.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { getAccessToken } from '../Services/AccessTokenMemory'
+import { TokenService } from '../Services/AccessTokenMemory'
+import { RefreshToken } from '../Services/RefreshToken.service'
 import { RegisterUser } from '../Services/RegisterUser.service'
 import { SignInUser } from '../Services/SignInUser.service'
-import { socket } from '../Services/socket'
+import { connectSocket, socket } from '../Services/socket'
 import { useAuthStore } from '../Store/useAuthStore'
 import { IResponse } from '../Types/Services.interface'
 
 const useRegistration = () => {
-	const [data, setData] = useState<{
-		username: string
-		password: string
-		avatar_url?: string
-	}>({
+	const [data, setData] = useState<IUser>({
 		username: '',
 		password: '',
 	})
 
-	const [type, setType] = useState('login')
+	const [type, setType] = useState<'login' | 'register'>('login')
 	const isAuthType = type === 'login'
 	const login = useAuthStore(state => state.login)
 
@@ -35,6 +33,7 @@ const useRegistration = () => {
 			try {
 				await SignInUser({ username: data.username, password: data.password })
 				login(data.username)
+				connectSocket()
 			} catch (err) {
 				console.error('Sign-in failed after registration:', err)
 			}
@@ -53,6 +52,7 @@ const useRegistration = () => {
 			if (isAuthType) {
 				await SignInUser(data)
 				login(data.username)
+				connectSocket()
 			} else {
 				await registerAsync(data)
 			}
@@ -63,13 +63,34 @@ const useRegistration = () => {
 
 	useEffect(() => {
 		const authenticateSocket = async () => {
-			const token = getAccessToken()
+			const token = TokenService.getToken()
+
 			if (token) {
-				socket.emit('authenticate', token)
+				socket.io.opts.extraHeaders = { Authorization: `Bearer ${token}` }
+				socket.connect()
 			} else {
+				console.error('No token found. Socket connection is not established.')
 			}
+
+			socket.on('token_expired', async () => {
+				try {
+					const newToken = await RefreshToken()
+					TokenService.setToken(newToken)
+
+					socket.io.opts.extraHeaders = { Authorization: `Bearer ${newToken}` }
+					socket.disconnect()
+					socket.connect()
+				} catch (err) {
+					console.error('Failed to refresh token:', err)
+				}
+			})
 		}
+
 		authenticateSocket()
+
+		return () => {
+			socket.disconnect()
+		}
 	}, [])
 
 	return { handleSubmit, isAuthType, setData, data, setType }

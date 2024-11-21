@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { IResponse, IUserData } from '../Types/Services.interface'
-import { setAccessToken } from './AccessTokenMemory'
+import { TokenService } from './AccessTokenMemory'
 
 const signInUrl = process.env.REACT_APP_AUTH_SIGN_IN_ROUTE
 
@@ -13,7 +13,7 @@ const SignInUser = async (userData: IUserData): Promise<IResponse> => {
 		const response = await axios.post(signInUrl, userData)
 		const { token } = response.data
 
-		setAccessToken(token)
+		TokenService.setToken(token)
 
 		return response.data
 	} catch (err: any) {

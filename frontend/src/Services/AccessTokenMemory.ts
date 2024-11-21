@@ -1,9 +1,15 @@
 let accessToken: string | null = null
 
-export const setAccessToken = (token: string) => {
-	accessToken = token
-}
+export const TokenService = {
+	getToken: (): string | null => {
+		return accessToken
+	},
 
-export const getAccessToken = (): string | null => {
-	return accessToken
+	setToken: (token: string | null) => {
+		accessToken = token
+	},
+
+	clearToken: () => {
+		accessToken = null
+	},
 }
