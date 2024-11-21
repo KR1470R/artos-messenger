@@ -6,6 +6,7 @@ import { ChatsModule } from '#api/chats/chats.module';
 import { JwtWsStrategy } from '#api/auth/strategies';
 import { MessagesRepositoryToken } from './constants';
 import { UsersModule } from '#api/users/users.module';
+import { JwtAuthWsGuard } from '#api/auth/guards';
 
 @Module({
   imports: [ChatsModule, UsersModule],
@@ -13,6 +14,7 @@ import { UsersModule } from '#api/users/users.module';
     MessagesGateway,
     MessagesService,
     JwtWsStrategy,
+    JwtAuthWsGuard,
     {
       provide: MessagesRepositoryToken,
       useClass: MessagesRepository,

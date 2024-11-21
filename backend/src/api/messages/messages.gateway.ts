@@ -1,5 +1,6 @@
 import { WsExceptionsFilter } from '#common/filters';
 import {
+  ExecutionContext,
   ParseIntPipe,
   UseFilters,
   UseGuards,
@@ -13,6 +14,7 @@ import {
   WsResponse,
   WebSocketServer,
   ConnectedSocket,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
 import {
@@ -34,11 +36,36 @@ import { LogginedUserIdWs } from '#common/decorators';
 @UsePipes(new ValidationPipe())
 @UseFilters(WsExceptionsFilter)
 @UseGuards(JwtAuthWsGuard)
-export class MessagesGateway {
+export class MessagesGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly messagesService: MessagesService) {}
+  constructor(
+    private readonly messagesService: MessagesService,
+    private readonly jwtAuthWsGuard: JwtAuthWsGuard,
+  ) {}
+
+  async handleConnection(client: Socket) {
+    try {
+      const context: ExecutionContext = this.createExecutionContext(client);
+
+      const isAuthorized = await this.jwtAuthWsGuard.canActivate(context);
+      if (!isAuthorized) {
+        throw new Error('Unauthorized');
+      }
+    } catch (error) {
+      client.disconnect();
+    }
+  }
+
+  private createExecutionContext(client: Socket): ExecutionContext {
+    return {
+      switchToHttp: () => ({
+        getRequest: () => client,
+        getResponse: () => client,
+      }),
+    } as ExecutionContext;
+  }
 
   @SubscribeMessage('join_chat')
   public async joinChat(

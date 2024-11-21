@@ -41,6 +41,7 @@ import { MessagesService } from '../messages.service';
 import { MessagesRepositoryToken } from '../constants';
 import { UsersModule } from '#api/users/users.module';
 import { IMessagesRepository } from '../interfaces';
+import { JwtAuthWsGuard } from '#api/auth/guards';
 
 const testCaseTimeout = 10000;
 
@@ -207,6 +208,7 @@ beforeAll(async () => {
       MessagesGateway,
       MessagesService,
       JwtWsStrategy,
+      JwtAuthWsGuard,
       {
         provide: MessagesRepositoryToken,
         useClass: MessagesRepository,
