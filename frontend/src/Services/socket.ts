@@ -1,28 +1,24 @@
 import { io } from 'socket.io-client'
 import { TokenService } from './AccessTokenMemory'
 
-export const socket = io(process.env.REACT_APP_API_URL || '', {
-	autoConnect: false,
+export const socket = io(`${process.env.REACT_APP_WS_URL}${process.env.REACT_APP_WS_MESSAGES_ROUTE}`, {
+	// autoConnect: false
 	extraHeaders: {
-		Authorization: `Bearer ${TokenService.getToken()}`,
+		token: `${TokenService.getToken()}`,
 	},
 })
 
-const setupSocketListeners = () => {
-	socket.on('connect', () => {
-		console.log('connect success')
-	})
+socket.on('connect', () => {
+	console.log('connect success')
+})
 
-	socket.on('connect_error', error => {
-		console.error('Connection error:', error)
-	})
+socket.on('connect_error', error => {
+	console.error('Connection error:', error)
+})
 
-	socket.on('error', error => {
-		console.error('Socket error:', error)
-	})
-}
-
-setupSocketListeners()
+socket.on('error', error => {
+	console.error('Socket error:', error)
+})
 
 export const connectSocket = () => {
 	const token = TokenService.getToken()
@@ -32,7 +28,7 @@ export const connectSocket = () => {
 	}
 
 	socket.io.opts.extraHeaders = {
-		Authorization: `Bearer ${token}`,
+		token,
 	}
 	socket.connect()
 }
