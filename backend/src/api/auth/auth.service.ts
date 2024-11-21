@@ -1,8 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Password } from '#common/utils';
-import { Users } from '#api/users/users.entity';
 import { UsersRepositoryToken } from '#api/users/constants';
 import IUsersRepository from '#api/users/interfaces/users.repository.interface';
 
@@ -26,15 +25,15 @@ export class AuthService {
   }
 
   public async processSignIn(username: string, password: string) {
-    const user = (
-      await this.usersRepository.findMany(
-        {
-          username,
-        },
-        true,
-      )
-    )[0] as Users | undefined;
-    if (!user) throw new Error('Invalid credentials');
+    const user = (await this.usersRepository.findOne(
+      {
+        username,
+      },
+      true,
+    ))!;
+
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+
     if (await Password.compare(user.password, password)) {
       const token = await this.jwtService.signAsync(
         { username: user.username, id: user.id },

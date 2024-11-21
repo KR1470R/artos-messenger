@@ -22,10 +22,10 @@ export class UsersService {
   ) {}
 
   public async processCreate(data: CreateUserRequestDto) {
-    const existentUser = await this.usersRepository.findMany({
+    const existentUser = await this.usersRepository.findOne({
       username: data.username,
     });
-    if (existentUser.length)
+    if (existentUser)
       throw new ForbiddenException('User with such username already exists.');
 
     data.password = await Password.toHash(data.password);
@@ -36,7 +36,10 @@ export class UsersService {
     logginedUserId: number,
     data: UpdateUserRequestDto,
   ) {
-    const target = await this.usersRepository.findOne(logginedUserId, true);
+    const target = await this.usersRepository.findOne(
+      { id: logginedUserId },
+      true,
+    );
     if (!target) throw new NotFoundException('User not found.');
     if (data.password) {
       if (!data.old_password) throw new Error('Old password is required.');
@@ -65,9 +68,9 @@ export class UsersService {
   }
 
   public async processFindOne(userId: number): Promise<UserFullResponseDto> {
-    const target = (await this.usersRepository.findOne(
-      userId,
-    )) as UserFullResponseDto;
+    const target = (await this.usersRepository.findOne({
+      id: userId,
+    })) as UserFullResponseDto;
     if (!target) throw new NotFoundException('User not found.');
 
     return target;

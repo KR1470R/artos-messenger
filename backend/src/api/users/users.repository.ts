@@ -52,7 +52,12 @@ export class UsersRepository implements IUsersRepository {
       });
   }
 
-  public async findOne(userId: number, includePassword = false) {
+  public async findOne(
+    filterBy: Partial<Pick<Users, 'id' | 'username'>>,
+    includePassword = false,
+  ) {
+    if (!filterBy.id && !filterBy.username) return undefined;
+
     const select: (keyof Users)[] = [
       'id',
       'username',
@@ -65,7 +70,10 @@ export class UsersRepository implements IUsersRepository {
 
     return await this.db(this.entity)
       .select(select)
-      .where({ id: userId })
+      .where(function () {
+        if (filterBy.id) this.orWhere({ id: filterBy.id });
+        if (filterBy.username) this.orWhere({ username: filterBy.username });
+      })
       .first();
   }
 }

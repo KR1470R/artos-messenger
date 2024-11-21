@@ -29,7 +29,7 @@ export default class IUsersRepository {
   >;
 
   findOne: (
-    userId: number,
+    filterBy: Partial<Pick<Users, 'id' | 'username'>>,
     includePassword?: boolean,
   ) => Promise<Pick<Users, keyof Users> | undefined>;
 }
