@@ -1,5 +1,5 @@
-import axios from 'axios'
 import { TokenService } from './AccessTokenMemory'
+import { ApiClient } from './ApiClient'
 import { RefreshToken } from './RefreshToken.service'
 import { socket } from './socket'
 
@@ -8,7 +8,7 @@ export const handle401Error = async (error: any): Promise<any> => {
 		try {
 			const newAccessToken = await RefreshToken()
 			error.config.headers['Authorization'] = `Bearer ${newAccessToken}`
-			return axios(error.config)
+			return ApiClient.request(error.config)
 		} catch (err) {
 			console.error('Failed to refresh token:', err)
 			TokenService.clearToken()
