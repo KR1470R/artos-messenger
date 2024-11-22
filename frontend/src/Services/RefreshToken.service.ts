@@ -1,6 +1,6 @@
-import axios from 'axios'
 import { TokenService } from './AccessTokenMemory'
 import { handle401Error } from './ErrorHandlingService'
+import { ApiClient } from './ApiClient'
 
 const refreshUrl = process.env.REACT_APP_AUTH_REFRESH_TOKEN_ROUTE
 
@@ -12,7 +12,7 @@ if (!refreshUrl) {
 
 export const RefreshToken = async (): Promise<string> => {
 	try {
-		const response = await axios.post<{ token: string }>(
+		const response = await ApiClient.post<{ token: string }>(
 			refreshUrl,
 			{},
 			{ withCredentials: true },
@@ -28,4 +28,4 @@ export const RefreshToken = async (): Promise<string> => {
 	}
 }
 
-axios.interceptors.response.use(response => response, handle401Error)
+ApiClient.interceptors.response.use(response => response, handle401Error)
