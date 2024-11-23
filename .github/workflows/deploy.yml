@@ -69,11 +69,10 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd artos-messenger
-            rm  -rf backend-configs frontend-configs
-            mkdir backend-configs
-            mkdir frontend-configs
-            cp backend/configs/.env.* ./backend-configs
-            cp frontend/.env.* ./frontend-configs
+            [ ! -d backend-configs ] && mkdir backend-configs
+            [ ! -d frontend-configs ] && mkdir frontend-configs
+            cp -r backend/configs/.env.* ./backend-configs
+            cp -r frontend/.env.* ./frontend-configs
             rm -rf backend frontend docker assets
 
       - name: Deploy to Server
@@ -97,8 +96,6 @@ jobs:
             cd artos-messenger
             mv backend-configs/.env.* ./backend/configs
             mv frontend-configs/.env.* ./frontend
-            rm -rf backend-configs
-            rm -rf frontend-configs
 
       - name: Restart the application
         uses: appleboy/ssh-action@master
