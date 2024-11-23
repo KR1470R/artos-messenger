@@ -12,7 +12,6 @@ const SignInUser = async (userData: IUserData): Promise<IResponse> => {
 	try {
 		const response = await ApiClient.post(signInUrl, userData)
 		const { token } = response.data
-
 		TokenService.setToken(token)
 
 		return response.data
