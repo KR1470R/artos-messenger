@@ -1,12 +1,14 @@
 import { io } from 'socket.io-client'
 import { TokenService } from './AccessTokenMemory'
 
-export const socket = io(`${process.env.REACT_APP_WS_URL}${process.env.REACT_APP_WS_MESSAGES_ROUTE}`, {
-	// autoConnect: false
-	extraHeaders: {
-		token: `${TokenService.getToken()}`,
+export const socket = io(
+	`${process.env.REACT_APP_WS_URL}${process.env.REACT_APP_WS_MESSAGES_ROUTE}`,
+	{
+		extraHeaders: {
+			token: `${TokenService.getToken()}`,
+		},
 	},
-})
+)
 
 socket.on('connect', () => {
 	console.log('connect success')
