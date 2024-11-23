@@ -1,6 +1,6 @@
-import axios from 'axios'
 import { IResponse, IUserData } from '../Types/Services.interface'
 import { TokenService } from './AccessTokenMemory'
+import { ApiClient } from './ApiClient'
 
 const signInUrl = process.env.REACT_APP_AUTH_SIGN_IN_ROUTE
 
@@ -10,7 +10,7 @@ if (!signInUrl) {
 
 const SignInUser = async (userData: IUserData): Promise<IResponse> => {
 	try {
-		const response = await axios.post(signInUrl, userData)
+		const response = await ApiClient.post(signInUrl, userData)
 		const { token } = response.data
 
 		TokenService.setToken(token)

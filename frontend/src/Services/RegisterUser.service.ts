@@ -1,5 +1,5 @@
-import axios from 'axios'
 import { IResponse, IUserData } from '../Types/Services.interface'
+import { ApiClient } from './ApiClient'
 
 const registerUrl = process.env.REACT_APP_USERS_REGISTER_ROUTE
 
@@ -9,7 +9,7 @@ if (!registerUrl) {
 
 const RegisterUser = async (userData: IUserData): Promise<IResponse> => {
 	try {
-		const { data } = await axios.post<IResponse>(registerUrl, userData, {
+		const { data } = await ApiClient.post<IResponse>(registerUrl, userData, {
 			headers: { 'Content-Type': 'application/json' },
 		})
 		return data
