@@ -18,11 +18,7 @@ const useRegistration = () => {
 	const isAuthType = type === 'login'
 	const login = useAuthStore(state => state.login)
 
-	const { mutateAsync: registerAsync } = useMutation<
-		IResponse,
-		Error,
-		{ username: string; password: string }
-	>({
+	const { mutateAsync: registerAsync } = useMutation<IResponse, Error, IUser>({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
 		onError: err => {
@@ -30,28 +26,30 @@ const useRegistration = () => {
 		},
 		onSuccess: async () => {
 			try {
-				await SignInUser({ username: data.username, password: data.password })
-				login(data.username)
-				connectSocket()
+				signInAsync({ username: data.username, password: data.password })
 			} catch (err) {
 				console.error('Sign-in failed after registration:', err)
 			}
 		},
 	})
+	const { mutateAsync: signInAsync } = useMutation<IResponse, Error, IUser>({
+		mutationKey: ['login'],
+		mutationFn: SignInUser,
+		onError: err => {
+			console.error('Error during login:', err)
+		},
+		onSuccess: () => {
+			login(data.username)
+			connectSocket()
+		},
+	})
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
-
-		if (!isAuthType && !data.avatar_url) {
-			alert('Please provide an avatar URL.')
-			return
-		}
-
 		try {
 			if (isAuthType) {
-				await SignInUser(data)
-				login(data.username)
-				connectSocket()
+				const { username, password } = data
+				await signInAsync({ username, password })
 			} else {
 				await registerAsync(data)
 			}
