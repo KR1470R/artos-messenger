@@ -10,9 +10,7 @@ export const socket = io(
 	},
 )
 
-socket.on('connect', () => {
-	console.log('connect success')
-})
+socket.on('connect', () => {})
 
 socket.on('connect_error', error => {
 	console.error('Connection error:', error)
