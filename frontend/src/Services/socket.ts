@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client'
-import { TokenService } from './AccessTokenMemory'
+import { TokenService } from './authorization/AccessTokenMemory'
 
 export const socket = io(
 	`${process.env.REACT_APP_WS_URL}${process.env.REACT_APP_WS_MESSAGES_ROUTE}`,

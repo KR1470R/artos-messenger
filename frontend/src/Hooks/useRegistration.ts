@@ -1,7 +1,7 @@
 import { IUser } from '@/Types/User.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { TokenService } from '../Services/AccessTokenMemory'
+import { TokenService } from '../Services/authorization/AccessTokenMemory'
 import { RegisterUser } from '../Services/authorization/RegisterUser.service'
 import { SignInUser } from '../Services/authorization/SignInUser.service'
 import { connectSocket, socket } from '../Services/socket'
