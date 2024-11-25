@@ -1,7 +1,7 @@
-import { TokenService } from './AccessTokenMemory'
-import { ApiClient } from './ApiClient'
+import { TokenService } from '../AccessTokenMemory'
+import { ApiClient } from '../ApiClient'
+import { socket } from '../socket'
 import { RefreshToken } from './RefreshToken.service'
-import { socket } from './socket'
 
 export const handle401Error = async (error: any): Promise<any> => {
 	if (error.response?.status === 401) {

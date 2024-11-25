@@ -1,5 +1,5 @@
-import { TokenService } from './AccessTokenMemory'
-import { ApiClient } from './ApiClient'
+import { TokenService } from '../AccessTokenMemory'
+import { ApiClient } from '../ApiClient'
 import { handle401Error } from './ErrorHandlingService'
 
 const refreshUrl = process.env.REACT_APP_AUTH_REFRESH_TOKEN_ROUTE

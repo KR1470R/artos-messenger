@@ -1,6 +1,6 @@
-import { IResponse, IUserData } from '../Types/Services.interface'
-import { TokenService } from './AccessTokenMemory'
-import { ApiClient } from './ApiClient'
+import { IResponse, IUserData } from '@/Types/Services.interface'
+import { TokenService } from '../AccessTokenMemory'
+import { ApiClient } from '../ApiClient'
 
 const signInUrl = process.env.REACT_APP_AUTH_SIGN_IN_ROUTE
 
