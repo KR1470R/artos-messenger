@@ -5,7 +5,7 @@
 	background: white;
 	border-top: 1px solid #eeeef1;
 	position: absolute;
-	width: calc(100% - 20px);
+	width: calc(100%);
 	bottom: 0;
 }
 
@@ -23,8 +23,6 @@
 	font-size: 14px;
 	height: 40px;
 	background: none;
-	/* border: none;
-	outline: none; */
 }
 
 .composeInput::placeholder {
@@ -32,10 +30,5 @@
 }
 
 .compose .toolbarButton {
-	color: #bbbbbf;
-	margin-left: 15px;
-}
-
-.compose .toolbarButton:hover {
-	color: #99999c;
+	margin: 0px 15px;
 }

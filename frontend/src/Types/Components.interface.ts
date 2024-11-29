@@ -14,3 +14,7 @@ export interface IConversationItem {
 export interface IToolbarButton {
 	icon: string
 }
+export interface ITabsProps {
+	activeTab: 'messages' | 'users'
+	setActiveTab: React.Dispatch<React.SetStateAction<'messages' | 'users'>>
+}

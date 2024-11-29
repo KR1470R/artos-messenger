@@ -1,12 +1,11 @@
-/* MessageList.css */
 .messageList {
-  display: flex;
-  flex-direction: column;
-  height: 100vh; /* Ensure the messageList takes the full height of the viewport */
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
 }
 
 .messageListContainer {
-  padding: 10px;
-  padding-bottom: 70px; /* Leave space for the Compose component */
-  overflow-y: auto; /* Allow scrolling if messages overflow */
+	padding: 10px;
+	padding-bottom: 70px;
+	overflow-y: auto;
 }
