@@ -1,53 +1,32 @@
-import { IConversation } from '../Types/Messages.interface'
-import axios from 'axios'
+import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { GetUsers } from '../Services/sideUsers/GetUsers.service'
+import { connectSocket } from '../Services/socket'
+import { IUserAll } from '../Types/Services.interface'
 
 const useSideUsers = () => {
+	const { data, isSuccess, isError, isLoading } = useQuery<IUserAll[], Error>({
+		queryKey: ['users'],
+		queryFn: GetUsers,
+		refetchOnWindowFocus: false,
+	})
+
 	const [activeTab, setActiveTab] = useState<'messages' | 'users'>('messages')
-	const [conversations, setConversations] = useState<IConversation[]>([])
-	const [users, setUsers] = useState<IConversation[]>([])
 
 	useEffect(() => {
-		if (activeTab === 'messages') {
-			getConversations()
-		} else if (activeTab === 'users') {
-			getUsers()
+		if (isSuccess) {
+			connectSocket()
 		}
-	}, [activeTab])
-
-	const getConversations = async () => {
-		try {
-			const response = await axios.get('https://randomuser.me/api/?results=10')
-			const newConversations = response.data.results.map((result: any) => ({
-				photo: result.picture.large,
-				name: `${result.name.first} ${result.name.last}`,
-				text: 'Hello world! This is a long message that needs to be truncated.',
-			}))
-			setConversations(newConversations)
-		} catch (error) {
-			console.error('Error fetching conversations', error)
+		if (isError) {
+			console.error('Failed to fetch users')
 		}
-	}
-
-	const getUsers = async () => {
-		try {
-			const response = await axios.get('https://randomuser.me/api/?results=10')
-			const newUsers = response.data.results.map((result: any) => ({
-				photo: result.picture.large,
-				name: `${result.name.first} ${result.name.last}`,
-				text: 'User description or status goes here.',
-			}))
-			setUsers(newUsers)
-		} catch (error) {
-			console.error('Error fetching users', error)
-		}
-	}
+	}, [isSuccess, isError])
 
 	const getRenderContent = () => {
-		return activeTab === 'messages' ? conversations : users
+		return data || []
 	}
 
-	return { activeTab, setActiveTab, getRenderContent }
+	return { activeTab, setActiveTab, getRenderContent, isLoading }
 }
 
 export { useSideUsers }

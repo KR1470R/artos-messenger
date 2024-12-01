@@ -14,8 +14,3 @@ export interface IMessageType {
 	message: string
 	timestamp: number
 }
-export interface IConversation {
-	photo: string
-	name: string
-	text: string
-}

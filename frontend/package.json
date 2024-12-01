@@ -18,6 +18,7 @@
 		"moment": "^2.30.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
+		"shave": "^5.0.4",
 		"socket.io-client": "^4.8.1",
 		"typescript": "^4.9.5",
 		"web-vitals": "^2.1.4",
@@ -48,7 +49,10 @@
 		]
 	},
 	"devDependencies": {
+		"@babel/plugin-proposal-private-property-in-object": "^7.21.11",
 		"@types/js-cookie": "^3.0.6",
+		"eslint": "^8.57.1",
+		"eslint-config-react-app": "^7.0.1",
 		"react-app-rewired": "^2.2.1",
 		"react-scripts": "^5.0.1"
 	}

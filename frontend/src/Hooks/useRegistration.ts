@@ -1,4 +1,3 @@
-import { IUser } from '@/Types/User.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { TokenService } from '../Services/authorization/AccessTokenMemory'
@@ -6,10 +5,10 @@ import { RegisterUser } from '../Services/authorization/RegisterUser.service'
 import { SignInUser } from '../Services/authorization/SignInUser.service'
 import { connectSocket, socket } from '../Services/socket'
 import { useAuthStore } from '../Store/useAuthStore'
-import { IResponse } from '../Types/Services.interface'
+import { IResponse, IUserData } from '../Types/Services.interface'
 
 const useRegistration = () => {
-	const [data, setData] = useState<IUser>({
+	const [data, setData] = useState<IUserData>({
 		username: '',
 		password: '',
 	})
@@ -18,7 +17,7 @@ const useRegistration = () => {
 	const isAuthType = type === 'login'
 	const login = useAuthStore(state => state.login)
 
-	const { mutateAsync: registerAsync } = useMutation<IResponse, Error, IUser>({
+	const { mutateAsync: registerAsync } = useMutation<IResponse, Error, IUserData>({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
 		onError: err => {
@@ -32,7 +31,7 @@ const useRegistration = () => {
 			}
 		},
 	})
-	const { mutateAsync: signInAsync } = useMutation<IResponse, Error, IUser>({
+	const { mutateAsync: signInAsync } = useMutation<IResponse, Error, IUserData>({
 		mutationKey: ['login'],
 		mutationFn: SignInUser,
 		onError: err => {

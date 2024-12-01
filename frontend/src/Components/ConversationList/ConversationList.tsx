@@ -7,7 +7,7 @@ import { ToolbarButton } from '../ToolbarButton/ToolbarButton'
 import './ConversationList.css'
 
 const ConversationList: React.FC = () => {
-	const { activeTab, setActiveTab, getRenderContent } = useSideUsers()
+	const { activeTab, setActiveTab, getRenderContent, isLoading } = useSideUsers()
 
 	return (
 		<div className='conversationList'>
@@ -18,11 +18,17 @@ const ConversationList: React.FC = () => {
 			/>
 			<ConversationSearch />
 			<Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
-			<div className='content'>
-				{getRenderContent().map(item => (
-					<ConversationListItem key={item.name} data={item} />
-				))}
-			</div>
+			{isLoading ? (
+				<div>Loading...</div>
+			) : activeTab === 'users' ? (
+				<div className='content'>
+					{getRenderContent().map(item => (
+						<ConversationListItem key={item.id} data={item} />
+					))}
+				</div>
+			) : (
+				<div>Messages tab content</div>
+			)}
 		</div>
 	)
 }

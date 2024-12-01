@@ -1,6 +1,5 @@
 import { ApiClient } from '../ApiClient'
 import { TokenService } from './AccessTokenMemory'
-import { handle401Error } from './ErrorHandlingService'
 
 const refreshUrl = process.env.REACT_APP_AUTH_REFRESH_TOKEN_ROUTE
 
@@ -27,5 +26,3 @@ export const RefreshToken = async (): Promise<string> => {
 		throw new Error('Failed to refresh token')
 	}
 }
-
-ApiClient.interceptors.response.use(response => response, handle401Error)
