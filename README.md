@@ -163,7 +163,7 @@ After running the commands above, access <http://localhost:3000/>.
 - [x] Create Docker container and build there the whole application
 - [x] Implement DB schema & migrations
 - [x] Implement App Authentication via JWT tokens on back-end side
-- [ ] Implement App Authentication via JWT tokens on front-end side
+- [x] Implement App Authentication via JWT tokens on front-end side
 - [x] Implement endpoints for manage users, groups, chats, messages
 - [ ] Implement UI for manage users, groups, chats, messages
 - [x] Implement chat websocket channel for real time messages sharing between users
@@ -172,7 +172,7 @@ After running the commands above, access <http://localhost:3000/>.
 - [ ] Implement fully adaptive UI/UX
 - [x] Create ERD Diagram
 - [x] Integrate Swagger
-- [ ] Deploy the application demo on a serve
+- [x] Deploy the application demo to the server
 
 # Contribution
 Feel free to create issues.
