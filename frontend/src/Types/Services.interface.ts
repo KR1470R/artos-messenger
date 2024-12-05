@@ -5,6 +5,7 @@ export interface IUserData {
 }
 
 export interface IResponse {
+	token: string
 	message: string
 	id: string
 	error?: string
@@ -16,4 +17,8 @@ export interface IUserAll {
 	id: string
 	username: string
 	avatar_url: string
+}
+export interface IUser {
+	id: string
+	username: string
 }

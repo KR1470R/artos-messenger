@@ -1,3 +1,4 @@
+import React from 'react'
 import { useSideUsers } from '../../Hooks/useSideUsers'
 import { Tabs } from '../../UI/Tabs/Tabs'
 import { ConversationListItem } from '../ConversationListItem/ConversationListItem'
@@ -9,10 +10,14 @@ import './ConversationList.css'
 const ConversationList: React.FC = () => {
 	const { activeTab, setActiveTab, getRenderContent, isLoading } = useSideUsers()
 
+	const handleItemClick = (userId: string) => {
+		console.log('Selected user:', userId)
+	}
+
 	return (
 		<div className='conversationList'>
 			<Toolbar
-				title='Artos-Messenger'
+				title='Artos Messenger'
 				leftItems={[<ToolbarButton key='cog' icon='ion-ios-cog' />]}
 				rightItems={[<ToolbarButton key='add' icon='ion-ios-add-circle-outline' />]}
 			/>
@@ -23,7 +28,11 @@ const ConversationList: React.FC = () => {
 			) : activeTab === 'users' ? (
 				<div className='content'>
 					{getRenderContent().map(item => (
-						<ConversationListItem key={item.id} data={item} />
+						<ConversationListItem
+							key={item.id}
+							data={item}
+							onClick={() => handleItemClick(item.id)}
+						/>
 					))}
 				</div>
 			) : (

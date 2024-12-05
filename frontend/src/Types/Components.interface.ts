@@ -10,10 +10,13 @@ export interface IToolBar {
 }
 export interface IConversationItem {
 	data: IUserAll
+	onClick: () => void
 }
 export interface IToolbarButton {
 	icon: string
+	onClick?: () => void
 }
+
 export interface ITabsProps {
 	activeTab: 'messages' | 'users'
 	setActiveTab: React.Dispatch<React.SetStateAction<'messages' | 'users'>>
