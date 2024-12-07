@@ -1,5 +1,14 @@
 import { useEffect, useState } from 'react'
-import { createMessage, subscribeToNewMessages } from '../../Services/socket'
+import {
+	connectSocket,
+	createMessage,
+	disconnectSocket,
+	joinChat,
+	leaveChatSocket,
+	subscribeToNewMessages,
+} from '../../Services/socket'
+import { CreateChat } from '../../Services/users/CreateChat.service'
+import { useChatStore } from '../../Store/useChatStore'
 import { IMessageType } from '../../Types/Messages.interface'
 import { Compose } from '../Compose/Compose'
 import { Message } from '../Message/Message'
@@ -12,9 +21,40 @@ const MessageList = ({
 	recipientId,
 }: {
 	currentUserId: string
-	recipientId: string
+	recipientId: number
 }) => {
 	const [messages, setMessages] = useState<IMessageType[]>([])
+	const { selectedUser, setSelectedUser } = useChatStore()
+
+	useEffect(() => {
+		console.log('Connecting socket...')
+		connectSocket()
+		if (!recipientId || recipientId !== selectedUser?.id) return
+
+		const setupChat = async () => {
+			try {
+				const chatId = await CreateChat(recipientId)
+				setSelectedUser({
+					id: recipientId,
+					username: selectedUser?.username || '',
+				})
+				connectSocket()
+				joinChat(chatId)
+				console.log(`Successfully joined chat with ID: ${chatId}`)
+			} catch (err: any) {
+				console.error('Failed to set up chat:', err.message)
+			}
+		}
+
+		setupChat()
+
+		return () => {
+			if (selectedUser?.id) {
+				leaveChatSocket(selectedUser.id)
+			}
+			disconnectSocket()
+		}
+	}, [recipientId, selectedUser?.id])
 
 	useEffect(() => {
 		subscribeToNewMessages((newMessage: IMessageType) => {
@@ -23,7 +63,8 @@ const MessageList = ({
 	}, [])
 
 	const handleSendMessage = (message: string) => {
-		createMessage(parseInt(recipientId), message)
+		if (!message.trim() || !selectedUser?.id) return
+		createMessage(selectedUser.id, message)
 		setMessages(prevMessages => [
 			...prevMessages,
 			{
@@ -38,7 +79,7 @@ const MessageList = ({
 	return (
 		<div className='messageList'>
 			<Toolbar
-				title='Chat'
+				title={`Chat with ${selectedUser?.username || '...'}`}
 				leftItems={[]}
 				rightItems={[
 					<ToolbarButton key='info' icon='ion-ios-information-circle-outline' />,

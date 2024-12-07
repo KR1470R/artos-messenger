@@ -24,25 +24,41 @@ socket.on('error', error => {
 })
 
 export const connectSocket = () => {
+	if (socket.connected) {
+		console.log('Socket already connected.')
+		return
+	}
 	const token = TokenService.getToken()
 	if (!token) {
 		console.error('Cannot connect socket: No access token')
 		return
 	}
-
 	socket.io.opts.extraHeaders = { token }
 	socket.connect()
 }
 
 export const joinChat = (chatId: number) => {
+	if (!chatId || isNaN(chatId)) {
+		console.error('Invalid chat ID provided for joining.')
+		return
+	}
+
 	socket.emit('join_chat', { chat_id: chatId }, (response: { message: string }) => {
-		console.log(response.message)
+		if (response.message === 'Joined chat successfully.') {
+			console.log(`Successfully joined chat: ${chatId}`)
+		} else {
+			console.error('Failed to join chat:', response)
+		}
 	})
 }
 
-export const leaveChat = (chatId: number) => {
+export const leaveChatSocket = (chatId: number) => {
 	socket.emit('leave_chat', { chat_id: chatId }, (response: { message: string }) => {
-		console.log(response.message)
+		if (response.message === 'Left chat successfully.') {
+			console.log(`Left chat: ${chatId}`)
+		} else {
+			console.error('Failed to leave chat:', response)
+		}
 	})
 }
 

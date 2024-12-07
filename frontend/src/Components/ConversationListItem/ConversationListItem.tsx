@@ -3,19 +3,27 @@ import shave from 'shave'
 import { IConversationItem } from '../../Types/Components.interface'
 import './ConversationListItem.css'
 
-const ConversationListItem: React.FC<IConversationItem> = ({ data }) => {
+const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) => {
 	useEffect(() => {
 		shave('.conversationSnippet', 20)
 	}, [])
+
 	const { username, avatar_url } = data
-	const fallbackAvatar =
-		'https://static.vecteezy.com/system/resources/previews/019/879/186/non_2x/user-icon-on-transparent-background-free-png.png'
+	const fallbackAvatar = '/assets/fallbackAvatar.webp'
+
 	const [imageSrc, setImageSrc] = useState(avatar_url)
+
 	const handleImageError = () => {
 		setImageSrc(fallbackAvatar)
 	}
+
+	const handleClick = () => {
+		console.log(`User clicked: ${username} (ID: ${data.id})`)
+		onClick()
+	}
+
 	return (
-		<div className='conversationListItem'>
+		<div className='conversationListItem' onClick={handleClick}>
 			<img
 				className='conversationPhoto'
 				src={imageSrc}
@@ -24,9 +32,9 @@ const ConversationListItem: React.FC<IConversationItem> = ({ data }) => {
 			/>
 			<div className='conversationInfo'>
 				<h1 className='conversationTitle'>{username}</h1>
-				{/* <p className='conversationSnippet'>{text}</p> */}
 			</div>
 		</div>
 	)
 }
+
 export { ConversationListItem }
