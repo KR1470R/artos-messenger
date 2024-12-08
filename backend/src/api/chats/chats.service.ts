@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
@@ -7,6 +8,7 @@ import {
 import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import { ChatsRepositoryToken, ChatsUsersRepositoryToken } from './constants';
 import { IChatsRepository, IChatsUsersRepository } from './interfaces';
+import { FilterChatsQueryDto } from './dto/requests';
 
 @Injectable()
 export class ChatsService {
@@ -50,21 +52,34 @@ export class ChatsService {
     await this.chatsRepository.delete(chatId);
   }
 
-  public async processFindMany(logginedUserId: number) {
-    return await this.chatsUsersRepository.findMany(logginedUserId);
+  public async processFindMany(
+    logginedUserId: number,
+    query?: FilterChatsQueryDto,
+  ) {
+    const relatedChatsIds = (
+      await this.chatsUsersRepository.findMany(logginedUserId)
+    ).map((chat) => chat.chat_id);
+    const data = await this.chatsRepository.findMany(relatedChatsIds, query);
+    return {
+      data,
+    };
   }
 
   public async processFindOne(logginedUserId: number, chatId: number) {
     const targetChat = await this.chatsRepository.findOne(chatId);
     if (!targetChat) throw new NotFoundException('Chat not found.');
 
-    const chatUser = await this.chatsUsersRepository.findMany(
+    const chatMembers = await this.chatsUsersRepository.findMany(
       logginedUserId,
       targetChat.id,
     );
 
-    if (!chatUser.length) throw new NotFoundException('Chat not found.');
+    if (!chatMembers.find((member) => member.user_id === logginedUserId))
+      throw new ForbiddenException('User does not persist in this chat.');
 
-    return targetChat;
+    return {
+      ...targetChat,
+      members: chatMembers,
+    };
   }
 }

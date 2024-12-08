@@ -1,5 +1,5 @@
 import { ExceptionResponseDto, SuccessResponseDto } from '#common/dto';
-import { Controller, Delete, Param, Post } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiOperation,
   ApiOkResponse,
@@ -7,9 +7,14 @@ import {
   ApiTags,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-import { CreateChatResponseDto } from './dto/responses';
+import {
+  ChatFullResponseDto,
+  CreateChatResponseDto,
+  FindManyChatsResponseDto,
+} from './dto/responses';
 import { ChatsService } from './chats.service';
 import { LogginedUserIdHttp } from '#common/decorators';
+import { FilterChatsQueryDto } from './dto/requests';
 
 @Controller('chats')
 @ApiTags('chats')
@@ -39,6 +44,42 @@ export class ChatsController {
     );
 
     return { message: 'Chat created successfully.', id };
+  }
+
+  @Get()
+  @ApiOperation({
+    description: 'Get list of chats where user persists.',
+  })
+  @ApiOkResponse({
+    type: FindManyChatsResponseDto,
+  })
+  @ApiDefaultResponse({
+    description: 'Something went wrong.',
+    type: ExceptionResponseDto,
+  })
+  public async findMany(
+    @LogginedUserIdHttp() logginedUserId: number,
+    @Query() query?: FilterChatsQueryDto,
+  ): Promise<FindManyChatsResponseDto> {
+    return await this.chatsService.processFindMany(logginedUserId, query);
+  }
+
+  @Get(':chat_id')
+  @ApiOperation({
+    description: 'Get chat and its members.',
+  })
+  @ApiOkResponse({
+    type: ChatFullResponseDto,
+  })
+  @ApiDefaultResponse({
+    description: 'Something went wrong.',
+    type: ExceptionResponseDto,
+  })
+  public async findOne(
+    @LogginedUserIdHttp() logginedUserId: number,
+    @Param('chat_id') chatId: number,
+  ): Promise<ChatFullResponseDto> {
+    return await this.chatsService.processFindOne(logginedUserId, chatId);
   }
 
   @Delete(':chat_id')

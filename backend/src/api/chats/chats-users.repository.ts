@@ -53,10 +53,14 @@ export class ChatsUsersRepository implements IChatsUsersRepository {
   }
 
   public async findMany(userId: number, chatId?: number) {
-    return await this.db(this.entity).select('id', 'chat_id', 'user_id').where({
-      user_id: userId,
-      chat_id: chatId,
-    });
+    return await this.db(this.entity)
+      .select('id', 'chat_id', 'user_id', 'role_id', 'created_at', 'updated_at')
+      .where({
+        user_id: userId,
+      })
+      .modify((qb) => {
+        if (chatId) qb.where({ chat_id: chatId });
+      });
   }
 
   public async findDirectChat(userId: number, targetUserId: number) {
