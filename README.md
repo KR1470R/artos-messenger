@@ -15,13 +15,13 @@
 	1) [HTTP API](#http-api)
 	2) [Websockets API](#websockets-api)
 		1) [/messages](#messages-namespace)
-			1) [join_chat](#join_chat)
-			2) [leave_chat](#leave_chat)
+			1) [join_chat](#join_chat-event)
+			2) [leave_chat](#leave_chat-event)
 			3) [CRUD events](#crud-events)
-				1) [create_message](#create_message)
-				2) [update_message](#update_message)
-				3) [delete_message](#delete_message)
-				4) [find_many_messages](#find_many_messages)
+				1) [create_message](#create_message-event)
+				2) [update_message](#update_message-event)
+				3) [delete_message](#delete_message-event)
+				4) [find_many_messages](#find_many_messages-event)
 6. [Usage](#usage)
 	1) [Installation](#installation)
 	2) [Running using Docker](#running-using-docker)
@@ -66,7 +66,7 @@ Diagrams below illustrates test-cases, when members communicate with each other 
 Bind user to a chat in the system.\
 First of all, when user opens a chat, the client should connect to the WS, and ask the server to join the target chat.
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/join_chat.event.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/a5579969ed45cdaf7c2155c5faf6241bac03225f/assets/ws-diagrams/messages/join_chat.event.png" align=center>
 </p>
 
 #### `leave_chat` event:
@@ -75,29 +75,29 @@ When user disconnects from the socket, the server automatically deletes from the
 
 The user can also manually leave from the chat:
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/leave_chat.event.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/a5579969ed45cdaf7c2155c5faf6241bac03225f/assets/ws-diagrams/messages/leave_chat.event.png" align=center>
 </p>
 
 #### CRUD events
 When client connected and joined to the chat, the WS server is ready to listen for events and process operations.
 ##### `create_message` event:
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/create_message.event.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/a5579969ed45cdaf7c2155c5faf6241bac03225f/assets/ws-diagrams/messages/crud/create_message.event.png" align=center>
 </p>
 
 ##### `update_message` event:
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/4037f9b359cf7089fcbdb24381d8c85a51dc6b43/assets/ws-diagrams/messages/crud/create_message.event.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/a5579969ed45cdaf7c2155c5faf6241bac03225f/assets/ws-diagrams/messages/crud/update_message.event.png" align=center>
 </p>
 
 ##### `delete_message` event:
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/4037f9b359cf7089fcbdb24381d8c85a51dc6b43/assets/ws-diagrams/messages/crud/delete_message.event.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/a5579969ed45cdaf7c2155c5faf6241bac03225f/assets/ws-diagrams/messages/crud/delete_message.event.png" align=center>
 </p>
 
 ##### `find_many_messages` event:
 <p align=center>
-  <img src="https://github.com/KR1470R/artos-messenger/blob/041b6c7a798d390a827df356efd991aa4edaf257/assets/ws-diagrams/messages/crud/find_many_messages.event.png" align=center>
+  <img src="https://github.com/KR1470R/artos-messenger/blob/a5579969ed45cdaf7c2155c5faf6241bac03225f/assets/ws-diagrams/messages/crud/find_many_messages.event.png" align=center>
 </p>
 
 # Usage
@@ -163,7 +163,7 @@ After running the commands above, access <http://localhost:3000/>.
 - [x] Create Docker container and build there the whole application
 - [x] Implement DB schema & migrations
 - [x] Implement App Authentication via JWT tokens on back-end side
-- [ ] Implement App Authentication via JWT tokens on front-end side
+- [x] Implement App Authentication via JWT tokens on front-end side
 - [x] Implement endpoints for manage users, groups, chats, messages
 - [ ] Implement UI for manage users, groups, chats, messages
 - [x] Implement chat websocket channel for real time messages sharing between users
@@ -172,7 +172,7 @@ After running the commands above, access <http://localhost:3000/>.
 - [ ] Implement fully adaptive UI/UX
 - [x] Create ERD Diagram
 - [x] Integrate Swagger
-- [ ] Deploy the application demo on a serve
+- [x] Deploy the application demo to the server
 
 # Contribution
 Feel free to create issues.

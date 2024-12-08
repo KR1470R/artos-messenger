@@ -20,7 +20,7 @@ export default interface IChatsUsersRepository {
   findMany: (
     userId: number,
     chatId?: number,
-  ) => Promise<Pick<ChatsUsers, 'id' | 'chat_id' | 'user_id'>[]>;
+  ) => Promise<Pick<ChatsUsers, 'id' | 'chat_id' | 'user_id' | 'role_id'>[]>;
 
   findDirectChat: (
     userId: number,
