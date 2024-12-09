@@ -21,8 +21,8 @@ import {
   CreateMessageRequestDto,
   DeleteMessageRequestDto,
   FindManyMessagesRequestDto,
+  UpdateMessageRequestDto,
 } from './dto/requests';
-import UpdateMessageRequestDto from './dto/requests/update-message.request.dto';
 import { Messages } from './messages.entity';
 import { MessagesService } from './messages.service';
 import { Server } from 'net';

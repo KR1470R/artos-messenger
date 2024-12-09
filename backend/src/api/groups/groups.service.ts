@@ -8,9 +8,11 @@ import { ChatsUsers } from '#api/chats/chats-users.entity';
 import { UsersService } from '#api/users/users.service';
 import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import {
+  AddMemberRequestDto,
   CreateGroupRequestDto,
   FindManyGroupsRequestDto,
   UpdateGroupRequestDto,
+  UpdateMemberRequestDto,
 } from './dto/requests';
 import {
   GroupsChatsUsersRepositoryToken,
@@ -130,6 +132,7 @@ export class GroupsService {
     logginedUserId: number,
     groupId: number,
     targetUserId: number,
+    data: AddMemberRequestDto,
   ) {
     const logginedUser = await this.processGetMember(logginedUserId, groupId);
     await this.accessMemberRole(logginedUser, groupId, [
@@ -149,7 +152,7 @@ export class GroupsService {
     const user = {
       user_id: targetUserId,
       chat_id: chatId,
-      role_id: ChatUserRolesEnum.USER,
+      role_id: data.role_id,
     };
 
     return this.chatsUsersRepository.create(user);
@@ -184,7 +187,7 @@ export class GroupsService {
     logginedUserId: number,
     groupId: number,
     targetUserId: number,
-    roleId: number,
+    data: UpdateMemberRequestDto,
   ) {
     await this.accessMemberRole(logginedUserId, groupId, [
       ChatUserRolesEnum.OWNER,
@@ -194,8 +197,10 @@ export class GroupsService {
     const targetGroup = await this.processFindOne(logginedUserId, groupId);
     const chatId = targetGroup.chat_id;
 
+    if (!data?.role_id) return; // nothing to update
+
     return this.chatsUsersRepository.update(chatId, targetUserId, {
-      role_id: roleId,
+      role_id: data.role_id,
     });
   }
 

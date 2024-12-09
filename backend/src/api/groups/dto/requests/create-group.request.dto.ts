@@ -31,7 +31,7 @@ export default class CreateGroupRequestDto {
 
   @ApiProperty({
     type: 'number',
-    description: 'Invited User IDs.',
+    description: 'Invited User IDs. By default their role will be user.',
     required: false,
     isArray: true,
   })

@@ -1,23 +1,22 @@
 import { ChatUserRolesEnum } from '#core/db/types';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, Max, Min } from 'class-validator';
+import { IsNotEmpty, IsNumber, Max, Min } from 'class-validator';
 
-export default class UpdateMemberRequestDto {
+export default class AddMemberRequestDto {
   @ApiProperty({
     type: 'number',
     description:
-      'Role id for the user in the group. Where 1 - owner, 2 - admin, 3 - user, 4 - banned.',
+      'Role id for the user in the group. Where 1 - owner 2 - admin, 3 - user.',
     required: true,
     enum: [
       ChatUserRolesEnum.OWNER,
       ChatUserRolesEnum.ADMIN,
       ChatUserRolesEnum.USER,
-      ChatUserRolesEnum.BANNED,
     ],
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
   @Min(1)
-  @Max(4)
-  role_id?: ChatUserRolesEnum;
+  @Max(3)
+  role_id: number;
 }

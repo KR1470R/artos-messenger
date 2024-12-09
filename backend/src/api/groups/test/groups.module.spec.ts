@@ -63,6 +63,9 @@ const testAddMember = async (ownerUser: ChatMember, targetUser: ChatMember) => {
     ownerUser.id,
     groupPayload.id,
     targetUser.id,
+    {
+      role_id: ChatUserRolesEnum.USER,
+    },
   );
   expect(result.message).toEqual('Member added successfully.');
 };
@@ -71,7 +74,9 @@ const testAddMemberForbidden = async (
   targetUser: ChatMember,
 ) => {
   await expect(
-    groupsController.addMember(ownerUser.id, groupPayload.id, targetUser.id),
+    groupsController.addMember(ownerUser.id, groupPayload.id, targetUser.id, {
+      role_id: ChatUserRolesEnum.USER,
+    }),
   ).rejects.toThrow();
 };
 const testUpdateMember = async (
@@ -83,7 +88,9 @@ const testUpdateMember = async (
     ownerUser.id,
     groupPayload.id,
     targetUser.id,
-    role,
+    {
+      role_id: role,
+    },
   );
   expect(result.message).toEqual('Member updated successfully.');
 };
@@ -97,7 +104,9 @@ const testUpdateMemberForbidden = async (
       ownerUser.id,
       groupPayload.id,
       targetUser.id,
-      role,
+      {
+        role_id: role,
+      },
     ),
   ).rejects.toThrow();
 };
