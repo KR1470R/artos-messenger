@@ -23,8 +23,10 @@ import {
   GroupShortResponseDto,
 } from './dto/responses';
 import {
+  AddMemberRequestDto,
   CreateGroupRequestDto,
   FindManyGroupsRequestDto,
+  UpdateMemberRequestDto,
 } from './dto/requests';
 import { LogginedUserIdHttp } from '#common/decorators';
 
@@ -36,7 +38,8 @@ export class GroupsController {
 
   @Post()
   @ApiOperation({
-    description: 'Create new group.',
+    description:
+      'Create new group. Note, invited users will be added as members with role - user.',
   })
   @ApiOkResponse({
     description: 'Group created successfully.',
@@ -91,8 +94,14 @@ export class GroupsController {
     @LogginedUserIdHttp() logginedUserId: number,
     @Param('group_id') groupId: number,
     @Param('user_id') userId: number,
+    @Body() data: AddMemberRequestDto,
   ) {
-    await this.groupsService.processAddMember(logginedUserId, groupId, userId);
+    await this.groupsService.processAddMember(
+      logginedUserId,
+      groupId,
+      userId,
+      data,
+    );
     return { message: 'Member added successfully.' };
   }
 
@@ -112,13 +121,13 @@ export class GroupsController {
     @LogginedUserIdHttp() logginedUserId: number,
     @Param('group_id') groupId: number,
     @Param('user_id') userId: number,
-    @Body('role_id') roleId: number,
+    @Body() data: UpdateMemberRequestDto,
   ) {
     await this.groupsService.processUpdateMember(
       logginedUserId,
       groupId,
       userId,
-      roleId,
+      data,
     );
     return { message: 'Member updated successfully.' };
   }
