@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 
 export interface IChatStore {
-	selectedUser: { id: number; username: string } | null
-	setSelectedUser: (user: { id: number; username: string }) => void
+	selectedUser: { id: string; username: string } | null
+	setSelectedUser: (user: { id: string; username: string }) => void
 	clearSelectedUser: () => void
 }
 

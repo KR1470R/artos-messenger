@@ -14,14 +14,13 @@ const ConversationList: React.FC = () => {
 	const { activeTab, setActiveTab, getRenderContent, isLoading } = useSideUsers()
 	const { setSelectedUser } = useChatStore()
 
-	const handleItemClick = async (user: { id: number; username: string }) => {
+	const handleItemClick = async (user: { id: string; username: string }) => {
 		setSelectedUser(user)
 		try {
 			const chatId = await CreateChat(user.id)
 			joinChat(chatId)
-			console.log('приєднано до чату')
 		} catch (error: any) {
-			console.error('Не вдалося приєднатися до чату:', error.message)
+			console.error('Failed to join chat:', error.message)
 		}
 	}
 
@@ -42,9 +41,7 @@ const ConversationList: React.FC = () => {
 						<ConversationListItem
 							key={item.id}
 							data={item}
-							onClick={() =>
-								handleItemClick({ id: Number(item.id), username: item.username })
-							}
+							onClick={() => handleItemClick({ id: item.id, username: item.username })}
 						/>
 					))}
 				</div>

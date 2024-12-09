@@ -11,6 +11,8 @@ const Message: React.FC<IMessage> = ({
 	showTimestamp,
 }) => {
 	const friendlyTimestamp = moment(data.timestamp).format('LLLL')
+	console.log('message', data.message)
+
 	return (
 		<div
 			className={[

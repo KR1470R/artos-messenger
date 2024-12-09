@@ -1,3 +1,6 @@
+import { useAuthStore } from '@/Store/useAuthStore'
+import { useChatStore } from '@/Store/useChatStore'
+import { IMessageType } from '@/Types/Messages.interface'
 import { useEffect, useState } from 'react'
 import {
 	connectSocket,
@@ -7,69 +10,49 @@ import {
 	leaveChatSocket,
 	subscribeToNewMessages,
 } from '../../Services/socket'
-import { CreateChat } from '../../Services/users/CreateChat.service'
-import { useChatStore } from '../../Store/useChatStore'
-import { IMessageType } from '../../Types/Messages.interface'
 import { Compose } from '../Compose/Compose'
 import { Message } from '../Message/Message'
 import { Toolbar } from '../Toolbar/Toolbar'
 import { ToolbarButton } from '../ToolbarButton/ToolbarButton'
 import './MessageList.css'
 
-const MessageList = ({
-	currentUserId,
-	recipientId,
-}: {
-	currentUserId: string
-	recipientId: number
-}) => {
+const MessageList = () => {
 	const [messages, setMessages] = useState<IMessageType[]>([])
-	const { selectedUser, setSelectedUser } = useChatStore()
+	const { selectedUser } = useChatStore()
+	const { user } = useAuthStore()
 
 	useEffect(() => {
-		console.log('Connecting socket...')
 		connectSocket()
-		if (!recipientId || recipientId !== selectedUser?.id) return
+
+		if (!selectedUser) return
 
 		const setupChat = async () => {
 			try {
-				const chatId = await CreateChat(recipientId)
-				setSelectedUser({
-					id: recipientId,
-					username: selectedUser?.username || '',
-				})
-				connectSocket()
-				joinChat(chatId)
-				console.log(`Successfully joined chat with ID: ${chatId}`)
+				joinChat(selectedUser.id)
 			} catch (err: any) {
 				console.error('Failed to set up chat:', err.message)
 			}
 		}
 
 		setupChat()
-
-		return () => {
-			if (selectedUser?.id) {
-				leaveChatSocket(selectedUser.id)
-			}
-			disconnectSocket()
-		}
-	}, [recipientId, selectedUser?.id])
-
-	useEffect(() => {
 		subscribeToNewMessages((newMessage: IMessageType) => {
 			setMessages(prevMessages => [...prevMessages, newMessage])
 		})
-	}, [])
+
+		return () => {
+			leaveChatSocket(selectedUser.id)
+			disconnectSocket()
+		}
+	}, [selectedUser])
 
 	const handleSendMessage = (message: string) => {
-		if (!message.trim() || !selectedUser?.id) return
+		if (!message.trim() || !selectedUser) return
 		createMessage(selectedUser.id, message)
 		setMessages(prevMessages => [
 			...prevMessages,
 			{
-				id: Date.now(),
-				author: currentUserId,
+				id: Date.now().toString(),
+				author: user?.id,
 				message,
 				timestamp: new Date().getTime(),
 			},
@@ -88,19 +71,10 @@ const MessageList = ({
 
 			<div className='messageListContainer'>
 				{messages.map((msg, index) => (
-					<Message key={index} data={msg} isMine={msg.author === currentUserId} />
+					<Message key={index} data={msg} isMine={msg.author === user?.id} />
 				))}
 			</div>
-
-			<Compose
-				rightItems={[
-					<ToolbarButton
-						key='send'
-						icon='ion-ios-send'
-						onClick={() => handleSendMessage('Your message')}
-					/>,
-				]}
-			/>
+			{selectedUser?.id ? <Compose onSend={handleSendMessage} /> : ''}
 		</div>
 	)
 }

@@ -10,8 +10,8 @@ export interface IMessage {
 }
 
 export interface IMessageType {
-	id: number
-	author: string
+	id: string
+	author?: string
 	message: string
 	timestamp: number
 	startsSequence?: boolean

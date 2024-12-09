@@ -13,7 +13,7 @@ const Messenger = () => {
 				<ConversationList />
 			</div>
 			<div className='scrollable content'>
-				<MessageList currentUserId={user.id} recipientId={1} />
+				<MessageList />
 			</div>
 		</div>
 	) : (

@@ -37,8 +37,8 @@ export const connectSocket = () => {
 	socket.connect()
 }
 
-export const joinChat = (chatId: number) => {
-	if (!chatId || isNaN(chatId)) {
+export const joinChat = (chatId: string) => {
+	if (!chatId) {
 		console.error('Invalid chat ID provided for joining.')
 		return
 	}
@@ -52,7 +52,7 @@ export const joinChat = (chatId: number) => {
 	})
 }
 
-export const leaveChatSocket = (chatId: number) => {
+export const leaveChatSocket = (chatId: string) => {
 	socket.emit('leave_chat', { chat_id: chatId }, (response: { message: string }) => {
 		if (response.message === 'Left chat successfully.') {
 			console.log(`Left chat: ${chatId}`)
@@ -62,7 +62,7 @@ export const leaveChatSocket = (chatId: number) => {
 	})
 }
 
-export const createMessage = (chatId: number, content: string) => {
+export const createMessage = (chatId: string, content: string) => {
 	socket.emit('create_message', { chat_id: chatId, content }, (response: any) => {
 		console.log('Message created:', response)
 	})
@@ -91,7 +91,7 @@ export const subscribeToUpdatedMessages = (callback: (message: any) => void) => 
 	socket.on('updated_message', callback)
 }
 
-export const deleteMessage = (chatId: number, messageId: number) => {
+export const deleteMessage = (chatId: string, messageId: string) => {
 	socket.emit('delete_message', { chat_id: chatId, id: messageId }, (response: any) => {
 		console.log('Message deleted:', response)
 	})

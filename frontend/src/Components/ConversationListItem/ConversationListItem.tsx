@@ -18,7 +18,6 @@ const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) =>
 	}
 
 	const handleClick = () => {
-		console.log(`User clicked: ${username} (ID: ${data.id})`)
 		onClick()
 	}
 

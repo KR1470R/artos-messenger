@@ -5,17 +5,13 @@ if (!createChatsUrl) {
 	throw new Error('Environment variable REACT_APP_CHATS_ROUTE is not defined.')
 }
 
-const CreateChat = async (targetUserId: number): Promise<number> => {
+const CreateChat = async (targetUserId: string): Promise<string> => {
 	try {
 		const response = await ApiClient.post(`${createChatsUrl}/${targetUserId}`)
 		const chatId = response.data.id
-		console.log('Отриманий chatId:', chatId)
 		return chatId
 	} catch (err: any) {
 		if (err.response?.status === 409) {
-			console.warn('Чат вже існує. Спроба отримати існуючий chatId...')
-			console.log('targetUserId:' + targetUserId)
-
 			try {
 				const existingChatResponse = await ApiClient.get(
 					`${createChatsUrl}/${targetUserId}`,
