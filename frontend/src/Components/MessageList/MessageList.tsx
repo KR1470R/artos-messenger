@@ -10,10 +10,10 @@ import {
 	leaveChatSocket,
 	subscribeToNewMessages,
 } from '../../Services/socket'
+import { Message } from '../../UI/Message/Message'
+import { Toolbar } from '../../UI/Toolbar/Toolbar'
+import { ToolbarButton } from '../../UI/ToolbarButton/ToolbarButton'
 import { Compose } from '../Compose/Compose'
-import { Message } from '../Message/Message'
-import { Toolbar } from '../Toolbar/Toolbar'
-import { ToolbarButton } from '../ToolbarButton/ToolbarButton'
 import './MessageList.css'
 
 const MessageList = () => {

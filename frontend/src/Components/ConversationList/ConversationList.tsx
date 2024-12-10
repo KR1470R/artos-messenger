@@ -4,10 +4,10 @@ import { CreateChat } from '@/Services/users/CreateChat.service'
 import { useChatStore } from '@/Store/useChatStore'
 import { Tabs } from '@/UI/Tabs/Tabs'
 import React from 'react'
-import { ConversationListItem } from '../ConversationListItem/ConversationListItem'
+import { Toolbar } from '../../UI/Toolbar/Toolbar'
+import { ToolbarButton } from '../../UI/ToolbarButton/ToolbarButton'
+import { ConversationListItem } from '../../UI/ConversationListItem/ConversationListItem'
 import { ConversationSearch } from '../ConversationSearch/ConversationSearch'
-import { Toolbar } from '../Toolbar/Toolbar'
-import { ToolbarButton } from '../ToolbarButton/ToolbarButton'
 import './ConversationList.css'
 
 const ConversationList: React.FC = () => {
