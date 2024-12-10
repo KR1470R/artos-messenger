@@ -1,4 +1,4 @@
-import { IToolbarButton } from '../../Types/Components.interface'
+import { IToolbarButton } from '@/Types/Components.interface'
 import './ToolbarButton.css'
 
 const ToolbarButton: React.FC<IToolbarButton> = ({ icon, onClick }) => {

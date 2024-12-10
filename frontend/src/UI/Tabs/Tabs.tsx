@@ -1,6 +1,6 @@
 import React from 'react'
-import { ITabsProps } from '../../Types/Components.interface'
 import './Tabs.css'
+import { ITabsProps } from '@/Types/Components.interface'
 
 const Tabs: React.FC<ITabsProps> = ({ activeTab, setActiveTab }) => {
 	return (

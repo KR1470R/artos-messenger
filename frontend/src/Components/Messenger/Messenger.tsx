@@ -1,4 +1,4 @@
-import { useAuthStore } from '../../Store/useAuthStore'
+import { useAuthStore } from '@/Store/useAuthStore'
 import { Auth } from '../Auth/Auth'
 import { ConversationList } from '../ConversationList/ConversationList'
 import { MessageList } from '../MessageList/MessageList'

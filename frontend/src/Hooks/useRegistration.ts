@@ -1,11 +1,11 @@
+import { TokenService } from '@/Services/authorization/AccessTokenMemory'
+import { RegisterUser } from '@/Services/authorization/RegisterUser.service'
+import { SignInUser } from '@/Services/authorization/SignInUser.service'
+import { connectSocket, disconnectSocket, socket } from '@/Services/socket'
+import { useAuthStore } from '@/Store/useAuthStore'
+import { IUserData } from '@/Types/Services.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { TokenService } from '../Services/authorization/AccessTokenMemory'
-import { RegisterUser } from '../Services/authorization/RegisterUser.service'
-import { SignInUser } from '../Services/authorization/SignInUser.service'
-import { connectSocket, disconnectSocket, socket } from '../Services/socket'
-import { useAuthStore } from '../Store/useAuthStore'
-import { IUserData } from '../Types/Services.interface'
 
 const useRegistration = () => {
 	const [data, setData] = useState<IUserData>({

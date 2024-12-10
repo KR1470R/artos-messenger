@@ -1,8 +1,8 @@
+import { connectSocket } from '@/Services/socket'
+import { GetUsers } from '@/Services/users/GetUsers.service'
+import { IUserAll } from '@/Types/Services.interface'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { connectSocket } from '../Services/socket'
-import { GetUsers } from '../Services/users/GetUsers.service'
-import { IUserAll } from '../Types/Services.interface'
 
 const useSideUsers = () => {
 	const { data, isSuccess, isError, isLoading } = useQuery<IUserAll[], Error>({

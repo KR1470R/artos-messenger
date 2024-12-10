@@ -1,6 +1,6 @@
+import { IConversationItem } from '@/Types/Components.interface'
 import React, { useEffect, useState } from 'react'
 import shave from 'shave'
-import { IConversationItem } from '../../Types/Components.interface'
 import './ConversationListItem.css'
 
 const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) => {

@@ -1,4 +1,4 @@
-import { Messenger } from '../Components/Messenger/Messenger'
+import { Messenger } from '@/Components/Messenger/Messenger'
 import './App.css'
 
 const App = () => {

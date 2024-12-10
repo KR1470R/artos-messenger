@@ -1,5 +1,5 @@
+import { ICompose } from '@/Types/Components.interface'
 import { useState } from 'react'
-import { ICompose } from '../../Types/Components.interface'
 import { ToolbarButton } from '../ToolbarButton/ToolbarButton'
 import './Compose.css'
 
