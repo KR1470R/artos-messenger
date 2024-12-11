@@ -1,35 +1,30 @@
-import { IMessage } from '@/Types/Messages.interface'
+import { IMessageProps } from '@/Types/Messages.interface'
 import moment from 'moment'
 import React from 'react'
 import './Message.css'
 
-const Message: React.FC<IMessage> = ({
-	data,
-	isMine,
-	startsSequence,
-	endsSequence,
-	showTimestamp,
-}) => {
+const Message: React.FC<IMessageProps> = ({ data, isMine }) => {
 	const friendlyTimestamp = moment(data.timestamp).format('LLLL')
-	console.log('message', data.message)
+	console.log('Rendering a message component:', data.content, 'isMine:', isMine)
 
 	return (
 		<div
 			className={[
 				'message',
-				`${isMine ? 'mine' : ''}`,
-				`${startsSequence ? 'start' : ''}`,
-				`${endsSequence ? 'end' : ''}`,
+				isMine ? 'mine' : '',
+				data.startsSequence ? 'start' : '',
+				data.endsSequence ? 'end' : '',
 			].join(' ')}
 		>
-			{showTimestamp && <div className='timestamp'>{friendlyTimestamp}</div>}
+			{data.showTimestamp && <div className='timestamp'>{friendlyTimestamp}</div>}
 
 			<div className='bubbleContainer'>
 				<div className='bubble' title={friendlyTimestamp}>
-					{data.message}
+					{data.content}
 				</div>
 			</div>
 		</div>
 	)
 }
+
 export { Message }

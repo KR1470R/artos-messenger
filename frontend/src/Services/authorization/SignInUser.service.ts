@@ -11,12 +11,12 @@ if (!signInUrl) {
 
 const SignInUser = async (
 	userData: IUserData,
-): Promise<{ id: string; username: string }> => {
+): Promise<{ id: number; username: string }> => {
 	try {
 		const response = await ApiClient.post<IResponse>(signInUrl, userData)
 		const { token } = response.data
 		TokenService.setToken(token)
-		const decodedToken: { id: string; username: string } = jwtDecode(token)
+		const decodedToken: { id: number; username: string } = jwtDecode(token)
 		const { id, username } = decodedToken
 
 		return { id, username }

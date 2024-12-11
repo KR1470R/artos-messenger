@@ -7,18 +7,19 @@ export interface IUserData {
 export interface IResponse {
 	token: string
 	message: string
-	id: string
+	id: number
 	error?: string
 	statusCode?: string
 	timestamp?: string
 }
 
 export interface IUserAll {
-	id: string
+	id: number
 	username: string
 	avatar_url: string
 }
+
 export interface IUser {
-	id: string
+	id: number
 	username: string
 }

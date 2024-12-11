@@ -4,9 +4,10 @@ import { persist } from 'zustand/middleware'
 
 interface IAuthStore {
 	user: IUser | null
-	login: (id: string, username: string) => void
+	login: (id: number, username: string) => void
 	logout: () => void
 }
+
 const useAuthStore = create<IAuthStore>()(
 	persist(
 		set => ({
@@ -17,4 +18,5 @@ const useAuthStore = create<IAuthStore>()(
 		{ name: 'auth-storage' },
 	),
 )
+
 export { useAuthStore }

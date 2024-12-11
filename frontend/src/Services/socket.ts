@@ -12,11 +12,19 @@ export const socket: Socket = io(
 )
 
 socket.on('connect', () => {
-	console.log('Socket connected successfully.')
+	console.log('Socket is successfully connected.')
 })
 
 socket.on('connect_error', error => {
 	console.error('Connection error:', error)
+	if (error.message === 'Access denied') {
+		console.log('Reconnecting...')
+		socket.connect()
+	}
+})
+
+socket.on('disconnect', reason => {
+	console.log('The socket is disabled:', reason)
 })
 
 socket.on('error', error => {
@@ -24,51 +32,58 @@ socket.on('error', error => {
 })
 
 export const connectSocket = () => {
-	if (socket.connected) {
-		console.log('Socket already connected.')
-		return
-	}
 	const token = TokenService.getToken()
 	if (!token) {
-		console.error('Cannot connect socket: No access token')
+		console.error('Unable to connect: No access token available')
+		return
+	}
+	console.log('Use of the token:', token)
+
+	if (socket.connected) {
+		console.log('The socket is already connected.')
 		return
 	}
 	socket.io.opts.extraHeaders = { token }
 	socket.connect()
 }
 
-export const joinChat = (chatId: string) => {
+export const joinChat = (chatId: number) => {
 	if (!chatId) {
-		console.error('Invalid chat ID provided for joining.')
+		console.error('Invalid chat ID for connection.')
 		return
 	}
+	console.log('chatId', chatId)
 
 	socket.emit('join_chat', { chat_id: chatId }, (response: { message: string }) => {
-		if (response.message === 'Joined chat successfully.') {
-			console.log(`Successfully joined chat: ${chatId}`)
+		if (response.message === 'Successfully connected to the chat.') {
+			console.log(`Successfully connected to the chat: ${chatId}`)
 		} else {
-			console.error('Failed to join chat:', response)
+			console.error('Unable to connect to the chat:', response)
 		}
 	})
 }
 
-export const leaveChatSocket = (chatId: string) => {
+export const leaveChatSocket = (chatId: number) => {
 	socket.emit('leave_chat', { chat_id: chatId }, (response: { message: string }) => {
-		if (response.message === 'Left chat successfully.') {
-			console.log(`Left chat: ${chatId}`)
+		if (response.message === 'Successfully left a chat.') {
+			console.log(`A chat has been left: ${chatId}`)
 		} else {
-			console.error('Failed to leave chat:', response)
+			console.error('Unable to leave the chat:', response)
 		}
 	})
 }
 
-export const createMessage = (chatId: string, content: string) => {
+export const createMessage = (chatId: number, content: string) => {
 	socket.emit('create_message', { chat_id: chatId, content }, (response: any) => {
-		console.log('Message created:', response)
+		if (response.error) {
+			console.error('The message could not be created:', response.error)
+		} else {
+			console.log('Message created:', response)
+		}
 	})
 }
 
-export const subscribeToNewMessages = (callback: (message: any) => void) => {
+export const subscribeToNewMessages = (callback: (message: string) => void) => {
 	socket.on('new_message', callback)
 }
 
@@ -82,25 +97,28 @@ export const updateMessage = (
 		'update_message',
 		{ chat_id: chatId, id: messageId, content, is_read: isRead },
 		(response: any) => {
-			console.log('Message updated:', response)
+			console.log('The message has been updated:', response)
 		},
 	)
 }
 
-export const subscribeToUpdatedMessages = (callback: (message: any) => void) => {
+export const subscribeToUpdatedMessages = (callback: (message: string) => void) => {
 	socket.on('updated_message', callback)
 }
 
-export const deleteMessage = (chatId: string, messageId: string) => {
+export const deleteMessage = (chatId: number, messageId: number) => {
 	socket.emit('delete_message', { chat_id: chatId, id: messageId }, (response: any) => {
 		console.log('Message deleted:', response)
 	})
 }
 
-export const subscribeToDeletedMessages = (callback: (message: any) => void) => {
+export const subscribeToDeletedMessages = (callback: (message: string) => void) => {
 	socket.on('deleted_message', callback)
 }
 
 export const disconnectSocket = () => {
-	socket.disconnect()
+	if (socket.connected) {
+		socket.disconnect()
+		console.log('Socket is disabled')
+	}
 }
