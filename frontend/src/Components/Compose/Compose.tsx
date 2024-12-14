@@ -1,6 +1,6 @@
 import { ICompose } from '@/Types/Components.interface'
+import { ToolbarButton } from '@/UI/ToolbarButton/ToolbarButton'
 import { useState } from 'react'
-import { ToolbarButton } from '../../UI/ToolbarButton/ToolbarButton'
 import './Compose.css'
 
 const Compose: React.FC<ICompose & { onSend: (message: string) => void }> = ({

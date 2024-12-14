@@ -1,3 +1,5 @@
+import { IMessageType } from '@/Types/Messages.interface'
+import { IResponse } from '@/Types/Services.interface'
 import { io, Socket } from 'socket.io-client'
 import { TokenService } from './authorization/AccessTokenMemory'
 
@@ -10,115 +12,75 @@ export const socket: Socket = io(
 		},
 	},
 )
-
-socket.on('connect', () => {
-	console.log('Socket is successfully connected.')
-})
-
-socket.on('connect_error', error => {
-	console.error('Connection error:', error)
-	if (error.message === 'Access denied') {
-		console.log('Reconnecting...')
-		socket.connect()
-	}
-})
-
-socket.on('disconnect', reason => {
-	console.log('The socket is disabled:', reason)
-})
-
-socket.on('error', error => {
-	console.error('Socket error:', error)
-})
+socket.on('connect', () => console.log('Socket connected successfully.'))
+socket.on('connect_error', error => console.error('Connection error:', error))
+socket.on('disconnect', reason => console.warn('Socket disconnected:', reason))
 
 export const connectSocket = () => {
 	const token = TokenService.getToken()
 	if (!token) {
-		console.error('Unable to connect: No access token available')
+		console.error('No token available. Cannot connect to the socket.')
 		return
 	}
-	console.log('Use of the token:', token)
-
-	if (socket.connected) {
-		console.log('The socket is already connected.')
-		return
+	if (!socket.connected) {
+		socket.io.opts.extraHeaders = { token }
+		socket.connect()
 	}
-	socket.io.opts.extraHeaders = { token }
-	socket.connect()
 }
 
-export const joinChat = (chatId: number) => {
-	if (!chatId) {
-		console.error('Invalid chat ID for connection.')
-		return
-	}
-	console.log('chatId', chatId)
-
-	socket.emit('join_chat', { chat_id: chatId }, (response: { message: string }) => {
-		if (response.message === 'Successfully connected to the chat.') {
-			console.log(`Successfully connected to the chat: ${chatId}`)
-		} else {
-			console.error('Unable to connect to the chat:', response)
-		}
+export const joinChat = (chat_id: number, user_id: number) => {
+	if (!chat_id || !user_id) return console.error('Invalid chatId or userId.')
+	socket.emit('join_chat', { chat_id, user_id }, (response: IResponse) => {
+		console.log(response.message || 'Joined chat successfully.')
 	})
 }
 
-export const leaveChatSocket = (chatId: number) => {
-	socket.emit('leave_chat', { chat_id: chatId }, (response: { message: string }) => {
-		if (response.message === 'Successfully left a chat.') {
-			console.log(`A chat has been left: ${chatId}`)
-		} else {
-			console.error('Unable to leave the chat:', response)
-		}
-	})
-}
-
-export const createMessage = (chatId: number, content: string) => {
-	socket.emit('create_message', { chat_id: chatId, content }, (response: any) => {
-		if (response.error) {
-			console.error('The message could not be created:', response.error)
-		} else {
-			console.log('Message created:', response)
-		}
-	})
-}
-
-export const subscribeToNewMessages = (callback: (message: string) => void) => {
-	socket.on('new_message', callback)
-}
-
-export const updateMessage = (
-	chatId: number,
-	messageId: number,
-	content?: string,
-	isRead?: boolean,
-) => {
+export const createMessage = (chat_id: number, content: string, receiver_id: number) => {
 	socket.emit(
-		'update_message',
-		{ chat_id: chatId, id: messageId, content, is_read: isRead },
-		(response: any) => {
-			console.log('The message has been updated:', response)
+		'create_message',
+		{ chat_id, content, receiver_id },
+		(response: IResponse) => {
+			if (response.error) console.error('Failed to create message:', response.error)
+			else console.log('Message created:', response)
 		},
 	)
 }
 
-export const subscribeToUpdatedMessages = (callback: (message: string) => void) => {
-	socket.on('updated_message', callback)
+export const updateMessage = (
+	chat_id: number,
+	message_id: number,
+	content?: string,
+	is_read?: boolean,
+) => {
+	socket.emit(
+		'update_message',
+		{ chat_id, id: message_id, content, is_read },
+		(response: IResponse) => console.log('Message updated:', response),
+	)
 }
 
-export const deleteMessage = (chatId: number, messageId: number) => {
-	socket.emit('delete_message', { chat_id: chatId, id: messageId }, (response: any) => {
-		console.log('Message deleted:', response)
+export const deleteMessage = (chat_id: number, message_id: number) => {
+	socket.emit('delete_message', { chat_id, id: message_id }, (response: IResponse) => {
+		if (response.error) console.error('Failed to delete message:', response.error)
+		else console.log('Message deleted:', response)
 	})
 }
 
-export const subscribeToDeletedMessages = (callback: (message: string) => void) => {
+export const subscribeToNewMessages = (callback: (message: IMessageType) => void) => {
+	socket.on('new_message', callback)
+}
+
+export const subscribeToUpdatedMessages = (callback: (message: IMessageType) => void) => {
+	socket.on('updated_message', callback)
+}
+
+export const subscribeToDeletedMessages = (callback: (messageId: number) => void) => {
 	socket.on('deleted_message', callback)
 }
 
 export const disconnectSocket = () => {
 	if (socket.connected) {
 		socket.disconnect()
-		console.log('Socket is disabled')
+		console.log('Socket disconnected.')
 	}
 }
