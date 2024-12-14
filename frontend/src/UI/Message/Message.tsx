@@ -5,8 +5,6 @@ import './Message.css'
 
 const Message: React.FC<IMessageProps> = ({ data, isMine }) => {
 	const friendlyTimestamp = moment(data.timestamp).format('LLLL')
-	console.log('Rendering a message component:', data.content, 'isMine:', isMine)
-
 	return (
 		<div
 			className={[

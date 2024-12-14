@@ -17,12 +17,8 @@ const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) =>
 		setImageSrc(fallbackAvatar)
 	}
 
-	const handleClick = () => {
-		onClick()
-	}
-
 	return (
-		<div className='conversationListItem' onClick={handleClick}>
+		<div className='conversationListItem' onClick={onClick}>
 			<img
 				className='conversationPhoto'
 				src={imageSrc}
