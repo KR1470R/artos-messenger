@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -71,7 +72,7 @@ export class GroupsController {
   })
   public async update(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('group_id') groupId: number,
+    @Param('group_id', new ParseIntPipe()) groupId: number,
     @Body() data: CreateGroupRequestDto,
   ) {
     await this.groupsService.processUpdate(logginedUserId, groupId, data);
@@ -92,8 +93,8 @@ export class GroupsController {
   })
   public async addMember(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('group_id') groupId: number,
-    @Param('user_id') userId: number,
+    @Param('group_id', new ParseIntPipe()) groupId: number,
+    @Param('user_id', new ParseIntPipe()) userId: number,
     @Body() data: AddMemberRequestDto,
   ) {
     await this.groupsService.processAddMember(
@@ -119,8 +120,8 @@ export class GroupsController {
   })
   public async updateMember(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('group_id') groupId: number,
-    @Param('user_id') userId: number,
+    @Param('group_id', new ParseIntPipe()) groupId: number,
+    @Param('user_id', new ParseIntPipe()) userId: number,
     @Body() data: UpdateMemberRequestDto,
   ) {
     await this.groupsService.processUpdateMember(
@@ -146,8 +147,8 @@ export class GroupsController {
   })
   public async deleteMember(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('group_id') groupId: number,
-    @Param('user_id') userId: number,
+    @Param('group_id', new ParseIntPipe()) groupId: number,
+    @Param('user_id', new ParseIntPipe()) userId: number,
   ) {
     await this.groupsService.processDeleteMember(
       logginedUserId,
@@ -171,7 +172,7 @@ export class GroupsController {
   })
   public async delete(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('group_id') groupId: number,
+    @Param('group_id', new ParseIntPipe()) groupId: number,
   ) {
     await this.groupsService.processDelete(logginedUserId, groupId);
     return { message: 'Group deleted successfully.' };
@@ -191,7 +192,7 @@ export class GroupsController {
   })
   public async findOne(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('group_id') groupId: number,
+    @Param('group_id', new ParseIntPipe()) groupId: number,
   ) {
     return await this.groupsService.processFindOne(logginedUserId, groupId);
   }

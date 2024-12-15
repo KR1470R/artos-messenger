@@ -1,5 +1,13 @@
 import { ExceptionResponseDto, SuccessResponseDto } from '#common/dto';
-import { Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   ApiOperation,
   ApiOkResponse,
@@ -36,7 +44,7 @@ export class ChatsController {
   })
   public async create(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('target_user_id') targetUserId: number,
+    @Param('target_user_id', new ParseIntPipe()) targetUserId: number,
   ) {
     const id = await this.chatsService.processCreate(
       logginedUserId,
@@ -77,7 +85,7 @@ export class ChatsController {
   })
   public async findOne(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('chat_id') chatId: number,
+    @Param('chat_id', new ParseIntPipe()) chatId: number,
   ): Promise<ChatFullResponseDto> {
     return await this.chatsService.processFindOne(logginedUserId, chatId);
   }
@@ -96,7 +104,7 @@ export class ChatsController {
   })
   public async delete(
     @LogginedUserIdHttp() logginedUserId: number,
-    @Param('chat_id') chatId: number,
+    @Param('chat_id', new ParseIntPipe()) chatId: number,
   ) {
     await this.chatsService.processDelete(logginedUserId, chatId);
 

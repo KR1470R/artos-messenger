@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -137,7 +138,7 @@ export class UsersController {
     description: 'Something went wrong.',
     type: ExceptionResponseDto,
   })
-  public async findOne(@Param('user_id') userId: number) {
+  public async findOne(@Param('user_id', new ParseIntPipe()) userId: number) {
     return await this.usersService.processFindOne(userId);
   }
 }
