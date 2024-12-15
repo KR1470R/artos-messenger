@@ -1,15 +1,14 @@
-import { IUser } from '@/Types/User.interface'
+import { TokenService } from '@/Services/authorization/AccessTokenMemory'
+import { RegisterUser } from '@/Services/authorization/RegisterUser.service'
+import { SignInUser } from '@/Services/authorization/SignInUser.service'
+import { connectSocket, disconnectSocket, socket } from '@/Services/socket'
+import { useAuthStore } from '@/Store/useAuthStore'
+import { IUserData } from '@/Types/Services.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { TokenService } from '../Services/AccessTokenMemory'
-import { RegisterUser } from '../Services/RegisterUser.service'
-import { SignInUser } from '../Services/SignInUser.service'
-import { connectSocket, socket } from '../Services/socket'
-import { useAuthStore } from '../Store/useAuthStore'
-import { IResponse } from '../Types/Services.interface'
 
 const useRegistration = () => {
-	const [data, setData] = useState<IUser>({
+	const [data, setData] = useState<IUserData>({
 		username: '',
 		password: '',
 	})
@@ -18,7 +17,7 @@ const useRegistration = () => {
 	const isAuthType = type === 'login'
 	const login = useAuthStore(state => state.login)
 
-	const { mutateAsync: registerAsync } = useMutation<IResponse, Error, IUser>({
+	const { mutateAsync: registerAsync } = useMutation({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
 		onError: err => {
@@ -26,20 +25,21 @@ const useRegistration = () => {
 		},
 		onSuccess: async () => {
 			try {
-				signInAsync({ username: data.username, password: data.password })
+				await signInAsync({ username: data.username, password: data.password })
 			} catch (err) {
 				console.error('Sign-in failed after registration:', err)
 			}
 		},
 	})
-	const { mutateAsync: signInAsync } = useMutation<IResponse, Error, IUser>({
+
+	const { mutateAsync: signInAsync } = useMutation({
 		mutationKey: ['login'],
 		mutationFn: SignInUser,
 		onError: err => {
 			console.error('Error during login:', err)
 		},
-		onSuccess: () => {
-			login(data.username)
+		onSuccess: ({ id, username }) => {
+			login(id, username)
 			connectSocket()
 		},
 	})
@@ -68,7 +68,7 @@ const useRegistration = () => {
 		}
 
 		return () => {
-			socket.disconnect()
+			disconnectSocket()
 		}
 	}, [])
 

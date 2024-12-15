@@ -15,18 +15,20 @@
 		"axios": "^1.7.7",
 		"ionicons": "^7.4.0",
 		"js-cookie": "^3.0.5",
+		"jwt-decode": "^4.0.0",
 		"moment": "^2.30.1",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
+		"shave": "^5.0.4",
 		"socket.io-client": "^4.8.1",
 		"typescript": "^4.9.5",
 		"web-vitals": "^2.1.4",
 		"zustand": "^5.0.1"
 	},
 	"scripts": {
-		"start": "react-scripts start",
-		"build": "react-scripts build",
-		"test": "react-scripts test",
+		"start": "react-app-rewired start",
+		"build": "react-app-rewired build",
+		"test": "react-app-rewired test",
 		"eject": "react-scripts eject"
 	},
 	"eslintConfig": {
@@ -48,7 +50,10 @@
 		]
 	},
 	"devDependencies": {
+		"@babel/plugin-proposal-private-property-in-object": "^7.21.11",
 		"@types/js-cookie": "^3.0.6",
+		"eslint": "^8.57.1",
+		"eslint-config-react-app": "^7.0.1",
 		"react-app-rewired": "^2.2.1",
 		"react-scripts": "^5.0.1"
 	}

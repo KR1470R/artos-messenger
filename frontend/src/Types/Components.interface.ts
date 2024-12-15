@@ -1,4 +1,4 @@
-import { IConversation } from './Messages.interface'
+import { IUserAll } from './Services.interface'
 
 export interface ICompose {
 	rightItems?: React.ReactNode[]
@@ -9,8 +9,15 @@ export interface IToolBar {
 	rightItems: React.ReactNode[]
 }
 export interface IConversationItem {
-	data: IConversation
+	data: IUserAll
+	onClick: () => void
 }
 export interface IToolbarButton {
 	icon: string
+	onClick?: () => void
+}
+
+export interface ITabsProps {
+	activeTab: 'messages' | 'users'
+	setActiveTab: React.Dispatch<React.SetStateAction<'messages' | 'users'>>
 }

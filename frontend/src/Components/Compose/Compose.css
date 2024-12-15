@@ -1,9 +1,9 @@
 .compose {
-	padding: 10px;
+	margin: 10px;
+	padding: 0px 10px;
 	display: flex;
 	align-items: center;
 	background: white;
-	border-top: 1px solid #eeeef1;
 	position: absolute;
 	width: calc(100% - 20px);
 	bottom: 0;
@@ -11,9 +11,10 @@
 
 @supports (backdrop-filter: blur(20px)) {
 	.compose {
-		border: none;
 		background-color: rgba(255, 255, 255, 0.8);
 		backdrop-filter: blur(20px);
+		border: 1px solid #d4d4d7;
+		border-radius: 10px;
 	}
 }
 
@@ -23,8 +24,8 @@
 	font-size: 14px;
 	height: 40px;
 	background: none;
-	/* border: none;
-	outline: none; */
+	border: none;
+	outline: none;
 }
 
 .composeInput::placeholder {
@@ -32,10 +33,5 @@
 }
 
 .compose .toolbarButton {
-	color: #bbbbbf;
-	margin-left: 15px;
-}
-
-.compose .toolbarButton:hover {
-	color: #99999c;
+	margin: 0px 15px;
 }

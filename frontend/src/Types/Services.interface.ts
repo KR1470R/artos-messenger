@@ -5,10 +5,21 @@ export interface IUserData {
 }
 
 export interface IResponse {
-	message: string;
-	id: string;
-	error?: string;
-	statusCode?: string;
-	timestamp?: string;
+	token: string
+	message: string
+	id: number
+	error?: string
+	statusCode?: string
+	timestamp?: string
 }
 
+export interface IUserAll {
+	id: number
+	username: string
+	avatar_url: string
+}
+
+export interface IUser {
+	id: number
+	username: string
+}

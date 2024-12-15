@@ -1,21 +1,29 @@
-export interface IMessage {
-	data: {
-		message: string
-		timestamp: string | number | Date
-	}
-	isMine: boolean
-	startsSequence: boolean
-	endsSequence: boolean
-	showTimestamp: boolean
-}
 export interface IMessageType {
 	id: number
-	author: string
-	message: string
-	timestamp: number
+	chat_id: number
+	sender_id: number
+	receiver_id: number
+	content: string
+	is_read: boolean
+	created_at: string
+	updated_at: string
+	timestamp?: number
+	startsSequence?: boolean
+	endsSequence?: boolean
+	showTimestamp?: boolean
 }
-export interface IConversation {
-	photo: string
-	name: string
-	text: string
+
+export interface IServerMessage {
+	id: number
+	chat_id: number
+	sender_id: number
+	content: string
+	is_read: boolean
+	created_at: string
+	updated_at: string
+}
+
+export interface IMessageProps {
+	data: IMessageType
+	isMine: boolean
 }

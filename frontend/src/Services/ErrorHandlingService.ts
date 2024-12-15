@@ -1,21 +1,21 @@
-import { TokenService } from './AccessTokenMemory'
 import { ApiClient } from './ApiClient'
-import { RefreshToken } from './RefreshToken.service'
-import { socket } from './socket'
+import { TokenService } from './authorization/AccessTokenMemory'
+import { RefreshToken } from './authorization/RefreshToken.service'
+import { disconnectSocket } from './socket'
 
 export const handle401Error = async (error: any): Promise<any> => {
 	if (error.response?.status === 401) {
 		try {
 			const newAccessToken = await RefreshToken()
+			TokenService.setToken(newAccessToken)
 			error.config.headers['Authorization'] = `Bearer ${newAccessToken}`
 			return ApiClient.request(error.config)
 		} catch (err) {
 			console.error('Failed to refresh token:', err)
 			TokenService.clearToken()
-			socket.disconnect()
+			disconnectSocket()
 			throw err
 		}
-	} else {
-		throw error
 	}
+	return Promise.reject(error)
 }
