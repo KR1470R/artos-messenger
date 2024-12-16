@@ -8,13 +8,14 @@ const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) =>
 		shave('.conversationSnippet', 20)
 	}, [])
 
-	const { username, avatar_url } = data
-	const fallbackAvatar = '/assets/fallbackAvatar.webp'
+	const username = 'username' in data ? data.username : 'Anonymous'
+	const avatar_url =
+		'avatar_url' in data ? data.avatar_url : '/assets/fallbackAvatar.webp'
 
 	const [imageSrc, setImageSrc] = useState(avatar_url)
 
 	const handleImageError = () => {
-		setImageSrc(fallbackAvatar)
+		setImageSrc('/assets/fallbackAvatar.webp')
 	}
 
 	return (
