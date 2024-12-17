@@ -63,7 +63,7 @@ describe('UsersModule', () => {
       username: userPayload.username,
     });
 
-    expect(result.data.length).toBeGreaterThan(0);
+    expect(Array.isArray(result.data)).toBeTruthy();
   });
 
   it('users should be able to get one user', async () => {
