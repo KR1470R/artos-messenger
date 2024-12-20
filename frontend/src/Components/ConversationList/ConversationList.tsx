@@ -1,4 +1,4 @@
-import { useConversationList } from '@/Hooks/useConversationUsers'
+import { useConversationList } from '@/Hooks/useConversationList'
 import { IChat, IUserAll } from '@/Types/Services.interface'
 import { ConversationListItem } from '@/UI/ConversationListItem/ConversationListItem'
 import { Tabs } from '@/UI/Tabs/Tabs'
@@ -9,11 +9,16 @@ import { ConversationSearch } from '../ConversationSearch/ConversationSearch'
 import './ConversationList.css'
 
 const ConversationList: React.FC = () => {
-	const { activeTab, setActiveTab, getRenderContent, isLoading, handleItemClick } =
-		useConversationList()
-	
-	// Логування контенту
-	console.log('Render Content:', getRenderContent())
+	const {
+		activeTab,
+		setActiveTab,
+		getRenderContent,
+		isLoading,
+		handleItemClickUsers,
+		handleItemClickChats,
+	} = useConversationList()
+
+	const renderContent = getRenderContent()
 
 	return (
 		<div className='conversationList'>
@@ -24,30 +29,28 @@ const ConversationList: React.FC = () => {
 			/>
 			<ConversationSearch />
 			<Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
 			{isLoading ? (
-				<div>Loading...</div>
+				<div className='loading'>Loading...</div>
 			) : (
 				<div className='content'>
-					{/* Якщо активна вкладка 'messages', виводимо чати */}
-					{activeTab === 'messages' ? (
-						(getRenderContent() as IChat[]).map(item => (
-							<ConversationListItem
-								key={item.id}
-								data={item}
-								onClick={() => console.log('Chat selected:', item.id)}
-							/>
-						))
-					) : (
-						(getRenderContent() as IUserAll[]).map(item => (
-							<ConversationListItem
-								key={item.id}
-								data={item}
-								onClick={() =>
-									handleItemClick({ id: item.id, username: item.username })
-								}
-							/>
-						))
-					)}
+					{activeTab === 'messages'
+						? (renderContent as IChat[]).map(item => (
+								<ConversationListItem
+									key={item.id}
+									data={item}
+									onClick={() => handleItemClickChats(item.id)}
+								/>
+						  ))
+						: (renderContent as IUserAll[]).map(item => (
+								<ConversationListItem
+									key={item.id}
+									data={item}
+									onClick={() =>
+										handleItemClickUsers({ id: item.id, username: item.username })
+									}
+								/>
+						  ))}
 				</div>
 			)}
 		</div>

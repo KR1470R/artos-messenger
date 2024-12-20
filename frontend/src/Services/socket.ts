@@ -12,38 +12,40 @@ export const socket: Socket = io(
 		},
 	},
 )
-socket.on('connect', () => console.log('Socket connected successfully.'))
-socket.on('connect_error', error => console.error('Connection error:', error))
-socket.on('disconnect', reason => console.warn('Socket disconnected:', reason))
-
 export const connectSocket = () => {
 	const token = TokenService.getToken()
 	if (!token) {
-		console.error('No token available. Cannot connect to the socket.')
+		console.error('❌ No token available. Cannot connect to the socket.')
 		return
 	}
-	if (!socket.connected) {
-		socket.io.opts.extraHeaders = { token }
-		socket.connect()
+
+	if (socket.connected) {
+		console.log('ℹ️ Socket is already connected.')
+		return
 	}
+
+	console.log('🔌 Connecting to socket server...')
+	socket.io.opts.extraHeaders = { token }
+	socket.connect()
+	socket.on('connect', () => console.log('✅ Socket connected successfully.'))
+	socket.on('connect_error', error => console.error('❌ Connection error:', error))
+	socket.on('disconnect', reason => console.warn('⚠️ Socket disconnected:', reason))
 }
 
-export const joinChat = (chat_id: number, user_id: number) => {
-	if (!chat_id || !user_id) return console.error('Invalid chatId or userId.')
-	socket.emit('join_chat', { chat_id, user_id }, (response: IResponse) => {
-		console.log(response.message || 'Joined chat successfully.')
+export const joinChat = (chat_id: number) => {
+	if (!socket.connected) {
+		connectSocket()
+	}
+	socket.emit('join_chat', { chat_id }, (response: any) => {
+		console.log('📡 Callback triggered. Server response:', response)
 	})
 }
-
-export const createMessage = (chat_id: number, content: string, receiver_id: number) => {
-	socket.emit(
-		'create_message',
-		{ chat_id, content, receiver_id },
-		(response: IResponse) => {
-			if (response.error) console.error('Failed to create message:', response.error)
-			else console.log('Message created:', response)
-		},
-	)
+export const createMessage = (chatId: number, content: string) => {
+	socket.emit('create_message', { chat_id: chatId, content }, (response: any) => {
+		if (response.error) {
+			console.error('Message creation failed:', response.error)
+		}
+	})
 }
 
 export const updateMessage = (

@@ -1,3 +1,4 @@
+import { connectSocket } from '@/Services/socket'
 import { GetChats } from '@/Services/users/GetChats.service'
 import { IChat } from '@/Types/Services.interface'
 import { useQuery } from '@tanstack/react-query'
@@ -9,14 +10,12 @@ const useSideChats = () => {
 		queryFn: GetChats,
 		refetchOnWindowFocus: false,
 	})
-
-	// Логування даних
 	useEffect(() => {
+		if (isSuccess) {
+			connectSocket()
+		}
 		if (isError) {
 			console.error('Failed to fetch chats')
-		}
-		if (isSuccess) {
-			console.log('Chats data: ', data) // Логування чатових даних
 		}
 	}, [isSuccess, isError])
 
