@@ -1,4 +1,5 @@
 import { useConversationList } from '@/Hooks/useConversationList'
+import { useChatStore } from '@/Store/useChatStore'
 import { IChat, IUserAll } from '@/Types/Services.interface'
 import { ConversationListItem } from '@/UI/ConversationListItem/ConversationListItem'
 import { Tabs } from '@/UI/Tabs/Tabs'
@@ -18,6 +19,7 @@ const ConversationList: React.FC = () => {
 		handleItemClickChats,
 	} = useConversationList()
 
+	const { chatId, selectedUser } = useChatStore()
 	const renderContent = getRenderContent()
 
 	return (
@@ -39,6 +41,7 @@ const ConversationList: React.FC = () => {
 								<ConversationListItem
 									key={item.id}
 									data={item}
+									isActive={chatId === item.id}
 									onClick={() => handleItemClickChats(item.id)}
 								/>
 						  ))
@@ -46,6 +49,7 @@ const ConversationList: React.FC = () => {
 								<ConversationListItem
 									key={item.id}
 									data={item}
+									isActive={selectedUser?.id === item.id}
 									onClick={() =>
 										handleItemClickUsers({ id: item.id, username: item.username })
 									}

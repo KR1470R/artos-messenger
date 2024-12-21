@@ -10,11 +10,13 @@ import { useState } from 'react'
 
 const useConversationList = () => {
 	const [activeTab, setActiveTab] = useState<'messages' | 'users'>('messages')
+
 	const { data: chatsData, isLoading: isChatsLoading } = useQuery<IChat[]>({
 		queryKey: ['chats'],
 		queryFn: GetChats,
 		enabled: activeTab === 'messages',
 	})
+
 	const { data: usersData, isLoading: isUsersLoading } = useQuery<IUserAll[]>({
 		queryKey: ['users'],
 		queryFn: GetUsers,
@@ -25,9 +27,10 @@ const useConversationList = () => {
 	const getRenderContent = (): IChat[] | IUserAll[] => {
 		return activeTab === 'messages' ? chatsData || [] : usersData || []
 	}
-
-	const { setSelectedUser, setChatId } = useChatStore()
+	const { selectedUser, setSelectedUser, setChatId } = useChatStore()
 	const handleItemClickUsers = async (userSelect: { id: number; username: string }) => {
+		if (selectedUser?.id === userSelect.id) return
+
 		setSelectedUser(userSelect)
 
 		try {
@@ -40,10 +43,11 @@ const useConversationList = () => {
 	}
 
 	const handleItemClickChats = async (chatId: number) => {
+		if (chatId === selectedUser?.id) return
+
 		try {
 			const responseData = await GetChat(chatId)
 			console.log(responseData, chatId)
-
 			if (chatId) {
 				setChatId(chatId)
 				joinChat(chatId)

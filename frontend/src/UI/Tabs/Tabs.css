@@ -16,7 +16,7 @@
 .tab.active {
 	color: #000;
 	border-bottom: 1px solid #000;
-	background-color: rgb(238, 236, 236, 0.7);
+	background-color: #f4f4f8;
 }
 
 .content {

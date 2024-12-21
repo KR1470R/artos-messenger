@@ -2,11 +2,16 @@
 	display: flex;
 	align-items: center;
 	padding: 10px;
+	transition: background-color 0.2s ease-in-out;
 }
 
 .conversationListItem:hover {
-	background: #eeeef1;
+	background: #f4f4f8;
 	cursor: pointer;
+}
+
+.conversationListItem.active {
+	background-color: #f4f4f8;
 }
 
 .conversationPhoto {
@@ -21,11 +26,5 @@
 	font-size: 14px;
 	font-weight: bold;
 	text-transform: capitalize;
-	margin: 0;
-}
-
-.conversationSnippet {
-	font-size: 14px;
-	color: #888;
 	margin: 0;
 }

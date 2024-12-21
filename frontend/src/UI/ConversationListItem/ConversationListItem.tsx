@@ -4,7 +4,11 @@ import shave from 'shave'
 import { IChat, IUserAll } from '../../Types/Services.interface'
 import './ConversationListItem.css'
 
-const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) => {
+const ConversationListItem: React.FC<IConversationItem & { isActive: boolean }> = ({
+	data,
+	onClick,
+	isActive,
+}) => {
 	useEffect(() => {
 		shave('.conversationSnippet', 20)
 	}, [])
@@ -24,7 +28,7 @@ const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) =>
 	}
 
 	return (
-		<div className='conversationListItem' onClick={onClick}>
+		<div className={`conversationListItem ${isActive ? 'active' : ''}`} onClick={onClick}>
 			<img
 				className='conversationPhoto'
 				src={imageSrc}
