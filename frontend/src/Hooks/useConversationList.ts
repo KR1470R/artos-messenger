@@ -27,7 +27,6 @@ const useConversationList = () => {
 	}
 
 	const { setSelectedUser, setChatId } = useChatStore()
-
 	const handleItemClickUsers = async (userSelect: { id: number; username: string }) => {
 		setSelectedUser(userSelect)
 
@@ -42,12 +41,12 @@ const useConversationList = () => {
 
 	const handleItemClickChats = async (chatId: number) => {
 		try {
-			const fetchedChat = await GetChat(chatId)
-			console.log(fetchedChat, chatId)
+			const responseData = await GetChat(chatId)
+			console.log(responseData, chatId)
 
-			if (fetchedChat) {
+			if (chatId) {
 				setChatId(chatId)
-				joinChat(fetchedChat)
+				joinChat(chatId)
 			} else {
 				console.error('Failed to fetch chat data.')
 			}

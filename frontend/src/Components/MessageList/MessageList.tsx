@@ -22,7 +22,7 @@ const MessageList = () => {
 					<Message key={msg.id} data={msg} isMine={msg.initiator_id === user?.id} />
 				))}
 			</div>
-			{selectedUser?.id && <Compose onSend={handleSendMessage} />}
+			<Compose onSend={handleSendMessage} />
 		</div>
 	)
 }

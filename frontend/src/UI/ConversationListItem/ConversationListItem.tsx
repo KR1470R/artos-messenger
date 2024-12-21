@@ -1,6 +1,7 @@
 import { IConversationItem } from '@/Types/Components.interface'
 import React, { useEffect, useState } from 'react'
 import shave from 'shave'
+import { IChat, IUserAll } from '../../Types/Services.interface'
 import './ConversationListItem.css'
 
 const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) => {
@@ -8,14 +9,18 @@ const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) =>
 		shave('.conversationSnippet', 20)
 	}, [])
 
-	const username = 'username' in data ? data.username : 'Anonymous'
-	const avatar_url =
-		'avatar_url' in data ? data.avatar_url : '/assets/fallbackAvatar.webp'
+	const isUserAll = (item: IUserAll | IChat): item is IUserAll => {
+		return (item as IUserAll).username !== undefined
+	}
 
-	const [imageSrc, setImageSrc] = useState(avatar_url)
+	const fallbackAvatar = '/assets/fallbackAvatar.webp'
+
+	const [imageSrc, setImageSrc] = useState(
+		isUserAll(data) ? data.avatar_url : fallbackAvatar,
+	)
 
 	const handleImageError = () => {
-		setImageSrc('/assets/fallbackAvatar.webp')
+		setImageSrc(fallbackAvatar)
 	}
 
 	return (
@@ -27,7 +32,9 @@ const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) =>
 				onError={handleImageError}
 			/>
 			<div className='conversationInfo'>
-				<h1 className='conversationTitle'>{username}</h1>
+				<h1 className='conversationTitle'>
+					{isUserAll(data) ? data.username : `Chat #${data.id}`}
+				</h1>
 			</div>
 		</div>
 	)

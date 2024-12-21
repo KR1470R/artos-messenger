@@ -8,8 +8,7 @@ if (!createChatsUrl) {
 const GetChat = async (id: number) => {
 	try {
 		const response = await ApiClient.get(`${createChatsUrl}/${id}`)
-		const chatId = response.data.id
-		return chatId
+		return response.data
 	} catch (err: any) {
 		throw new Error('Failed to retrieve existing chat.')
 	}
