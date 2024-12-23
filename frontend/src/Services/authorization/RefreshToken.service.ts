@@ -21,7 +21,6 @@ export const RefreshToken = async (): Promise<string> => {
 		TokenService.setToken(newAccessToken)
 		return newAccessToken
 	} catch (err: any) {
-		console.error('Failed to refresh token:', err.response?.data || err)
 		TokenService.clearToken()
 		throw new Error('Failed to refresh token')
 	}

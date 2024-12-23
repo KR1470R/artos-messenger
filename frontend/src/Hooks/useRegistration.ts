@@ -20,24 +20,14 @@ const useRegistration = () => {
 	const { mutateAsync: registerAsync } = useMutation({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
-		onError: err => {
-			console.error('Error during registration:', err)
-		},
-		onSuccess: async () => {
-			try {
-				await signInAsync({ username: data.username, password: data.password })
-			} catch (err) {
-				console.error('Sign-in failed after registration:', err)
-			}
-		},
+		onSuccess: async () =>
+			await signInAsync({ username: data.username, password: data.password }),
 	})
 
 	const { mutateAsync: signInAsync } = useMutation({
 		mutationKey: ['login'],
 		mutationFn: SignInUser,
-		onError: err => {
-			console.error('Error during login:', err)
-		},
+
 		onSuccess: ({ id, username }) => {
 			login(id, username)
 			connectSocket()
@@ -62,7 +52,7 @@ const useRegistration = () => {
 		const token = TokenService.getToken()
 		if (token) {
 			socket.io.opts.extraHeaders = { Authorization: `Bearer ${token}` }
-			socket.connect()
+			connectSocket()
 		} else {
 			console.error('No token found. Socket connection is not established.')
 		}

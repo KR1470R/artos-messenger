@@ -11,7 +11,6 @@ export const handle401Error = async (error: any): Promise<any> => {
 			error.config.headers['Authorization'] = `Bearer ${newAccessToken}`
 			return ApiClient.request(error.config)
 		} catch (err) {
-			console.error('Failed to refresh token:', err)
 			TokenService.clearToken()
 			disconnectSocket()
 			throw err

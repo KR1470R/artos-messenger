@@ -19,7 +19,11 @@ const MessageList = () => {
 			/>
 			<div className='messageListContainer'>
 				{messages.map(msg => (
-					<Message key={msg.id} data={msg} isMine={msg.initiator_id === user?.id} />
+					<Message
+						key={msg.id}
+						data={msg}
+						isMine={msg.initiator_id === user?.id || msg.sender_id === user?.id}
+					/>
 				))}
 			</div>
 			<Compose onSend={handleSendMessage} />

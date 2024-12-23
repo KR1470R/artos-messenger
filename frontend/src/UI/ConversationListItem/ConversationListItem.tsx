@@ -16,8 +16,8 @@ const ConversationListItem: React.FC<IConversationItem & { isActive: boolean }> 
 	const isUserAll = (item: IUserAll | IChat): item is IUserAll => {
 		return (item as IUserAll).username !== undefined
 	}
-
-	const fallbackAvatar = '/assets/fallbackAvatar.webp'
+	const fallbackAvatar =
+		'https://github.com/KR1470R/artos-messenger/blob/main/assets/fallbackAvatar.jpg?raw=true'
 
 	const [imageSrc, setImageSrc] = useState(
 		isUserAll(data) ? data.avatar_url : fallbackAvatar,
