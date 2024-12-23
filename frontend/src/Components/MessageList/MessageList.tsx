@@ -1,12 +1,13 @@
-import { Message } from '@/UI/Message/Message'
-import { Toolbar } from '@/UI/Toolbar/Toolbar'
-import { ToolbarButton } from '@/UI/ToolbarButton/ToolbarButton'
+import { useMessageList } from '@/Hooks/useMessageList'
+import { Message } from '../../UI/Message/Message'
+import { Toolbar } from '../../UI/Toolbar/Toolbar'
+import { ToolbarButton } from '../../UI/ToolbarButton/ToolbarButton'
 import { Compose } from '../Compose/Compose'
 import './MessageList.css'
-import { useMessageList } from '@/Hooks/useMessageList'
 
 const MessageList = () => {
-	const {selectedUser, messages, handleSendMessage, user} = useMessageList()
+	const { selectedUser, messages, handleSendMessage, user } = useMessageList()
+
 	return (
 		<div className='messageList'>
 			<Toolbar
@@ -18,11 +19,14 @@ const MessageList = () => {
 			/>
 			<div className='messageListContainer'>
 				{messages.map(msg => (
-					<Message key={msg.id} data={msg} isMine={msg.sender_id === user?.id} />
+					<Message
+						key={msg.id}
+						data={msg}
+						isMine={msg.initiator_id === user?.id || msg.sender_id === user?.id}
+					/>
 				))}
 			</div>
-
-			{selectedUser?.id ? <Compose onSend={handleSendMessage} /> : ''}
+			<Compose onSend={handleSendMessage} />
 		</div>
 	)
 }

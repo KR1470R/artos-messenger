@@ -1,3 +1,5 @@
+import { JwtAuthWsGuard } from '#api/auth/guards';
+import { LogginedUserIdWs } from '#common/decorators';
 import { WsExceptionsFilter } from '#common/filters';
 import {
   ExecutionContext,
@@ -8,14 +10,15 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
+  ConnectedSocket,
   MessageBody,
+  OnGatewayConnection,
   SubscribeMessage,
   WebSocketGateway,
-  WsResponse,
   WebSocketServer,
-  ConnectedSocket,
-  OnGatewayConnection,
+  WsResponse,
 } from '@nestjs/websockets';
+import { Server } from 'net';
 import { Socket } from 'socket.io';
 import {
   CreateMessageRequestDto,
@@ -25,9 +28,6 @@ import {
 } from './dto/requests';
 import { Messages } from './messages.entity';
 import { MessagesService } from './messages.service';
-import { Server } from 'net';
-import { JwtAuthWsGuard } from '#api/auth/guards';
-import { LogginedUserIdWs } from '#common/decorators';
 
 @WebSocketGateway(8080, {
   namespace: 'messages',

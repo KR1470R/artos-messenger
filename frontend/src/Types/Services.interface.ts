@@ -23,3 +23,9 @@ export interface IUser {
 	id: number
 	username: string
 }
+export interface IChat {
+	id: number
+	type: number
+	created_at: string
+	updated_at: string
+}

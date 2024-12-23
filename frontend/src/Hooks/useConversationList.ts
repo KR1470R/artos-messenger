@@ -1,27 +1,64 @@
 import { joinChat } from '@/Services/socket'
 import { CreateChat } from '@/Services/users/CreateChat.service'
-import { useAuthStore } from '@/Store/useAuthStore'
+import { GetChats } from '@/Services/users/GetChats.service'
+import { GetUsers } from '@/Services/users/GetUsers.service'
 import { useChatStore } from '@/Store/useChatStore'
-import { useSideUsers } from './useSideUsers'
+import { IChat, IUserAll } from '@/Types/Services.interface'
+import { useQuery } from '@tanstack/react-query'
+import { useState } from 'react'
 
 const useConversationList = () => {
-	const { activeTab, setActiveTab, getRenderContent, isLoading } = useSideUsers()
-	const { setSelectedUser, setChatId } = useChatStore()
-	const { user } = useAuthStore()
+	const [activeTab, setActiveTab] = useState<'messages' | 'users'>('messages')
 
-	const handleItemClick = async (userSelect: { id: number; username: string }) => {
-		console.log('Selecting user:', userSelect.username)
+	const { data: chatsData, isLoading: isChatsLoading } = useQuery<IChat[]>({
+		queryKey: ['chats'],
+		queryFn: GetChats,
+		enabled: activeTab === 'messages',
+	})
+
+	const { data: usersData, isLoading: isUsersLoading } = useQuery<IUserAll[]>({
+		queryKey: ['users'],
+		queryFn: GetUsers,
+		enabled: activeTab === 'users',
+	})
+
+	const isLoading = activeTab === 'messages' ? isChatsLoading : isUsersLoading
+	const getRenderContent = (): IChat[] | IUserAll[] => {
+		return activeTab === 'messages' ? chatsData || [] : usersData || []
+	}
+
+	const { selectedUser, setSelectedUser, setChatId } = useChatStore()
+	const handleItemClickUsers = async (userSelect: { id: number; username: string }) => {
+		if (selectedUser?.id === userSelect.id) return
+
 		setSelectedUser(userSelect)
 		try {
 			const chatId = await CreateChat(userSelect.id)
-			console.log('Joining chat with ID:', chatId)
 			setChatId(chatId)
-			if (!user) return
-			joinChat(chatId, user.id)
+			joinChat(chatId)
 		} catch (error: any) {
-			console.error('Failed to join chat:', error.message)
+			console.error('❌ Error creating or joining chat:', error.message)
 		}
 	}
-	return { activeTab, setActiveTab, getRenderContent, isLoading, handleItemClick }
+	const handleItemClickChats = async (chatId: number) => {
+		try {
+			if (chatId) {
+				setChatId(chatId)
+				joinChat(chatId)
+			}
+		} catch (error: any) {
+			console.error('Error fetching or joining chat:', error.message)
+		}
+	}
+
+	return {
+		activeTab,
+		setActiveTab,
+		getRenderContent,
+		isLoading,
+		handleItemClickUsers,
+		handleItemClickChats,
+	}
 }
+
 export { useConversationList }

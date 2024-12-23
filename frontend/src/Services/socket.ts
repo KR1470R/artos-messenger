@@ -1,5 +1,4 @@
 import { IMessageType } from '@/Types/Messages.interface'
-import { IResponse } from '@/Types/Services.interface'
 import { io, Socket } from 'socket.io-client'
 import { TokenService } from './authorization/AccessTokenMemory'
 
@@ -12,75 +11,60 @@ export const socket: Socket = io(
 		},
 	},
 )
-socket.on('connect', () => console.log('Socket connected successfully.'))
-socket.on('connect_error', error => console.error('Connection error:', error))
-socket.on('disconnect', reason => console.warn('Socket disconnected:', reason))
-
 export const connectSocket = () => {
 	const token = TokenService.getToken()
 	if (!token) {
-		console.error('No token available. Cannot connect to the socket.')
+		console.error('❌ No token available. Cannot connect to the socket.')
 		return
 	}
-	if (!socket.connected) {
-		socket.io.opts.extraHeaders = { token }
-		socket.connect()
-	}
+	if (socket.connected) return
+	socket.io.opts.extraHeaders = { token }
+	socket.connect()
+	socket.on('connect', () => console.log('✅ Socket connected successfully.'))
+	socket.on('connect_error', error => console.error('❌ Connection error:', error))
+	socket.on('disconnect', reason => console.warn('⚠️ Socket disconnected:', reason))
 }
 
-export const joinChat = (chat_id: number, user_id: number) => {
-	if (!chat_id || !user_id) return console.error('Invalid chatId or userId.')
-	socket.emit('join_chat', { chat_id, user_id }, (response: IResponse) => {
-		console.log(response.message || 'Joined chat successfully.')
-	})
+export const joinChat = (chatId: number) => {
+	if (!socket.connected) connectSocket()
+	socket.emit('join_chat', { chat_id: chatId })
+}
+export const leaveChat = (chatId: number) => {
+	if (!socket.connected) connectSocket()
+	socket.emit('leave_chat', { chat_id: chatId })
 }
 
-export const createMessage = (chat_id: number, content: string, receiver_id: number) => {
-	socket.emit(
-		'create_message',
-		{ chat_id, content, receiver_id },
-		(response: IResponse) => {
-			if (response.error) console.error('Failed to create message:', response.error)
-			else console.log('Message created:', response)
-		},
-	)
+export const createMessage = (chatId: number, content: string) => {
+	if (!socket.connected) connectSocket()
+	socket.emit('create_message', { chat_id: chatId, content })
 }
 
-export const updateMessage = (
-	chat_id: number,
-	message_id: number,
-	content?: string,
-	is_read?: boolean,
-) => {
-	socket.emit(
-		'update_message',
-		{ chat_id, id: message_id, content, is_read },
-		(response: IResponse) => console.log('Message updated:', response),
-	)
-}
-
-export const deleteMessage = (chat_id: number, message_id: number) => {
-	socket.emit('delete_message', { chat_id, id: message_id }, (response: IResponse) => {
-		if (response.error) console.error('Failed to delete message:', response.error)
-		else console.log('Message deleted:', response)
+export const fetchMessages = (chatId: number, pageSize: number, pageNum: number) => {
+	if (!socket.connected) connectSocket()
+	socket.emit('find_many_messages', {
+		chat_id: chatId,
+		page_size: pageSize,
+		page_num: pageNum,
 	})
 }
 
 export const subscribeToNewMessages = (callback: (message: IMessageType) => void) => {
 	socket.on('new_message', callback)
 }
-
-export const subscribeToUpdatedMessages = (callback: (message: IMessageType) => void) => {
-	socket.on('updated_message', callback)
+export const unsubscribeFromNewMessages = (callback: (message: IMessageType) => void) => {
+	socket.off('new_message', callback)
 }
-
-export const subscribeToDeletedMessages = (callback: (messageId: number) => void) => {
-	socket.on('deleted_message', callback)
+export const subscribeToFetchMessages = (
+	callback: (messages: IMessageType[]) => void,
+) => {
+	socket.on('find_many_messages', callback)
+}
+export const unsubscribeFromFetchMessages = (
+	callback: (messages: IMessageType[]) => void,
+) => {
+	socket.off('find_many_messages', callback)
 }
 
 export const disconnectSocket = () => {
-	if (socket.connected) {
-		socket.disconnect()
-		console.log('Socket disconnected.')
-	}
+	if (socket.connected) socket.disconnect()
 }

@@ -1,4 +1,4 @@
-import { IUserAll } from './Services.interface'
+import { IChat, IUserAll } from './Services.interface'
 
 export interface ICompose {
 	rightItems?: React.ReactNode[]
@@ -9,9 +9,10 @@ export interface IToolBar {
 	rightItems: React.ReactNode[]
 }
 export interface IConversationItem {
-	data: IUserAll
-	onClick: () => void
+	data: IChat | IUserAll;
+	onClick: () => void;
 }
+
 export interface IToolbarButton {
 	icon: string
 	onClick?: () => void

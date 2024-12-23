@@ -1,24 +1,34 @@
 import { IConversationItem } from '@/Types/Components.interface'
 import React, { useEffect, useState } from 'react'
 import shave from 'shave'
+import { IChat, IUserAll } from '../../Types/Services.interface'
 import './ConversationListItem.css'
 
-const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) => {
+const ConversationListItem: React.FC<IConversationItem & { isActive: boolean }> = ({
+	data,
+	onClick,
+	isActive,
+}) => {
 	useEffect(() => {
 		shave('.conversationSnippet', 20)
 	}, [])
 
-	const { username, avatar_url } = data
-	const fallbackAvatar = '/assets/fallbackAvatar.webp'
+	const isUserAll = (item: IUserAll | IChat): item is IUserAll => {
+		return (item as IUserAll).username !== undefined
+	}
+	const fallbackAvatar =
+		'https://github.com/KR1470R/artos-messenger/blob/main/assets/fallbackAvatar.jpg?raw=true'
 
-	const [imageSrc, setImageSrc] = useState(avatar_url)
+	const [imageSrc, setImageSrc] = useState(
+		isUserAll(data) ? data.avatar_url : fallbackAvatar,
+	)
 
 	const handleImageError = () => {
 		setImageSrc(fallbackAvatar)
 	}
 
 	return (
-		<div className='conversationListItem' onClick={onClick}>
+		<div className={`conversationListItem ${isActive ? 'active' : ''}`} onClick={onClick}>
 			<img
 				className='conversationPhoto'
 				src={imageSrc}
@@ -26,7 +36,9 @@ const ConversationListItem: React.FC<IConversationItem> = ({ data, onClick }) =>
 				onError={handleImageError}
 			/>
 			<div className='conversationInfo'>
-				<h1 className='conversationTitle'>{username}</h1>
+				<h1 className='conversationTitle'>
+					{isUserAll(data) ? data.username : `Chat #${data.id}`}
+				</h1>
 			</div>
 		</div>
 	)
