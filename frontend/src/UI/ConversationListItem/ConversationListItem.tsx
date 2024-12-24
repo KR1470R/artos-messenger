@@ -17,7 +17,7 @@ const ConversationListItem: React.FC<IConversationItem & { isActive: boolean }> 
 		return (item as IUserAll).username !== undefined
 	}
 	const fallbackAvatar =
-		'https://github.com/KR1470R/artos-messenger/blob/main/assets/fallbackAvatar.jpg?raw=true'
+		'https://github.com/KR1470R/artos-messenger/blob/main/assets/fallbackAvatar.png?raw=true'
 
 	const [imageSrc, setImageSrc] = useState(
 		isUserAll(data) ? data.avatar_url : fallbackAvatar,

@@ -11,6 +11,7 @@ const GetChats = async (): Promise<IChat[]> => {
 		const response = await ApiClient.get<{ data: IChat[] }>(createChatsUrl)
 		return response.data.data
 	} catch (err: any) {
+		console.error('Failed to retrieve chats:', err)
 		throw new Error('Failed to retrieve chats.')
 	}
 }

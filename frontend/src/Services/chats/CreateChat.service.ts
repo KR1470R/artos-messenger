@@ -11,6 +11,7 @@ const CreateChat = async (targetUserId: number) => {
 		const chatId = response.data.id
 		return chatId
 	} catch (err: any) {
+		console.error('Error in CreateChat:', err.response ? err.response.data : err.message)
 		throw new Error('Failed to retrieve existing chat.')
 	}
 }
