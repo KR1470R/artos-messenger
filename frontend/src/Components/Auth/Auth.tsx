@@ -1,9 +1,9 @@
 import { useRegistration } from '@/Hooks/useRegistration'
-import React from 'react'
 import './Auth.css'
 
 const Auth = () => {
-	const { handleSubmit, isAuthType, setData, data, setType } = useRegistration()
+	const { handleSubmit, isAuthType, register, setType } = useRegistration()
+
 	return (
 		<div className='wrapper'>
 			<form onSubmit={handleSubmit} className='formSignIn'>
@@ -11,37 +11,21 @@ const Auth = () => {
 				<input
 					type='text'
 					className='formControl'
-					name='username'
 					placeholder='User name'
-					required
-					value={data.username}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-						setData({ ...data, username: e.target.value })
-					}
+					{...register('username', { required: true })}
 				/>
 				<input
 					type='password'
 					className='formControl'
-					name='password'
 					placeholder='Password'
-					required
-					value={data.password}
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-						setData({ ...data, password: e.target.value })
-					}
+					{...register('password', { required: true })}
 				/>
-				{isAuthType ? (
-					''
-				) : (
+				{!isAuthType && (
 					<input
 						type='text'
 						className='formControl'
-						name='avatarURL'
 						placeholder='Avatar URL'
-						value={data.avatar_url}
-						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-							setData({ ...data, avatar_url: e.target.value })
-						}
+						{...register('avatar_url')}
 					/>
 				)}
 				<button className='btn' type='submit'>

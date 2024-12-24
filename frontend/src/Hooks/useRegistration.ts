@@ -6,16 +6,20 @@ import { useAuthStore } from '@/Store/useAuthStore'
 import { IUserData } from '@/Types/Services.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 const useRegistration = () => {
-	const [data, setData] = useState<IUserData>({
-		username: '',
-		password: '',
-	})
-
 	const [type, setType] = useState<'login' | 'register'>('login')
 	const isAuthType = type === 'login'
 	const login = useAuthStore(state => state.login)
+
+	const { register, handleSubmit, reset, watch } = useForm<IUserData>({
+		defaultValues: {
+			username: '',
+			password: '',
+			avatar_url: '',
+		},
+	})
 
 	const { mutateAsync: registerAsync } = useMutation({
 		mutationKey: ['register'],
@@ -25,7 +29,8 @@ const useRegistration = () => {
 		},
 		onSuccess: async () => {
 			try {
-				await signInAsync({ username: data.username, password: data.password })
+				const { username, password } = watch()
+				await signInAsync({ username, password })
 			} catch (err) {
 				console.error('Sign-in failed after registration:', err)
 			}
@@ -48,15 +53,14 @@ const useRegistration = () => {
 		},
 	})
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
+	const onSubmit: SubmitHandler<IUserData> = async formData => {
 		try {
 			if (isAuthType) {
-				const { username, password } = data
-				await signInAsync({ username, password })
+				await signInAsync({ username: formData.username, password: formData.password })
 			} else {
-				await registerAsync(data)
+				await registerAsync(formData)
 			}
+			reset()
 		} catch (err) {
 			console.error('Error during submission:', err)
 		}
@@ -73,7 +77,7 @@ const useRegistration = () => {
 		}
 	}, [])
 
-	return { handleSubmit, isAuthType, setData, data, setType }
+	return { handleSubmit: handleSubmit(onSubmit), isAuthType, register, setType }
 }
 
 export { useRegistration }
