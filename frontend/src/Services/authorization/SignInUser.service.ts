@@ -21,7 +21,7 @@ const SignInUser = async (
 
 		return { id, username }
 	} catch (err: any) {
-		throw new Error('Sign-in failed, please check credentials.')
+		throw new Error('Sign-in failed, please check your username and password.')
 	}
 }
 

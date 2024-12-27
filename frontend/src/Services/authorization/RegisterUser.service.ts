@@ -14,6 +14,7 @@ const RegisterUser = async (userData: IUserData): Promise<IResponse> => {
 		})
 		return data
 	} catch (err: any) {
+		console.error('Registration failed:', err.response?.data || err)
 		throw new Error('Registration failed')
 	}
 }

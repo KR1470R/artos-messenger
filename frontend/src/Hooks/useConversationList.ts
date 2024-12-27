@@ -1,6 +1,7 @@
 import { joinChat } from '@/Services/socket'
-import { CreateChat } from '@/Services/users/CreateChat.service'
-import { GetChats } from '@/Services/users/GetChats.service'
+import { CreateChat } from '@/Services/chats/CreateChat.service'
+import { GetChat } from '@/Services/chats/GetChat.service'
+import { GetChats } from '@/Services/chats/GetChats.service'
 import { GetUsers } from '@/Services/users/GetUsers.service'
 import { useChatStore } from '@/Store/useChatStore'
 import { IChat, IUserAll } from '@/Types/Services.interface'
@@ -26,12 +27,12 @@ const useConversationList = () => {
 	const getRenderContent = (): IChat[] | IUserAll[] => {
 		return activeTab === 'messages' ? chatsData || [] : usersData || []
 	}
-
 	const { selectedUser, setSelectedUser, setChatId } = useChatStore()
 	const handleItemClickUsers = async (userSelect: { id: number; username: string }) => {
 		if (selectedUser?.id === userSelect.id) return
 
 		setSelectedUser(userSelect)
+
 		try {
 			const chatId = await CreateChat(userSelect.id)
 			setChatId(chatId)
@@ -40,11 +41,18 @@ const useConversationList = () => {
 			console.error('❌ Error creating or joining chat:', error.message)
 		}
 	}
+
 	const handleItemClickChats = async (chatId: number) => {
+		if (chatId === selectedUser?.id) return
+
 		try {
+			const responseData = await GetChat(chatId)
+			console.log(responseData, chatId)
 			if (chatId) {
 				setChatId(chatId)
 				joinChat(chatId)
+			} else {
+				console.error('Failed to fetch chat data.')
 			}
 		} catch (error: any) {
 			console.error('Error fetching or joining chat:', error.message)

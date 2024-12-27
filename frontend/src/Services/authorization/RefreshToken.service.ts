@@ -11,17 +11,18 @@ if (!refreshUrl) {
 
 export const RefreshToken = async (): Promise<string> => {
 	try {
-		const response = await ApiClient.post<{ token: string }>(
-			refreshUrl,
-			{},
-			{ withCredentials: true },
-		)
-
-		const newAccessToken = response.data.token
-		TokenService.setToken(newAccessToken)
-		return newAccessToken
+			const response = await ApiClient.post<{ token: string }>(
+					refreshUrl,
+					{},
+					{ withCredentials: true },
+			)
+			const newAccessToken = response.data.token
+			TokenService.setToken(newAccessToken)
+			return newAccessToken
 	} catch (err: any) {
-		TokenService.clearToken()
-		throw new Error('Failed to refresh token')
+			console.error('Token refresh failed. Please log in again.')
+			TokenService.clearToken()
+			throw new Error('Failed to refresh token')
 	}
 }
+
