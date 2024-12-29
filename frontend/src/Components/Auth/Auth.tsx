@@ -2,31 +2,46 @@ import { useRegistration } from '@/Hooks/useRegistration'
 import './Auth.css'
 
 const Auth = () => {
-	const { handleSubmit, isAuthType, register, setType } = useRegistration()
+	const { handleSubmit, isAuthType, register, setType, errors } = useRegistration()
 
 	return (
 		<div className='wrapper'>
 			<form onSubmit={handleSubmit} className='formSignIn'>
 				<h2 className='formSignInHeading'>{isAuthType ? 'Login' : 'Registration'}</h2>
-				<input
-					type='text'
-					className='formControl'
-					placeholder='User name'
-					{...register('username', { required: true })}
-				/>
-				<input
-					type='password'
-					className='formControl'
-					placeholder='Password'
-					{...register('password', { required: true })}
-				/>
-				{!isAuthType && (
+				<div className='formGroup'>
 					<input
 						type='text'
-						className='formControl'
-						placeholder='Avatar URL'
-						{...register('avatar_url')}
+						className={`formControl ${errors.username ? 'formError' : ''}`}
+						placeholder='User name'
+						{...register('username')}
 					/>
+					{errors.username && (
+						<span className='errorText'>{errors.username.message}</span>
+					)}
+				</div>
+				<div className='formGroup'>
+					<input
+						type='password'
+						className={`formControl ${errors.password ? 'formError' : ''}`}
+						placeholder='Password'
+						{...register('password')}
+					/>
+					{errors.password && (
+						<span className='errorText'>{errors.password.message}</span>
+					)}
+				</div>
+				{!isAuthType && (
+					<div className='formGroup'>
+						<input
+							type='text'
+							className={`formControl ${errors.avatar_url ? 'formError' : ''}`}
+							placeholder='Avatar URL'
+							{...register('avatar_url')}
+						/>
+						{errors.avatar_url && (
+							<span className='errorText'>{errors.avatar_url.message}</span>
+						)}
+					</div>
 				)}
 				<button className='btn' type='submit'>
 					{isAuthType ? 'Login' : 'Register'}

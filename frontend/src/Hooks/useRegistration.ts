@@ -13,13 +13,24 @@ const useRegistration = () => {
 	const isAuthType = type === 'login'
 	const login = useAuthStore(state => state.login)
 
-	const { register, handleSubmit, reset, watch } = useForm<IUserData>({
+	const {
+		register,
+		handleSubmit,
+		reset,
+		watch,
+		formState: { errors },
+	} = useForm<IUserData>({
+		mode: 'onChange',
 		defaultValues: {
 			username: '',
 			password: '',
 			avatar_url: '',
 		},
 	})
+
+	const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/
+	const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,20}$/
+	const avatarUrlRegex = /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/i
 
 	const { mutateAsync: registerAsync } = useMutation({
 		mutationKey: ['register'],
@@ -77,7 +88,44 @@ const useRegistration = () => {
 		}
 	}, [])
 
-	return { handleSubmit: handleSubmit(onSubmit), isAuthType, register, setType }
+	return {
+		handleSubmit: handleSubmit(onSubmit),
+		isAuthType,
+		register: (field: any) => {
+			switch (field) {
+				case 'username':
+					return register(field, {
+						required: 'Username is required',
+						pattern: {
+							value: usernameRegex,
+							message:
+								'Username must be 3-20 characters and contain only letters, numbers, underscores, or dashes',
+						},
+					})
+				case 'password':
+					return register(field, {
+						required: 'Password is required',
+						pattern: {
+							value: passwordRegex,
+							message:
+								'Password must be 6-20 characters, include at least one letter and one number',
+						},
+					})
+				case 'avatar_url':
+					return register(field, {
+						required: !isAuthType ? 'Avatar URL is required for registration' : undefined,
+						pattern: {
+							value: avatarUrlRegex,
+							message: 'Avatar URL must be a valid image link (jpg, jpeg, png, gif)',
+						},
+					})
+				default:
+					return register(field)
+			}
+		},
+		setType,
+		errors,
+	}
 }
 
 export { useRegistration }
