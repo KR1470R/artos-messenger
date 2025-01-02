@@ -12,6 +12,7 @@ const useRegistration = () => {
 	const [type, setType] = useState<'login' | 'register'>('login')
 	const isAuthType = type === 'login'
 	const login = useAuthStore(state => state.login)
+	const clearErrors = useAuthStore(state => state.clearErrors)
 
 	const {
 		register,
@@ -28,7 +29,7 @@ const useRegistration = () => {
 		},
 	})
 
-	const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/
+	const usernameRegex = /^[a-zA-Zа-яА-ЯёЁЇїІіЄєҐґ0-9_\-!@#$%^&*()]{3,20}$/
 	const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,20}$/
 	const avatarUrlRegex = /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/i
 
@@ -40,6 +41,7 @@ const useRegistration = () => {
 		},
 		onSuccess: async () => {
 			try {
+				clearErrors()
 				const { username, password } = watch()
 				await signInAsync({ username, password })
 			} catch (err) {
@@ -59,6 +61,7 @@ const useRegistration = () => {
 			}
 		},
 		onSuccess: ({ id, username }) => {
+			clearErrors()
 			login(id, username)
 			connectSocket()
 		},

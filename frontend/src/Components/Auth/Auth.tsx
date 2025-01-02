@@ -1,8 +1,11 @@
 import { useRegistration } from '@/Hooks/useRegistration'
+import { useAuthStore } from '@/Store/useAuthStore'
+import { ErrorMessages } from '@/UI/ErrorMessages/ErrorMessages'
 import './Auth.css'
 
 const Auth = () => {
 	const { handleSubmit, isAuthType, register, setType, errors } = useRegistration()
+	const errorsState = useAuthStore(state => state.errorsState)
 
 	return (
 		<div className='wrapper'>
@@ -15,6 +18,7 @@ const Auth = () => {
 						placeholder='User name'
 						{...register('username')}
 					/>
+					{errorsState.length > 0 && <ErrorMessages errorsState={errorsState} />}
 					{errors.username && (
 						<span className='errorText'>{errors.username.message}</span>
 					)}
