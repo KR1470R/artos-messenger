@@ -6,16 +6,32 @@ import { useAuthStore } from '@/Store/useAuthStore'
 import { IUserData } from '@/Types/Services.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
 
 const useRegistration = () => {
-	const [data, setData] = useState<IUserData>({
-		username: '',
-		password: '',
-	})
-
 	const [type, setType] = useState<'login' | 'register'>('login')
 	const isAuthType = type === 'login'
 	const login = useAuthStore(state => state.login)
+	const clearErrors = useAuthStore(state => state.clearErrors)
+
+	const {
+		register,
+		handleSubmit,
+		reset,
+		watch,
+		formState: { errors },
+	} = useForm<IUserData>({
+		mode: 'onChange',
+		defaultValues: {
+			username: '',
+			password: '',
+			avatar_url: '',
+		},
+	})
+
+	const usernameRegex = /^[a-zA-Zа-яА-ЯёЁЇїІіЄєҐґ0-9_\-!@#$%^&*()]{3,20}$/
+	const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,20}$/
+	const avatarUrlRegex = /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/i
 
 	const { mutateAsync: registerAsync } = useMutation({
 		mutationKey: ['register'],
@@ -25,7 +41,9 @@ const useRegistration = () => {
 		},
 		onSuccess: async () => {
 			try {
-				await signInAsync({ username: data.username, password: data.password })
+				clearErrors()
+				const { username, password } = watch()
+				await signInAsync({ username, password })
 			} catch (err) {
 				console.error('Sign-in failed after registration:', err)
 			}
@@ -43,20 +61,20 @@ const useRegistration = () => {
 			}
 		},
 		onSuccess: ({ id, username }) => {
+			clearErrors()
 			login(id, username)
 			connectSocket()
 		},
 	})
 
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
+	const onSubmit: SubmitHandler<IUserData> = async formData => {
 		try {
 			if (isAuthType) {
-				const { username, password } = data
-				await signInAsync({ username, password })
+				await signInAsync({ username: formData.username, password: formData.password })
 			} else {
-				await registerAsync(data)
+				await registerAsync(formData)
 			}
+			reset()
 		} catch (err) {
 			console.error('Error during submission:', err)
 		}
@@ -73,7 +91,44 @@ const useRegistration = () => {
 		}
 	}, [])
 
-	return { handleSubmit, isAuthType, setData, data, setType }
+	return {
+		handleSubmit: handleSubmit(onSubmit),
+		isAuthType,
+		register: (field: any) => {
+			switch (field) {
+				case 'username':
+					return register(field, {
+						required: 'Username is required',
+						pattern: {
+							value: usernameRegex,
+							message:
+								'Username must be 3-20 characters and contain only letters, numbers, underscores, or dashes',
+						},
+					})
+				case 'password':
+					return register(field, {
+						required: 'Password is required',
+						pattern: {
+							value: passwordRegex,
+							message:
+								'Password must be 6-20 characters, include at least one letter and one number',
+						},
+					})
+				case 'avatar_url':
+					return register(field, {
+						required: !isAuthType ? 'Avatar URL is required for registration' : undefined,
+						pattern: {
+							value: avatarUrlRegex,
+							message: 'Avatar URL must be a valid image link (jpg, jpeg, png, gif)',
+						},
+					})
+				default:
+					return register(field)
+			}
+		},
+		setType,
+		errors,
+	}
 }
 
 export { useRegistration }

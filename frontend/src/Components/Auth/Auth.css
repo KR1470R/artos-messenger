@@ -25,7 +25,6 @@ body {
 	box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
 	text-align: left;
 }
-
 .formSignInHeading {
 	margin-bottom: 30px;
 	font-size: 24px;
@@ -33,11 +32,17 @@ body {
 	text-align: center;
 }
 
+.formGroup {
+	position: relative;
+	display: inline-block;
+	width: 100%;
+	margin-bottom: 20px;
+}
+
 .formControl {
 	width: 100%;
 	font-size: 16px;
 	padding: 12px 15px;
-	margin-bottom: 20px;
 	border: 1px solid #ddd;
 	border-radius: 5px;
 	background-color: #f9f9f9;
@@ -45,10 +50,26 @@ body {
 	outline: none;
 }
 
+.errorText {
+	position: absolute;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	margin-bottom: 5px;
+	bottom: 100%;
+	right: 0;
+	width: 185px;
+	color: #ff0000;
+	background-color: #fff;
+	padding: 5px 10px;
+	border: 0.5px solid #ff0000;
+	border-radius: 5px;
+	box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 .btn {
 	width: 100%;
 	padding: 12px;
-	margin-top: 10px;
 	background-color: #3b82f6;
 	color: #fff;
 	border: none;
@@ -58,10 +79,9 @@ body {
 	cursor: pointer;
 	transition: background-color 0.3s ease;
 	text-align: center;
-}
-
-.btn:hover {
-	background-color: #2563eb;
+	&:hover {
+		background-color: #2563eb;
+	}
 }
 
 .btn_register {
@@ -72,8 +92,7 @@ body {
 	color: #3b82f6;
 	font-size: 14px;
 	transition: color 0.3s ease;
-}
-
-.btn_register:hover {
-	color: #2563eb;
+	&:hover {
+		color: #2563eb;
+	}
 }

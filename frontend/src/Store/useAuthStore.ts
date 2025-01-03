@@ -6,6 +6,9 @@ interface IAuthStore {
 	user: IUser | null
 	login: (id: number, username: string) => void
 	logout: () => void
+	errorsState: string[]
+	setError: (error: string) => void
+	clearErrors: () => void
 }
 
 const useAuthStore = create<IAuthStore>()(
@@ -14,8 +17,16 @@ const useAuthStore = create<IAuthStore>()(
 			user: null,
 			login: (id, username) => set({ user: { id, username } }),
 			logout: () => set({ user: null }),
+			errorsState: [],
+			setError: error => set(state => ({ errorsState: [...state.errorsState, error] })),
+			clearErrors: () => set({ errorsState: [] }),
 		}),
-		{ name: 'auth-storage' },
+		{
+			name: 'auth-storage',
+			onRehydrateStorage: () => state => {
+				if (state) state.clearErrors()
+			},
+		},
 	),
 )
 

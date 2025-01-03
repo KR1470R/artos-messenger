@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/Store/useAuthStore'
 import { ApiClient } from './ApiClient'
 import { TokenService } from './authorization/AccessTokenMemory'
 import { RefreshToken } from './authorization/RefreshToken.service'
@@ -22,10 +23,16 @@ const processQueue = (error: any, token: string | null = null) => {
 
 export const handle401Error = async (error: any): Promise<any> => {
 	if (error.response?.status === 401) {
-		console.error(
-			'Authorization failed: Invalid token or token is missing, also possible incorrect authorization data.',
-		)
 		if (!isRefreshing) {
+			const { setError } = useAuthStore.getState()
+			setError(`Error Occured: ${error.response?.status} Unauthorized`)
+			setError(
+				'Authorization failed: Incorrect authorization data, also possible invalid token or token is missing.',
+			)
+			console.error(`Error Occured: ${error.response?.status} Unauthorized`)
+			console.error(
+				'Authorization failed: Incorrect authorization data, also possible invalid token or token is missing.',
+			)
 			isRefreshing = true
 			try {
 				const newAccessToken = await RefreshToken()

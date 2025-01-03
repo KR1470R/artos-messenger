@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/Store/useAuthStore'
 import { IResponse, IUserData } from '@/Types/Services.interface'
 import { jwtDecode } from 'jwt-decode'
 import { ApiClient } from '../ApiClient'
@@ -21,7 +22,9 @@ const SignInUser = async (
 
 		return { id, username }
 	} catch (err: any) {
-		throw new Error('Sign-in failed, please check your username and password.')
+		const { setError } = useAuthStore.getState()
+		setError(`${err}`)
+		throw new Error('Sign-in failed, please check credentials.')
 	}
 }
 

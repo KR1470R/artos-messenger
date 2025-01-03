@@ -26,7 +26,7 @@ const MessageList = () => {
 					/>
 				))}
 			</div>
-			<Compose onSend={handleSendMessage} />
+			{selectedUser && <Compose onSend={handleSendMessage} />}
 		</div>
 	)
 }
