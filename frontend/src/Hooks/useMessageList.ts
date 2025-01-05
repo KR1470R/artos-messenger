@@ -11,12 +11,13 @@ import {
 import { useAuthStore } from '@/Store/useAuthStore'
 import { useChatStore } from '@/Store/useChatStore'
 import { IMessageType } from '@/Types/Messages.interface'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const useMessageList = () => {
 	const [messages, setMessages] = useState<IMessageType[]>([])
 	const { selectedUser, chatId } = useChatStore()
 	const { user } = useAuthStore()
+	const containerRef = useRef<HTMLDivElement | null>(null)
 
 	useEffect(() => {
 		if (!chatId) return
@@ -50,7 +51,22 @@ const useMessageList = () => {
 		createMessage(chatId, messageContent)
 	}
 
-	return { selectedUser, messages, handleSendMessage, user }
+	const scrollToBottom = () => {
+		if (containerRef.current) {
+			containerRef.current.scrollTop = containerRef.current.scrollHeight
+		}
+	}
+	useEffect(() => {
+		scrollToBottom()
+	}, [messages])
+	const handleSend = (messageContent: string) => {
+		handleSendMessage(messageContent)
+		setTimeout(() => {
+			scrollToBottom()
+		}, 0)
+	}
+
+	return { selectedUser, messages, handleSend, user, containerRef }
 }
 
 export { useMessageList }

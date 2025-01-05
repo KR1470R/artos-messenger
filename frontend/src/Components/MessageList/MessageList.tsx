@@ -6,7 +6,7 @@ import { Compose } from '../Compose/Compose'
 import './MessageList.css'
 
 const MessageList = () => {
-	const { selectedUser, messages, handleSendMessage, user } = useMessageList()
+	const { selectedUser, messages, handleSend, user, containerRef } = useMessageList()
 
 	return (
 		<div className='messageList'>
@@ -17,7 +17,7 @@ const MessageList = () => {
 					<ToolbarButton key='info' icon='ion-ios-information-circle-outline' />,
 				]}
 			/>
-			<div className='messageListContainer'>
+			<div className='messageListContainer' ref={containerRef}>
 				{messages.map(msg => (
 					<Message
 						key={msg.id}
@@ -26,7 +26,7 @@ const MessageList = () => {
 					/>
 				))}
 			</div>
-			{selectedUser && <Compose onSend={handleSendMessage} />}
+			<Compose onSend={handleSend} />
 		</div>
 	)
 }
