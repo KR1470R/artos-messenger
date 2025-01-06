@@ -36,10 +36,19 @@ export class MessagesRepository implements IMessagesRepository {
   }
 
   public async findMany(filters: Pick<Messages, 'chat_id'> & Pagination) {
-    return await getEntitiesPaginated(
-      this.db(this.entity).select('id', 'sender_id', 'content').where({
-        chat_id: filters.chat_id,
-      }),
+    return getEntitiesPaginated(
+      this.db(this.entity)
+        .select(
+          'id',
+          'sender_id',
+          'content',
+          'is_read',
+          'created_at',
+          'updated_at',
+        )
+        .where({
+          chat_id: filters.chat_id,
+        }),
       filters.pageNum,
       filters.pageSize,
     );

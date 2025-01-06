@@ -172,7 +172,7 @@ const testFindMany = async (
   expectedIds: number[],
 ) => {
   const messages = await emitEvent<
-    Pick<Messages, 'content' | 'sender_id' | 'id'>[]
+    Pick<Messages, 'id' | 'sender_id' | 'content' | 'is_read' | 'created_at' | 'updated_at'>[]
   >(socketLink, 'find_many_messages', payload);
 
   expectedIds.forEach((id) => {

@@ -16,7 +16,12 @@ export default interface IMessagesRepository {
 
   findMany: (
     filters: Pick<Messages, 'chat_id'> & Pagination,
-  ) => Promise<Pick<Messages, 'id' | 'sender_id' | 'content' | 'is_read'>[]>;
+  ) => Promise<
+    Pick<
+      Messages,
+      'id' | 'sender_id' | 'content' | 'is_read' | 'created_at' | 'updated_at'
+    >[]
+  >;
 
   findOne: (messageId: number) => Promise<Messages | undefined>;
 }
