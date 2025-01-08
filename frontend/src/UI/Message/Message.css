@@ -24,10 +24,7 @@
 	padding: 10px;
 	border-radius: 20px;
 	max-width: 75%;
-	border-top-left-radius: 2px;
-	border-bottom-left-radius: 2px;
-	border-top-right-radius: 20px;
-	border-bottom-right-radius: 20px;
+	border-radius: 10px;
 	display: inline-block;
 	white-space: pre-wrap;
 	word-wrap: break-word;
@@ -50,10 +47,6 @@
 .message.mine .bubbleContainer .bubble {
 	background: #007aff;
 	color: #fff;
-	border-top-left-radius: 20px;
-	border-bottom-left-radius: 20px;
-	border-top-right-radius: 2px;
-	border-bottom-right-radius: 2px;
 }
 
 .message.mine .bubbleContainer .bubble .messageTime {
