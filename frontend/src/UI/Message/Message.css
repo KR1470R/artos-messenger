@@ -9,7 +9,7 @@
 	color: #999;
 	font-weight: 600;
 	font-size: 12px;
-	margin: 10px 0px;
+	margin: 10px 0;
 	text-transform: uppercase;
 }
 
@@ -18,45 +18,44 @@
 	display: flex;
 }
 
-.message.mine .bubbleContainer {
-	justify-content: flex-end;
-}
-
-.message.start .bubbleContainer .bubble {
-	border-top-left-radius: 20px;
-}
-
-.message.end .bubbleContainer .bubble {
-	border-bottom-left-radius: 20px;
-}
-
-.message.mine.start .bubbleContainer .bubble {
-	margin-top: 10px;
-	border-top-right-radius: 20px;
-}
-
-.message.mine.end .bubbleContainer .bubble {
-	border-bottom-right-radius: 20px;
-	margin-bottom: 10px;
-}
-
 .message .bubbleContainer .bubble {
-	margin: 1px 0px;
+	margin: 1px 0;
 	background: #f4f4f8;
-	padding: 10px 15px;
+	padding: 10px;
 	border-radius: 20px;
 	max-width: 75%;
 	border-top-left-radius: 2px;
 	border-bottom-left-radius: 2px;
 	border-top-right-radius: 20px;
 	border-bottom-right-radius: 20px;
+	display: inline-block;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+.message .bubbleContainer .bubble .messageTime {
+	display: inline-block;
+	color: #000;
+	font-size: 10px;
+	margin-left: 5px;
+	text-align: right;
+	vertical-align: bottom;
+	white-space: nowrap;
+}
+
+.message.mine .bubbleContainer {
+	justify-content: flex-end;
 }
 
 .message.mine .bubbleContainer .bubble {
 	background: #007aff;
-	color: white;
+	color: #fff;
 	border-top-left-radius: 20px;
 	border-bottom-left-radius: 20px;
 	border-top-right-radius: 2px;
 	border-bottom-right-radius: 2px;
+}
+
+.message.mine .bubbleContainer .bubble .messageTime {
+	color: #f4f4f4;
 }

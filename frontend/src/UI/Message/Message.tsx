@@ -4,21 +4,19 @@ import React from 'react'
 import './Message.css'
 
 const Message: React.FC<IMessageProps> = ({ data, isMine }) => {
-	const friendlyTimestamp = moment(data.timestamp).format('LLLL')
+	const messageYear = moment(data.created_at).format('YYYY')
+	const messageDate = moment(data.created_at).format('MMMM D')
+	const messageTime = moment(data.created_at).format('HH:mm')
 
 	return (
-		<div
-			className={[
-				'message',
-				isMine ? 'mine' : '',
-				data.startsSequence ? 'start' : '',
-				data.endsSequence ? 'end' : '',
-			].join(' ')}
-		>
-			{data.showTimestamp && <div className='timestamp'>{friendlyTimestamp}</div>}
+		<div className={['message', isMine ? 'mine' : ''].join(' ')}>
+			<div className='timestamp'>
+				<div>{messageDate}</div>
+			</div>
 			<div className='bubbleContainer'>
-				<div className='bubble' title={friendlyTimestamp}>
-					{data.content}
+				<div className='bubble' title={`${messageDate} ${messageYear}, ${messageTime}`}>
+					<span className='bubbleMessageContent'>{data.content}</span>
+					<span className='messageTime'>{messageTime}</span>
 				</div>
 			</div>
 		</div>

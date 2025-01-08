@@ -1,7 +1,7 @@
-import { joinChat } from '@/Services/socket'
 import { CreateChat } from '@/Services/chats/CreateChat.service'
 import { GetChat } from '@/Services/chats/GetChat.service'
 import { GetChats } from '@/Services/chats/GetChats.service'
+import { joinChat } from '@/Services/socket'
 import { GetUsers } from '@/Services/users/GetUsers.service'
 import { useChatStore } from '@/Store/useChatStore'
 import { IChat, IUserAll } from '@/Types/Services.interface'
@@ -47,7 +47,6 @@ const useConversationList = () => {
 
 		try {
 			const responseData = await GetChat(chatId)
-			console.log(responseData, chatId)
 			if (chatId) {
 				setChatId(chatId)
 				joinChat(chatId)
