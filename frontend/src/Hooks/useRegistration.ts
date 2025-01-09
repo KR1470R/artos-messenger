@@ -2,6 +2,7 @@ import { TokenService } from '@/Services/authorization/AccessTokenMemory'
 import { RegisterUser } from '@/Services/authorization/RegisterUser.service'
 import { SignInUser } from '@/Services/authorization/SignInUser.service'
 import { connectSocket, disconnectSocket, socket } from '@/Services/socket'
+import { GetCurrentUser } from '@/Services/users/GetCurrentUser.service'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { IUserData } from '@/Types/Services.interface'
 import { useMutation } from '@tanstack/react-query'
@@ -11,7 +12,6 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 const useRegistration = () => {
 	const [type, setType] = useState<'login' | 'register'>('login')
 	const isAuthType = type === 'login'
-	const login = useAuthStore(state => state.login)
 	const clearErrors = useAuthStore(state => state.clearErrors)
 
 	const {
@@ -60,10 +60,14 @@ const useRegistration = () => {
 				console.error('Login error: Unexpected server issue.', err)
 			}
 		},
-		onSuccess: ({ id, username }) => {
-			clearErrors()
-			login(id, username)
-			connectSocket()
+		onSuccess: async () => {
+			try {
+				clearErrors()
+				await GetCurrentUser()
+				connectSocket()
+			} catch (err) {
+				console.error('Error fetching user data after login:', err)
+			}
 		},
 	})
 
