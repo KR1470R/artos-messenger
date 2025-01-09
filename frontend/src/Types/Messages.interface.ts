@@ -11,4 +11,5 @@ export interface IMessageType {
 export interface IMessageProps {
 	data: IMessageType
 	isMine: boolean
+	showDate: boolean
 }

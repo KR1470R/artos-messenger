@@ -4,13 +4,15 @@
 }
 
 .message .timestamp {
-	display: flex;
-	justify-content: center;
+	position: sticky;
+	text-align: center;
+	display: inline-block;
+	margin: 0px auto;
+	font-size: 14px;
+	border-radius: 30px;
+	background-color: #fff;
 	color: #999;
-	font-weight: 600;
-	font-size: 12px;
-	margin: 10px 0;
-	text-transform: uppercase;
+	padding: 10px;
 }
 
 .message .bubbleContainer {

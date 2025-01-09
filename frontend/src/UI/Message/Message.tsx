@@ -1,20 +1,29 @@
 import { IMessageProps } from '@/Types/Messages.interface'
 import moment from 'moment'
-import React from 'react'
 import './Message.css'
 
-const Message: React.FC<IMessageProps> = ({ data, isMine }) => {
-	const messageYear = moment(data.created_at).format('YYYY')
-	const messageDate = moment(data.created_at).format('MMMM D')
-	const messageTime = moment(data.created_at).format('HH:mm')
+const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
+	const today = moment().startOf('day')
+	const messageDate = moment(data.created_at)
+	const isToday = messageDate.isSame(today, 'day')
+	const isDifferentYear = !messageDate.isSame(today, 'year')
+	const displayDate = isToday
+		? 'Today'
+		: isDifferentYear
+		? messageDate.format('D MMMM, YYYY')
+		: messageDate.format('D MMMM')
+
+	const messageTime = messageDate.format('HH:mm')
 
 	return (
 		<div className={['message', isMine ? 'mine' : ''].join(' ')}>
-			<div className='timestamp'>
-				<div>{messageDate}</div>
-			</div>
+			{showDate && (
+				<div className='timestamp'>
+					<div>{displayDate}</div>
+				</div>
+			)}
 			<div className='bubbleContainer'>
-				<div className='bubble' title={`${messageDate} ${messageYear}, ${messageTime}`}>
+				<div className='bubble' title={`${messageDate.format('HH:mm D MMMM, YYYY')}`}>
 					<span className='bubbleMessageContent'>{data.content}</span>
 					<span className='messageTime'>{messageTime}</span>
 				</div>
