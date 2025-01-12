@@ -47,6 +47,18 @@ export const fetchMessages = (chatId: number, pageSize: number, pageNum: number)
 		page_num: pageNum,
 	})
 }
+export const markMessageAsRead = (
+	chatId: number,
+	messageId: number,
+	is_read: boolean,
+) => {
+	if (!socket.connected) connectSocket()
+	socket.emit('update_message', {
+		chat_id: chatId,
+		id: messageId,
+		is_read,
+	})
+}
 
 export const subscribeToNewMessages = (callback: (message: IMessageType) => void) => {
 	socket.on('new_message', callback)

@@ -16,7 +16,7 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 	const messageTime = messageDate.format('HH:mm')
 
 	return (
-		<div className={['message', isMine ? 'mine' : ''].join(' ')}>
+		<div className={['message', isMine ? 'mine' : ''].join(' ')} data-id={data.id}>
 			{showDate && (
 				<div className='timestamp'>
 					<div>{displayDate}</div>

@@ -12,7 +12,6 @@ const GetCurrentUser = async (): Promise<void> => {
 	try {
 		const response = await ApiClient.get<IUser>(getUserUrl)
 		const user = response.data
-		console.log('User data fetched:', user)
 		useAuthStore.getState().setUser(user)
 	} catch (err: any) {
 		console.error('Error fetching user data:', err?.response?.data || err.message)

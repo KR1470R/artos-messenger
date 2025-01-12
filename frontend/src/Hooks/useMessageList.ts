@@ -2,6 +2,7 @@ import {
 	connectSocket,
 	createMessage,
 	fetchMessages,
+	markMessageAsRead,
 	socket,
 	subscribeToFetchMessages,
 	subscribeToNewMessages,
@@ -59,6 +60,7 @@ const useMessageList = () => {
 	useEffect(() => {
 		scrollToBottom()
 	}, [messages])
+
 	const handleSend = (messageContent: string) => {
 		handleSendMessage(messageContent)
 		setTimeout(() => {
@@ -66,6 +68,41 @@ const useMessageList = () => {
 		}, 0)
 	}
 
+	const observeMessages = () => {
+		if (!chatId) return console.log(chatId)
+		const observer = new IntersectionObserver(
+			entries => {
+				entries.forEach(entry => {
+					const isIntersecting = entry.isIntersecting
+					const target = entry.target
+					const messageId = target.getAttribute('data-id')
+					const isMine = target.classList.contains('mine')
+					if (isIntersecting && messageId && !isMine)
+						if (messageId) markMessageAsRead(chatId, Number(messageId), true)
+				})
+			},
+			{ threshold: 1.0 },
+		)
+		return observer
+	}
+
+	useEffect(() => {
+		if (messages.length === 0) return
+		const observer = observeMessages()
+		if (!observer) return
+		const container = containerRef.current
+		if (!container) return
+		const messageElements = container.querySelectorAll('.message[data-id]')
+		messageElements.forEach(message => {
+			const dataId = message.getAttribute('data-id')
+			console.log(`Спостереження за повідомленням з data-id: ${dataId}`, message)
+			observer.observe(message)
+		})
+
+		return () => {
+			messageElements.forEach(message => observer.unobserve(message))
+		}
+	}, [messages])
 	return { selectedUser, messages, handleSend, user, containerRef }
 }
 

@@ -6,6 +6,7 @@ export interface IMessageType {
 	content: string
 	chat_id: number
 	created_at: string
+	is_read: boolean
 }
 
 export interface IMessageProps {
