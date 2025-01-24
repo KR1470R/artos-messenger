@@ -16,7 +16,7 @@
 }
 
 .message .bubbleContainer {
-	font-size: 14px;
+	font-size: 16px;
 	display: flex;
 }
 
@@ -24,9 +24,8 @@
 	margin: 1px 0;
 	background: #f4f4f8;
 	padding: 10px;
-	border-radius: 20px;
 	max-width: 75%;
-	border-radius: 10px;
+	border-radius: 20px;
 	display: inline-block;
 	white-space: pre-wrap;
 	word-wrap: break-word;
@@ -35,8 +34,8 @@
 .message .bubbleContainer .bubble .messageTime {
 	display: inline-block;
 	color: #000;
-	font-size: 10px;
-	margin-left: 5px;
+	font-size: 12px;
+	margin-left: 7px;
 	text-align: right;
 	vertical-align: bottom;
 	white-space: nowrap;
@@ -53,4 +52,14 @@
 
 .message.mine .bubbleContainer .bubble .messageTime {
 	color: #f4f4f4;
+}
+.messageStatus {
+	font-size: 16px;
+	padding-left: 2px;
+	svg {
+		margin: 0;
+		padding: 0;
+		vertical-align: middle;
+		line-height: 1;
+	}
 }

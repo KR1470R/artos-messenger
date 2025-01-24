@@ -1,5 +1,6 @@
 import { IMessageProps } from '@/Types/Messages.interface'
 import moment from 'moment'
+import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5'
 import './Message.css'
 
 const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
@@ -25,7 +26,14 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 			<div className='bubbleContainer'>
 				<div className='bubble' title={`${messageDate.format('HH:mm D MMMM, YYYY')}`}>
 					<span className='bubbleMessageContent'>{data.content}</span>
-					<span className='messageTime'>{messageTime}</span>
+					<span className='messageTime'>
+						{messageTime}
+						{isMine && (
+							<span className='messageStatus'>
+								{data.is_read ? <IoCheckmarkDone /> : <IoCheckmark />}
+							</span>
+						)}
+					</span>
 				</div>
 			</div>
 		</div>

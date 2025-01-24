@@ -41,6 +41,8 @@ export const createMessage = (chatId: number, content: string) => {
 
 export const fetchMessages = (chatId: number, pageSize: number, pageNum: number) => {
 	if (!socket.connected) connectSocket()
+	console.log('find_many_messages')
+
 	socket.emit('find_many_messages', {
 		chat_id: chatId,
 		page_size: pageSize,
@@ -75,6 +77,14 @@ export const unsubscribeFromFetchMessages = (
 	callback: (messages: IMessageType[]) => void,
 ) => {
 	socket.off('find_many_messages', callback)
+}
+export const subscribeToUpdatedMessages = (callback: (message: IMessageType) => void) => {
+	socket.on('updated_message', callback)
+}
+export const unsubscribeFromUpdatedMessages = (
+	callback: (message: IMessageType) => void,
+) => {
+	socket.off('updated_message', callback)
 }
 
 export const disconnectSocket = () => {

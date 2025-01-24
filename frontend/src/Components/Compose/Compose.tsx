@@ -25,7 +25,9 @@ const Compose: React.FC<ICompose & { onSend: (message: string) => void }> = ({
 				onChange={e => setInput(e.target.value)}
 				onKeyUp={e => e.key === 'Enter' && handleSend()}
 			/>
-			<ToolbarButton key='send' icon='ion-ios-send' onClick={handleSend} />
+			<span onKeyDown={e => e.key === 'Enter' && handleSend}>
+				<ToolbarButton key='send' icon='ion-ios-send' onClick={handleSend} />
+			</span>
 		</div>
 	)
 }

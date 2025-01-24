@@ -8,7 +8,6 @@ const ToolbarButton: React.FC<IToolbarButton> = ({ icon, onClick }) => {
 			onClick={onClick}
 			role='button'
 			tabIndex={0}
-			onKeyDown={e => e.key === 'Enter' && onClick?.()}
 		/>
 	)
 }
