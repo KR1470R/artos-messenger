@@ -1,5 +1,6 @@
 import { useMessageList } from '@/Hooks/useMessageList'
 import moment from 'moment'
+import { SlArrowDown } from 'react-icons/sl'
 import { Message } from '../../UI/Message/Message'
 import { Toolbar } from '../../UI/Toolbar/Toolbar'
 import { ToolbarButton } from '../../UI/ToolbarButton/ToolbarButton'
@@ -7,9 +8,17 @@ import { Compose } from '../Compose/Compose'
 import './MessageList.css'
 
 const MessageList = () => {
-	const { selectedUser, messages, handleSend, user, containerRef } = useMessageList()
+	const {
+		selectedUser,
+		messages,
+		handleSend,
+		user,
+		containerRef,
+		unreadMessagesLen,
+		handleSmoothScroll,
+		showScrollButton,
+	} = useMessageList()
 	let previousDate: string | null = null
-
 	return (
 		<div className='messageList'>
 			<Toolbar
@@ -34,6 +43,16 @@ const MessageList = () => {
 					)
 				})}
 			</div>
+			{showScrollButton && (
+				<div className='scrollBut' onClick={handleSmoothScroll}>
+					{unreadMessagesLen > 0 && (
+						<span className='messageLen'>{unreadMessagesLen}</span>
+					)}
+					<div className='scrollBot'>
+						<SlArrowDown />
+					</div>
+				</div>
+			)}
 			<Compose onSend={handleSend} />
 		</div>
 	)

@@ -14,13 +14,22 @@ import {
 import { useAuthStore } from '@/Store/useAuthStore'
 import { useChatStore } from '@/Store/useChatStore'
 import { IMessageType } from '@/Types/Messages.interface'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useScroll } from './useScroll'
 
 const useMessageList = () => {
 	const [messages, setMessages] = useState<IMessageType[]>([])
+	const [unreadMessagesLen, setUnreadMessagesLen] = useState<number>(0)
 	const { selectedUser, chatId } = useChatStore()
 	const { user } = useAuthStore()
-	const containerRef = useRef<HTMLDivElement | null>(null)
+	const { containerRef, scrollToBottom, handleSmoothScroll, showScrollButton } =
+		useScroll(messages)
+
+	const updateUnreadMessagesLen = useCallback(() => {
+		return messages.filter(message => {
+			return Number(message.is_read) === 0 && message.sender_id !== user?.id
+		}).length
+	}, [messages, user?.id])
 
 	useEffect(() => {
 		if (!chatId) return
@@ -46,25 +55,9 @@ const useMessageList = () => {
 		return () => {
 			unsubscribeFromNewMessages(handleNewMessage)
 		}
-	}, [chatId])
+	}, [chatId, user?.id])
 
-	const scrollToBottom = () => {
-		if (containerRef.current) {
-			containerRef.current.scrollTop = containerRef.current.scrollHeight
-		}
-	}
-	useEffect(() => {
-		scrollToBottom()
-	}, [messages])
-
-	const handleSend = (messageContent: string) => {
-		handleSendMessage(messageContent)
-		setTimeout(() => {
-			scrollToBottom()
-		}, 0)
-	}
-
-	const observeMessages = () => {
+	const observeMessages = useCallback(() => {
 		if (!chatId) return console.log(chatId)
 		const observer = new IntersectionObserver(
 			entries => {
@@ -76,7 +69,6 @@ const useMessageList = () => {
 					const message = messages.find(msg => msg.id === Number(messageId))
 					if (isIntersecting && messageId && !isMine) {
 						if (message && message.initiator_id !== user?.id) {
-							console.log('markMessageAsRead')
 							markMessageAsRead(chatId, Number(messageId), true)
 						}
 					}
@@ -85,7 +77,7 @@ const useMessageList = () => {
 			{ threshold: 1.0 },
 		)
 		return observer
-	}
+	}, [chatId, messages, user?.id])
 
 	useEffect(() => {
 		if (messages.length === 0) return
@@ -101,13 +93,15 @@ const useMessageList = () => {
 		return () => {
 			messageElements.forEach(message => observer.unobserve(message))
 		}
-	}, [messages])
+	}, [messages, observeMessages, containerRef])
+
+	useEffect(() => {
+		setUnreadMessagesLen(updateUnreadMessagesLen())
+	}, [messages, user?.id, updateUnreadMessagesLen])
 
 	useEffect(() => {
 		if (!socket.connected) connectSocket()
-
 		const handleUpdatedMessage = (updatedMessage: IMessageType) => {
-			console.log('Received updated message: ', updatedMessage)
 			if (updatedMessage.initiator_id === user?.id) return
 			setMessages(prevMessages =>
 				prevMessages.map(message => {
@@ -120,20 +114,33 @@ const useMessageList = () => {
 					return message
 				}),
 			)
+			setUnreadMessagesLen(updateUnreadMessagesLen())
 		}
-
 		subscribeToUpdatedMessages(handleUpdatedMessage)
 		return () => {
 			unsubscribeFromUpdatedMessages(handleUpdatedMessage)
 		}
-	}, [chatId, user?.id])
+	}, [chatId, user?.id, updateUnreadMessagesLen])
 
-	const handleSendMessage = (messageContent: string) => {
+	const handleSend = (messageContent: string) => {
 		if (!messageContent.trim() || !chatId || !user) return
 		createMessage(chatId, messageContent)
+		setUnreadMessagesLen(updateUnreadMessagesLen())
+		setTimeout(() => {
+			scrollToBottom()
+		}, 0)
 	}
 
-	return { selectedUser, messages, handleSend, user, containerRef }
+	return {
+		selectedUser,
+		messages,
+		handleSend,
+		user,
+		containerRef,
+		unreadMessagesLen,
+		handleSmoothScroll,
+		showScrollButton,
+	}
 }
 
 export { useMessageList }

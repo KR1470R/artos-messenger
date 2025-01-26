@@ -11,3 +11,38 @@
 	padding: 10px 10px 0;
 	overflow-y: auto;
 }
+.scrollBut {
+	position: absolute;
+	bottom: 70px;
+	right: 20px;
+	background-color: #fff;
+	border-radius: 50%;
+	border: 1px solid #999;
+}
+.messageLen {
+	position: absolute;
+	top: -2px;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 20px;
+	height: 20px;
+	padding: 5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	border-radius: 50%;
+	background-color: #007aff;
+	color: #fff;
+	font-size: 16px;
+}
+.scrollBot {
+	svg {
+		color: #999;
+		margin: 0;
+		padding: 8px;
+		vertical-align: middle;
+		line-height: 1;
+		font-size: 35px;
+	}
+}
