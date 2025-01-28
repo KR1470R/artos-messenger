@@ -2,7 +2,7 @@ import { useConversationList } from '@/Hooks/useConversationList'
 import { useChatStore } from '@/Store/useChatStore'
 import { IChat, IUserAll } from '@/Types/Services.interface'
 import { ConversationListItem } from '@/UI/ConversationListItem/ConversationListItem'
-import { Tabs } from '@/UI/Tabs/Tabs'
+import { TabsChat } from '@/UI/TabsChat/TabsChat'
 import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import { ToolbarButton } from '@/UI/ToolbarButton/ToolbarButton'
 import React from 'react'
@@ -30,7 +30,7 @@ const ConversationList: React.FC = () => {
 				rightItems={[<ToolbarButton key='add' icon='ion-ios-add-circle-outline' />]}
 			/>
 			<ConversationSearch />
-			<Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+			<TabsChat activeTab={activeTab} setActiveTab={setActiveTab} />
 
 			{isLoading ? (
 				<div className='loading'>Loading...</div>

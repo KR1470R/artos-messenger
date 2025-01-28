@@ -1,8 +1,8 @@
-import React from 'react'
-import './Tabs.css'
 import { ITabsProps } from '@/Types/Components.interface'
+import React from 'react'
+import './TabsChat.css'
 
-const Tabs: React.FC<ITabsProps> = ({ activeTab, setActiveTab }) => {
+const TabsChat: React.FC<ITabsProps> = ({ activeTab, setActiveTab }) => {
 	return (
 		<div className='tabs'>
 			<div
@@ -20,4 +20,4 @@ const Tabs: React.FC<ITabsProps> = ({ activeTab, setActiveTab }) => {
 		</div>
 	)
 }
-export { Tabs }
+export { TabsChat }

@@ -9,8 +9,8 @@ export interface IToolBar {
 	rightItems: React.ReactNode[]
 }
 export interface IConversationItem {
-	data: IChat | IUserAll;
-	onClick: () => void;
+	data: IChat | IUserAll
+	onClick: () => void
 }
 
 export interface IToolbarButton {
@@ -21,4 +21,15 @@ export interface IToolbarButton {
 export interface ITabsProps {
 	activeTab: 'messages' | 'users'
 	setActiveTab: React.Dispatch<React.SetStateAction<'messages' | 'users'>>
+}
+export interface IContextMenuProps {
+	visible: boolean
+	x: number
+	y: number
+	onClose: () => void
+	items: {
+		icon?: React.ReactNode
+		text: string
+		onClick: () => void
+	}[]
 }
