@@ -1,3 +1,4 @@
+import { useContextMenu } from '@/Hooks/useContextMenu'
 import { IMessageProps } from '@/Types/Messages.interface'
 import moment from 'moment'
 import React, { useState } from 'react'
@@ -17,6 +18,7 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 		x: 0,
 		y: 0,
 	})
+	const { handleCopyText } = useContextMenu(data)
 
 	const today = moment().startOf('day')
 	const messageDate = moment(data.created_at)
@@ -67,7 +69,7 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 			type: 'action',
 			icon: <FaRegCopy />,
 			text: 'Copy Text',
-			onClick: () => console.log(data),
+			onClick: () => handleCopyText(),
 		},
 		{
 			type: 'divider',

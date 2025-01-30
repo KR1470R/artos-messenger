@@ -1,5 +1,5 @@
 import { IUserAll } from '@/Types/Services.interface'
-import { ApiClient } from '../ApiClient'
+import { ApiClient } from '../network/ApiClient'
 
 const getUsersUrl = process.env.REACT_APP_USERS_ROUTE
 if (!getUsersUrl) {

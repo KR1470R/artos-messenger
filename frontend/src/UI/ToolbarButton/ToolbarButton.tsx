@@ -3,12 +3,7 @@ import './ToolbarButton.css'
 
 const ToolbarButton: React.FC<IToolbarButton> = ({ icon, onClick }) => {
 	return (
-		<i
-			className={`toolbarButton ${icon}`}
-			onClick={onClick}
-			role='button'
-			tabIndex={0}
-		/>
+		<i className={`toolbarButton ${icon}`} onClick={onClick} role='button' tabIndex={0} />
 	)
 }
 

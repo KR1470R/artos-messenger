@@ -1,8 +1,8 @@
 import { useAuthStore } from '@/Store/useAuthStore'
+import { RefreshToken } from '../authorization/RefreshToken.service'
+import { TokenService } from '../authorization/accessTokenMemory'
+import { disconnectSocket } from '../socket'
 import { ApiClient } from './ApiClient'
-import { TokenService } from './authorization/AccessTokenMemory'
-import { RefreshToken } from './authorization/RefreshToken.service'
-import { disconnectSocket } from './socket'
 
 let isRefreshing = false
 let failedQueue: {

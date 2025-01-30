@@ -1,5 +1,5 @@
-import { ApiClient } from '../ApiClient'
-import { TokenService } from './AccessTokenMemory'
+import { ApiClient } from '../network/ApiClient'
+import { TokenService } from './accessTokenMemory'
 
 const refreshUrl = process.env.REACT_APP_AUTH_REFRESH_TOKEN_ROUTE
 
@@ -11,18 +11,17 @@ if (!refreshUrl) {
 
 export const RefreshToken = async (): Promise<string> => {
 	try {
-			const response = await ApiClient.post<{ token: string }>(
-					refreshUrl,
-					{},
-					{ withCredentials: true },
-			)
-			const newAccessToken = response.data.token
-			TokenService.setToken(newAccessToken)
-			return newAccessToken
+		const response = await ApiClient.post<{ token: string }>(
+			refreshUrl,
+			{},
+			{ withCredentials: true },
+		)
+		const newAccessToken = response.data.token
+		TokenService.setToken(newAccessToken)
+		return newAccessToken
 	} catch (err: any) {
-			console.error('Token refresh failed. Please log in again.')
-			TokenService.clearToken()
-			throw new Error('Failed to refresh token')
+		console.error('Token refresh failed. Please log in again.')
+		TokenService.clearToken()
+		throw new Error('Failed to refresh token')
 	}
 }
-

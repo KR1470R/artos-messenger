@@ -1,4 +1,4 @@
-import { ApiClient } from '../ApiClient'
+import { ApiClient } from '../network/ApiClient'
 
 const createChatsUrl = process.env.REACT_APP_CHATS_ROUTE
 if (!createChatsUrl) {

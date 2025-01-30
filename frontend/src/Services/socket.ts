@@ -1,6 +1,6 @@
 import { IMessageType } from '@/Types/Messages.interface'
 import { io, Socket } from 'socket.io-client'
-import { TokenService } from './authorization/AccessTokenMemory'
+import { TokenService } from './authorization/accessTokenMemory'
 
 export const socket: Socket = io(
 	`${process.env.REACT_APP_WS_URL}${process.env.REACT_APP_WS_MESSAGES_ROUTE}`,

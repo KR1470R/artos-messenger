@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { TokenService } from './authorization/AccessTokenMemory'
-import { handle401Error } from './ErrorHandlingService'
+import { TokenService } from '../authorization/accessTokenMemory'
+import { handle401Error } from './errorHandlingService'
 
 const ApiClient = axios.create({
 	baseURL: process.env.REACT_APP_API_URL,

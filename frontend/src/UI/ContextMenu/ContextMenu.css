@@ -34,6 +34,12 @@
 	font-size: 14px;
 	color: rgb(10, 20, 28);
 	border-radius: 4px;
+	opacity: 0;
+	animation: fadeInListItem 0.3s ease-out forwards;
+}
+
+.contextMenu li:nth-child(n) {
+	animation-delay: calc(0.05s * var(--index));
 }
 .contextMenu li.menuItemDelete,
 .contextMenu li.menuItemDelete .menuIcon {
@@ -60,6 +66,16 @@
 }
 
 @keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes fadeInListItem {
 	from {
 		opacity: 0;
 		transform: translateY(-10px);

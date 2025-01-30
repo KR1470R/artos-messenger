@@ -31,7 +31,7 @@ const ContextMenu: React.FC<IContextMenuProps> = ({ visible, x, y, onClose, item
 			<ul>
 				{items.map((item, index) =>
 					item.type === 'divider' ? (
-						<hr />
+						<hr key={index} />
 					) : (
 						<li
 							className={item.className}
@@ -40,6 +40,7 @@ const ContextMenu: React.FC<IContextMenuProps> = ({ visible, x, y, onClose, item
 								if (item.onClick) item.onClick()
 								onClose()
 							}}
+							style={{ '--index': index } as React.CSSProperties}
 						>
 							{item.icon && <span className='menuIcon'>{item.icon}</span>}
 							{item.text}

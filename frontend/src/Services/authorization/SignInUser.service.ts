@@ -1,8 +1,8 @@
 import { useAuthStore } from '@/Store/useAuthStore'
 import { IResponse, IUserData } from '@/Types/Services.interface'
-import { ApiClient } from '../ApiClient'
+import { ApiClient } from '../network/ApiClient'
 import { GetCurrentUser } from '../users/GetCurrentUser.service'
-import { TokenService } from './AccessTokenMemory'
+import { TokenService } from './accessTokenMemory'
 
 const signInUrl = process.env.REACT_APP_AUTH_SIGN_IN_ROUTE
 

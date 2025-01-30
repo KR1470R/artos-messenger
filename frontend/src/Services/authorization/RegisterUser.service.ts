@@ -1,5 +1,5 @@
 import { IResponse, IUserData } from '@/Types/Services.interface'
-import { ApiClient } from '../ApiClient'
+import { ApiClient } from '../network/ApiClient'
 
 const registerUrl = process.env.REACT_APP_USERS_REGISTER_ROUTE
 

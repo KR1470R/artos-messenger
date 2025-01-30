@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/Store/useAuthStore'
 import { IUser } from '@/Types/Services.interface'
-import { ApiClient } from '../ApiClient'
+import { ApiClient } from '../network/ApiClient'
 
 const getUserUrl = process.env.REACT_APP_USERS_ME_ROUTE
 
