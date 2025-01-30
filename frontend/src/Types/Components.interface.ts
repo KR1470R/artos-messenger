@@ -29,7 +29,9 @@ export interface IContextMenuProps {
 	onClose: () => void
 	items: {
 		icon?: React.ReactNode
-		text: string
-		onClick: () => void
+		text?: string
+		onClick?: () => void
+		type: string
+		className?: string
 	}[]
 }

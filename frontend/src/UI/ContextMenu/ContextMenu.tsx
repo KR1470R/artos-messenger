@@ -11,11 +11,7 @@ const ContextMenu: React.FC<IContextMenuProps> = ({ visible, x, y, onClose, item
 				onClose()
 			}
 		}
-
-		if (visible) {
-			document.addEventListener('mousedown', handleOutsideClick)
-		}
-
+		if (visible) document.addEventListener('mousedown', handleOutsideClick)
 		return () => {
 			document.removeEventListener('mousedown', handleOutsideClick)
 		}
@@ -33,18 +29,23 @@ const ContextMenu: React.FC<IContextMenuProps> = ({ visible, x, y, onClose, item
 			}}
 		>
 			<ul>
-				{items.map((item, index) => (
-					<li
-						key={index}
-						onClick={() => {
-							item.onClick()
-							onClose()
-						}}
-					>
-						{item.icon && <span className='menuIcon'>{item.icon}</span>}
-						{item.text}
-					</li>
-				))}
+				{items.map((item, index) =>
+					item.type === 'divider' ? (
+						<hr />
+					) : (
+						<li
+							className={item.className}
+							key={index}
+							onClick={() => {
+								if (item.onClick) item.onClick()
+								onClose()
+							}}
+						>
+							{item.icon && <span className='menuIcon'>{item.icon}</span>}
+							{item.text}
+						</li>
+					),
+				)}
 			</ul>
 		</div>
 	)

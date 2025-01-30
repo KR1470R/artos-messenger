@@ -1,6 +1,8 @@
 import { IMessageProps } from '@/Types/Messages.interface'
 import moment from 'moment'
 import React, { useState } from 'react'
+import { FaEdit, FaRegCopy } from 'react-icons/fa'
+import { FaRegTrashCan } from 'react-icons/fa6'
 import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5'
 import { ContextMenu } from '../ContextMenu/ContextMenu'
 import './Message.css'
@@ -27,7 +29,7 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 		: messageDate.format('D MMMM')
 
 	const messageTime = messageDate.format('HH:mm')
-	
+
 	const handleContextMenu = (e: React.MouseEvent) => {
 		e.preventDefault()
 		const container = e.currentTarget.closest('.messageList') as HTMLElement
@@ -35,7 +37,7 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 		let x = e.clientX - (containerRect?.left || 0)
 		let y = e.clientY - (containerRect?.top || 0)
 
-		const menuWidth = 180
+		const menuWidth = 150
 		const menuHeight = 50
 		const cursorOffset = 3
 		if (e.clientX + menuWidth > window.innerWidth) x -= menuWidth + cursorOffset
@@ -56,9 +58,26 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 
 	const menuItems = [
 		{
-			icon: <IoCheckmark />,
-			text: "Переглянути об'єкт",
+			type: 'action',
+			icon: <FaEdit />,
+			text: 'Edit',
 			onClick: () => console.log(data),
+		},
+		{
+			type: 'action',
+			icon: <FaRegCopy />,
+			text: 'Copy Text',
+			onClick: () => console.log(data),
+		},
+		{
+			type: 'divider',
+		},
+		{
+			type: 'action',
+			icon: <FaRegTrashCan />,
+			text: 'Delete',
+			onClick: () => console.log(data),
+			className: 'menuItemDelete',
 		},
 	]
 

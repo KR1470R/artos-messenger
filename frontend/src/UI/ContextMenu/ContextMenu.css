@@ -1,12 +1,20 @@
 .contextMenu {
 	position: absolute;
-	background-color: #ffffff;
+	background-color: linear-gradient(
+		45deg,
+		rgba(255, 255, 255, 0.45) 0%,
+		rgba(255, 255, 255, 0.85) 100%
+	);
+	backdrop-filter: blur(15px);
 	border-radius: 8px;
-	box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 2px rgb(0 0 0 / 3%),
+		0 4px 4px rgb(0 0 0 / 4%), 0 10px 8px rgb(0 0 0 / 5%), 0 15px 15px rgb(0 0 0 / 6%),
+		0 30px 30px rgb(0 0 0 / 7%), 0 70px 65px rgba(0, 0, 0, 0.09);
 	z-index: 1000;
-	min-width: 180px;
+	min-width: 150px;
 	max-width: 280px;
-	padding: 8px 0;
+	padding: 3px;
 	overflow: hidden;
 	animation: fadeIn 0.2s ease-in-out;
 }
@@ -20,39 +28,35 @@
 .contextMenu li {
 	display: flex;
 	align-items: center;
-	padding: 10px 16px;
+	padding: 5px;
 	cursor: pointer;
 	transition: background-color 0.2s ease, color 0.2s ease;
 	font-size: 14px;
-	color: #333333;
-	font-weight: 500;
+	color: rgb(10, 20, 28);
+	border-radius: 4px;
+}
+.contextMenu li.menuItemDelete,
+.contextMenu li.menuItemDelete .menuIcon {
+	color: #be3144;
 }
 
 .contextMenu li:hover {
-	background-color: #f7f9fc;
-	color: #1d4ed8;
-}
-
-.contextMenu li:active {
-	background-color: #e4e8f0;
-	color: #1e3a8a;
+	background-color: rgba(10, 20, 28, 0.05);
 }
 
 .contextMenu .menuIcon {
-	margin-right: 12px;
-	font-size: 16px;
-	color: #6b7280;
+	font-size: 13px;
+	color: rgb(10, 20, 28);
 	transition: color 0.2s ease;
-}
-
-.contextMenu li:hover .menuIcon {
-	color: #1d4ed8;
+	display: flex;
+	align-items: center;
+	padding-right: 5px;
 }
 
 .contextMenu hr {
-	margin: 6px 0;
+	margin: 6px 5px;
 	border: none;
-	border-top: 1px solid #e5e7eb;
+	border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 @keyframes fadeIn {
