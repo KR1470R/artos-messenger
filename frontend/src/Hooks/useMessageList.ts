@@ -1,12 +1,15 @@
 import {
 	connectSocket,
 	createMessage,
+	deleteMessages,
 	fetchMessages,
 	markMessageAsRead,
 	socket,
+	subscribeToDeleteMessage,
 	subscribeToFetchMessages,
 	subscribeToNewMessages,
 	subscribeToUpdatedMessages,
+	unsubscribeFromDeleteMessage,
 	unsubscribeFromFetchMessages,
 	unsubscribeFromNewMessages,
 	unsubscribeFromUpdatedMessages,
@@ -122,6 +125,32 @@ const useMessageList = () => {
 		}
 	}, [chatId, user?.id, updateUnreadMessagesLen])
 
+	const deleteMessage = useCallback(
+		(data: IMessageType) => {
+			if (!socket.connected) connectSocket()
+			if (!chatId) return
+			deleteMessages(chatId, data.id)
+		},
+		[chatId],
+	)
+
+	useEffect(() => {
+		if (!socket.connected) connectSocket()
+
+		const handleDeleteMessage = (deletedMessage: IMessageType) => {
+			setMessages(prevMessages => {
+				const index = prevMessages.findIndex(message => message.id === deletedMessage.id)
+				if (index === -1) return prevMessages
+				return [...prevMessages.slice(0, index), ...prevMessages.slice(index + 1)]
+			})
+		}
+
+		subscribeToDeleteMessage(handleDeleteMessage)
+		return () => {
+			unsubscribeFromDeleteMessage(handleDeleteMessage)
+		}
+	}, [chatId, user?.id])
+
 	const handleSend = (messageContent: string) => {
 		if (!messageContent.trim() || !chatId || !user) return
 		createMessage(chatId, messageContent)
@@ -140,6 +169,7 @@ const useMessageList = () => {
 		unreadMessagesLen,
 		handleSmoothScroll,
 		showScrollButton,
+		deleteMessage,
 	}
 }
 
