@@ -109,14 +109,15 @@ const useMessageList = () => {
 	useEffect(() => {
 		if (!socket.connected) connectSocket()
 		const handleUpdatedMessage = (updatedMessage: IMessageType) => {
-			if (updatedMessage.initiator_id === user?.id) return
+			if (updatedMessage.chat_id !== chatId) return
 			setMessages(prevMessages =>
 				prevMessages.map(message => {
 					if (message.id === updatedMessage.id) {
-						if (updatedMessage.receiver_id === user?.id) {
-							return { ...message, ...updatedMessage }
+						return {
+							...message,
+							content: updatedMessage.content ?? message.content,
+							is_read: updatedMessage.is_read ?? message.is_read,
 						}
-						return message
 					}
 					return message
 				}),
@@ -127,7 +128,7 @@ const useMessageList = () => {
 		return () => {
 			unsubscribeFromUpdatedMessages(handleUpdatedMessage)
 		}
-	}, [chatId, user?.id, updateUnreadMessagesLen])
+	}, [chatId, updateUnreadMessagesLen])
 
 	const deleteMessage = useCallback(
 		(data: IMessageType) => {
