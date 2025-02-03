@@ -59,19 +59,25 @@ export const markMessageAsRead = (
 		is_read,
 	})
 }
+export const updateMessage = (
+	chatId: number,
+	messageId: number,
+	content: string,
+	is_read: boolean,
+) => {
+	if (!socket.connected) connectSocket()
+	socket.emit('update_message', {
+		chat_id: chatId,
+		id: messageId,
+		content,
+		is_read,
+	})
+}
 export const deleteMessages = (chatId: number, id: number) => {
 	socket.emit('delete_message', {
 		chat_id: chatId,
 		id,
 	})
-}
-export const subscribeToDeleteMessage = (callback: (message: IMessageType) => void) => {
-	socket.on('deleted_message', callback)
-}
-export const unsubscribeFromDeleteMessage = (
-	callback: (message: IMessageType) => void,
-) => {
-	socket.off('deleted_message', callback)
 }
 export const subscribeToNewMessages = (callback: (message: IMessageType) => void) => {
 	socket.on('new_message', callback)
@@ -97,7 +103,14 @@ export const unsubscribeFromUpdatedMessages = (
 ) => {
 	socket.off('updated_message', callback)
 }
-
+export const subscribeToDeleteMessage = (callback: (message: IMessageType) => void) => {
+	socket.on('deleted_message', callback)
+}
+export const unsubscribeFromDeleteMessage = (
+	callback: (message: IMessageType) => void,
+) => {
+	socket.off('deleted_message', callback)
+}
 export const disconnectSocket = () => {
 	if (socket.connected) socket.disconnect()
 }

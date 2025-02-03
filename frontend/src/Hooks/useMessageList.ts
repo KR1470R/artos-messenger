@@ -13,6 +13,7 @@ import {
 	unsubscribeFromFetchMessages,
 	unsubscribeFromNewMessages,
 	unsubscribeFromUpdatedMessages,
+	updateMessage,
 } from '@/Services/socket'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { useChatStore } from '@/Store/useChatStore'
@@ -98,10 +99,13 @@ const useMessageList = () => {
 		}
 	}, [messages, observeMessages, containerRef])
 
-	useEffect(() => {
-		setUnreadMessagesLen(updateUnreadMessagesLen())
-	}, [messages, user?.id, updateUnreadMessagesLen])
-
+	const updateMessages = useCallback(
+		(data: IMessageType) => {
+			if (!chatId) return
+			updateMessage(chatId, data.id, data.content, Boolean(data.is_read))
+		},
+		[chatId],
+	)
 	useEffect(() => {
 		if (!socket.connected) connectSocket()
 		const handleUpdatedMessage = (updatedMessage: IMessageType) => {
@@ -154,7 +158,6 @@ const useMessageList = () => {
 	const handleSend = (messageContent: string) => {
 		if (!messageContent.trim() || !chatId || !user) return
 		createMessage(chatId, messageContent)
-		setUnreadMessagesLen(updateUnreadMessagesLen())
 		setTimeout(() => {
 			scrollToBottom()
 		}, 0)
@@ -170,6 +173,7 @@ const useMessageList = () => {
 		handleSmoothScroll,
 		showScrollButton,
 		deleteMessage,
+		updateMessages,
 	}
 }
 
