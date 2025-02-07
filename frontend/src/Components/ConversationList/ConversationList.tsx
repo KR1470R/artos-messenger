@@ -17,6 +17,7 @@ const ConversationList: React.FC = () => {
 		isLoading,
 		handleItemClickUsers,
 		handleItemClickChats,
+		lastMessages,
 	} = useConversationList()
 
 	const { chatId, selectedUser } = useChatStore()
@@ -42,6 +43,7 @@ const ConversationList: React.FC = () => {
 									key={item.id}
 									data={item}
 									isActive={chatId === item.id}
+									lastMessage={lastMessages[item.id] || '(немає повідомлень)'}
 									onClick={() => handleItemClickChats(item.id)}
 								/>
 						  ))

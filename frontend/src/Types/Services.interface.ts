@@ -33,4 +33,5 @@ export interface IChat {
 	type: number
 	created_at: string
 	updated_at: string
+	lastMessage: string
 }

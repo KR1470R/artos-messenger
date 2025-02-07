@@ -1,10 +1,8 @@
 import {
-	connectSocket,
 	createMessage,
 	deleteMessages,
 	fetchMessages,
 	markMessageAsRead,
-	socket,
 	subscribeToDeleteMessage,
 	subscribeToFetchMessages,
 	subscribeToNewMessages,
@@ -48,7 +46,6 @@ const useMessageList = () => {
 	}, [chatId])
 
 	useEffect(() => {
-		if (!socket.connected) connectSocket()
 		const handleNewMessage = (newMessage: IMessageType) => {
 			setMessages(prevMessages => {
 				if (prevMessages.some(msg => msg.id === newMessage.id)) return prevMessages
@@ -107,7 +104,6 @@ const useMessageList = () => {
 		[chatId],
 	)
 	useEffect(() => {
-		if (!socket.connected) connectSocket()
 		const handleUpdatedMessage = (updatedMessage: IMessageType) => {
 			if (updatedMessage.chat_id !== chatId) return
 			setMessages(prevMessages =>
@@ -132,7 +128,6 @@ const useMessageList = () => {
 
 	const deleteMessage = useCallback(
 		(data: IMessageType) => {
-			if (!socket.connected) connectSocket()
 			if (!chatId) return
 			deleteMessages(chatId, data.id)
 		},
@@ -140,8 +135,6 @@ const useMessageList = () => {
 	)
 
 	useEffect(() => {
-		if (!socket.connected) connectSocket()
-
 		const handleDeleteMessage = (deletedMessage: IMessageType) => {
 			setMessages(prevMessages => {
 				const index = prevMessages.findIndex(message => message.id === deletedMessage.id)

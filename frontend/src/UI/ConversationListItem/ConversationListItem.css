@@ -28,3 +28,7 @@
 	text-transform: capitalize;
 	margin: 0;
 }
+.conversationSnippet {
+	font-size: 13px;
+	color: #999;
+}

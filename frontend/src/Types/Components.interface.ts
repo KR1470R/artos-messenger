@@ -11,6 +11,8 @@ export interface IToolBar {
 export interface IConversationItem {
 	data: IChat | IUserAll
 	onClick: () => void
+	isActive: boolean
+	lastMessage?: string
 }
 
 export interface IToolbarButton {
