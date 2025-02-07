@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/Store/useAuthStore'
-import { IResponse, IUserData } from '@/Types/Services.interface'
+import { IResponseAuth, IResponseError, IUserData } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 import { GetCurrentUser } from '../users/GetCurrentUser.service'
 import { TokenService } from './accessTokenMemory'
@@ -12,12 +12,13 @@ if (!signInUrl) {
 
 const SignInUser = async (userData: IUserData): Promise<void> => {
 	try {
-		const response = await ApiClient.post<IResponse>(signInUrl, userData)
+		const response = await ApiClient.post<IResponseAuth>(signInUrl, userData)
 		const { token } = response.data
 		TokenService.setToken(token)
 
 		await GetCurrentUser()
-	} catch (err: any) {
+	} catch (error) {
+		const err = error as IResponseError
 		const { setError } = useAuthStore.getState()
 		setError(`${err}`)
 		throw new Error('Sign-in failed, please check credentials.')

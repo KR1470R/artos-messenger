@@ -10,7 +10,7 @@ import {
 import { GetUsers } from '@/Services/users/GetUsers.service'
 import { useChatStore } from '@/Store/useChatStore'
 import { IMessageType } from '@/Types/Messages.interface'
-import { IChat, IUserAll } from '@/Types/Services.interface'
+import { IChat, IResponseError, IUserAll } from '@/Types/Services.interface'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
@@ -64,8 +64,9 @@ const useConversationList = () => {
 			const chatId = await CreateChat(userSelect.id)
 			setChatId(chatId)
 			joinChat(chatId)
-		} catch (error: any) {
-			console.error('❌ Error creating or joining chat:', error.message)
+		} catch (error) {
+			const err = error as IResponseError
+			console.error('❌ Error creating or joining chat:', err.message || 'Unknown error')
 		}
 	}
 
@@ -79,8 +80,9 @@ const useConversationList = () => {
 			} else {
 				console.error('Failed to fetch chat data.')
 			}
-		} catch (error: any) {
-			console.error('Error fetching or joining chat:', error.message)
+		} catch (error) {
+			const err = error as IResponseError
+			console.error('Error fetching or joining chat:', err.message || 'Unknown error')
 		}
 	}
 

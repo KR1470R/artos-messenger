@@ -19,7 +19,7 @@ export interface IUser {
 	updated_at?: string
 }
 
-export interface IResponse {
+export interface IResponseAuth {
 	token: string
 	message: string
 	id: number
@@ -34,4 +34,10 @@ export interface IChat {
 	created_at: string
 	updated_at: string
 	lastMessage: string
+}
+export interface IResponseError {
+	error: string
+	message: string
+	statusCode: string | number
+	timestamp: string
 }

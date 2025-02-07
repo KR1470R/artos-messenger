@@ -1,4 +1,4 @@
-import { IUserAll } from '@/Types/Services.interface'
+import { IResponseError, IUserAll } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
 const getUsersUrl = process.env.REACT_APP_USERS_ROUTE
@@ -10,8 +10,9 @@ const GetUsers = async () => {
 	try {
 		const response = await ApiClient.get<{ data: IUserAll[] }>(getUsersUrl)
 		return response.data.data
-	} catch (err: any) {
-		console.error('Error fetching users:', err?.response?.data || err.message)
+	} catch (error) {
+		const err = error as IResponseError
+		console.error('Error fetching users:', err.message || 'Unknown error')
 		throw new Error('Get users failed. Please check credentials and API configuration.')
 	}
 }

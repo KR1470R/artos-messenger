@@ -1,5 +1,5 @@
 import { useAuthStore } from '@/Store/useAuthStore'
-import { IUser } from '@/Types/Services.interface'
+import { IResponseError, IUser } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
 const getUserUrl = process.env.REACT_APP_USERS_ME_ROUTE
@@ -13,9 +13,10 @@ const GetCurrentUser = async (): Promise<void> => {
 		const response = await ApiClient.get<IUser>(getUserUrl)
 		const user = response.data
 		useAuthStore.getState().setUser(user)
-	} catch (err: any) {
-		console.error('Error fetching user data:', err?.response?.data || err.message)
-		useAuthStore.getState().setError(err?.response?.data?.message || err.message)
+	} catch (error) {
+		const err = error as IResponseError
+		console.error('Error fetching user data:', err.message)
+		useAuthStore.getState().setError(err.message || 'Unknown error')
 		throw new Error('Failed to fetch user data. Please check API configuration.')
 	}
 }

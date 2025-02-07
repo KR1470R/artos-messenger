@@ -1,3 +1,4 @@
+import { IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 import { TokenService } from './accessTokenMemory'
 
@@ -19,8 +20,12 @@ export const RefreshToken = async (): Promise<string> => {
 		const newAccessToken = response.data.token
 		TokenService.setToken(newAccessToken)
 		return newAccessToken
-	} catch (err: any) {
-		console.error('Token refresh failed. Please log in again.')
+	} catch (error) {
+		const err = error as IResponseError
+		console.error(
+			'Token refresh failed. Please log in again.',
+			err.message || 'Unknown error',
+		)
 		TokenService.clearToken()
 		throw new Error('Failed to refresh token')
 	}

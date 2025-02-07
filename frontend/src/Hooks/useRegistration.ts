@@ -4,7 +4,7 @@ import { SignInUser } from '@/Services/authorization/SignInUser.service'
 import { connectSocket, disconnectSocket, socket } from '@/Services/socket'
 import { GetCurrentUser } from '@/Services/users/GetCurrentUser.service'
 import { useAuthStore } from '@/Store/useAuthStore'
-import { IUserData } from '@/Types/Services.interface'
+import { IResponseError, IUserData } from '@/Types/Services.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -53,8 +53,8 @@ const useRegistration = () => {
 	const { mutateAsync: signInAsync } = useMutation({
 		mutationKey: ['login'],
 		mutationFn: SignInUser,
-		onError: (err: any) => {
-			if (err.response?.status === 401) {
+		onError: (err: IResponseError) => {
+			if (err.statusCode === 401) {
 				console.error('Login error: Invalid credentials provided.')
 			} else {
 				console.error('Login error: Unexpected server issue.', err)

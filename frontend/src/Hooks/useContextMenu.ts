@@ -7,7 +7,7 @@ const useContextMenu = (data: IMessageType) => {
 	const handleCopyMessage = async () => {
 		try {
 			await navigator.clipboard.writeText(data.content)
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error(error)
 		}
 	}

@@ -1,3 +1,4 @@
+import { IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
 const createChatsUrl = process.env.REACT_APP_CHATS_ROUTE
@@ -9,7 +10,9 @@ const GetChat = async (id: number) => {
 	try {
 		const response = await ApiClient.get(`${createChatsUrl}/${id}`)
 		return response.data
-	} catch (err: any) {
+	} catch (error) {
+		const err = error as IResponseError
+		console.error('Failed to get chats:', err || 'Unknown error')
 		throw new Error('Failed to retrieve existing chat.')
 	}
 }

@@ -1,4 +1,4 @@
-import { IChat } from '@/Types/Services.interface'
+import { IChat, IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
 const createChatsUrl = process.env.REACT_APP_CHATS_ROUTE
@@ -10,8 +10,9 @@ const GetChats = async (): Promise<IChat[]> => {
 	try {
 		const response = await ApiClient.get<{ data: IChat[] }>(createChatsUrl)
 		return response.data.data
-	} catch (err: any) {
-		console.error('Failed to retrieve chats:', err)
+	} catch (error) {
+		const err = error as IResponseError
+		console.error('Failed to retrieve chats:', err || 'Unknown error')
 		throw new Error('Failed to retrieve chats.')
 	}
 }
