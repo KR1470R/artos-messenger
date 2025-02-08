@@ -9,7 +9,7 @@ import { ContextMenu } from '../ContextMenu/ContextMenu'
 import './Message.css'
 
 const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
-	const { handleCopyMessage, handleDeleteMessages } = useContextMenu(data)
+	const { handleCopyMessage, handleDeleteMessages } = useContextMenu(data, isMine)
 	const {
 		handleContextMenu,
 		displayDate,
