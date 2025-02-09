@@ -1,3 +1,4 @@
+import { useContextMenu } from '@/Hooks/useContextMenu'
 import { IConversationItem } from '@/Types/Components.interface'
 import React, { useState } from 'react'
 import { FaRegTrashCan } from 'react-icons/fa6'
@@ -10,14 +11,18 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 	onClick,
 	isActive,
 	lastMessage,
+	activeTab,
 }) => {
+	const closeContextMenu = () => setContextMenu({ visible: false, x: 0, y: 0 })
+	const { deleteChat } = useContextMenu(data)
+
 	const isUserAll = (item: IUserAll | IChat): item is IUserAll => {
 		return (item as IUserAll).username !== undefined
 	}
-	const shortenText = (text: string, maxLength: number = 35): string => {
-		if (text.length > maxLength) return text.slice(0, maxLength) + '...'
-		return text
-	}
+
+	const shortenText = (text: string, maxLength: number = 35): string =>
+		text.length > maxLength ? text.slice(0, maxLength) + '...' : text
+
 	const shortenedMessage = shortenText(lastMessage || ' ')
 
 	const fallbackAvatar =
@@ -30,9 +35,11 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 	const handleImageError = () => {
 		setImageSrc(fallbackAvatar)
 	}
+
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 })
 
 	const handleContextMenu = (e: React.MouseEvent) => {
+		if (activeTab !== 'messages') return
 		e.preventDefault()
 		const container = e.currentTarget.closest('.conversationList') as HTMLElement
 		const containerRect = container?.getBoundingClientRect()
@@ -47,16 +54,16 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 		setContextMenu({ visible: true, x, y })
 	}
 
-	const closeContextMenu = () => setContextMenu({ visible: false, x: 0, y: 0 })
 	const menuItems = [
 		{
 			type: 'action',
 			icon: <FaRegTrashCan />,
 			text: 'Delete Chat',
-			onClick: () => console.log(data),
+			onClick: deleteChat,
 			className: 'menuItemDelete',
 		},
 	]
+
 	return (
 		<>
 			<div

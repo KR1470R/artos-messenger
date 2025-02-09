@@ -13,6 +13,7 @@ export interface IConversationItem {
 	onClick: () => void
 	isActive: boolean
 	lastMessage?: string
+	activeTab: string
 }
 
 export interface IToolbarButton {

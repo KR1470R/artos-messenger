@@ -43,6 +43,7 @@ const ConversationList: React.FC = () => {
 									key={item.id}
 									data={item}
 									isActive={chatId === item.id}
+									activeTab={activeTab}
 									lastMessage={lastMessages[item.id] || '(немає повідомлень)'}
 									onClick={() => handleItemClickChats(item.id)}
 								/>
@@ -51,6 +52,7 @@ const ConversationList: React.FC = () => {
 								<ConversationListItem
 									key={item.id}
 									data={item}
+									activeTab={activeTab}
 									isActive={selectedUser?.id === item.id}
 									onClick={() =>
 										handleItemClickUsers({ id: item.id, username: item.username })

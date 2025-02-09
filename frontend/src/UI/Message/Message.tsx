@@ -1,5 +1,6 @@
 import { useContextMenu } from '@/Hooks/useContextMenu'
 import { useMessage } from '@/Hooks/useMessage'
+import { useAuthStore } from '@/Store/useAuthStore'
 import { IMessageProps } from '@/Types/Messages.interface'
 import React from 'react'
 import { FaEdit, FaRegCopy } from 'react-icons/fa'
@@ -9,7 +10,8 @@ import { ContextMenu } from '../ContextMenu/ContextMenu'
 import './Message.css'
 
 const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
-	const { handleCopyMessage, handleDeleteMessages } = useContextMenu(data, isMine)
+	const { handleCopyMessage, handleDeleteMessages } = useContextMenu(data)
+	const user = useAuthStore(state => state.user)
 	const {
 		handleContextMenu,
 		displayDate,
@@ -25,30 +27,40 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 		closeContextMenu,
 		startEditing,
 	} = useMessage({ data, isMine, showDate })
-	const menuItems = [
-		{
-			type: 'action',
-			icon: <FaEdit />,
-			text: 'Edit',
-			onClick: startEditing,
-		},
-		{
-			type: 'action',
-			icon: <FaRegCopy />,
-			text: 'Copy Text',
-			onClick: handleCopyMessage,
-		},
-		{
-			type: 'divider',
-		},
-		{
-			type: 'action',
-			icon: <FaRegTrashCan />,
-			text: 'Delete',
-			onClick: handleDeleteMessages,
-			className: 'menuItemDelete',
-		},
-	]
+	const menuItems =
+		user?.id === data.sender_id
+			? [
+					{
+						type: 'action',
+						icon: <FaEdit />,
+						text: 'Edit',
+						onClick: () => startEditing(isMine),
+					},
+					{
+						type: 'action',
+						icon: <FaRegCopy />,
+						text: 'Copy Text',
+						onClick: handleCopyMessage,
+					},
+					{
+						type: 'divider',
+					},
+					{
+						type: 'action',
+						icon: <FaRegTrashCan />,
+						text: 'Delete',
+						onClick: handleDeleteMessages,
+						className: 'menuItemDelete',
+					},
+			  ]
+			: [
+					{
+						type: 'action',
+						icon: <FaRegCopy />,
+						text: 'Copy Text',
+						onClick: handleCopyMessage,
+					},
+			  ]
 	return (
 		<>
 			<div

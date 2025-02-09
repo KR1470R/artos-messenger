@@ -1,31 +1,50 @@
+import { DeleteChat } from '@/Services/chats/DeleteChat.service'
 import { IMessageType } from '@/Types/Messages.interface'
+import { IChat, IUserAll } from '@/Types/Services.interface'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { useMessageList } from './useMessageList'
 
-const useContextMenu = (data: IMessageType, isMine: boolean) => {
+const useContextMenu = (data: IMessageType | IChat | IUserAll) => {
 	const { deleteMessage, updateMessages } = useMessageList()
+	const queryClient = useQueryClient()
 	const [isEditing, setIsEditing] = useState(false)
-	const [editedContent, setEditedContent] = useState(data.content)
+	const [editedContent, setEditedContent] = useState(
+		'content' in data ? data.content || '' : '',
+	)
 	const textareaRef = useRef<HTMLTextAreaElement>(null)
+	const deleteChatMutation = useMutation({
+		mutationFn: async (chatId: number) => DeleteChat(chatId),
+		onSuccess: () => queryClient.invalidateQueries({ queryKey: ['chats'] }),
+	})
 
 	const handleCopyMessage = async () => {
-		try {
-			await navigator.clipboard.writeText(data.content)
-		} catch (error: unknown) {
-			console.error(error)
+		if ('content' in data && data.content) {
+			try {
+				await navigator.clipboard.writeText(data.content)
+			} catch (error: unknown) {
+				console.error(error)
+			}
 		}
 	}
 
 	const handleDeleteMessages = () => {
-		deleteMessage(data)
+		if ('content' in data) deleteMessage(data)
 	}
 
 	const handleUpdateMessages = (newContent: string) => {
-		updateMessages({ ...data, content: newContent })
+		if ('content' in data && data.content)
+			updateMessages({ ...data, content: newContent })
 	}
 
-	const startEditing = () => {
-		if (isMine) {
+	const deleteChat = () => {
+		if ('id' in data) {
+			deleteChatMutation.mutate(data.id)
+		}
+	}
+
+	const startEditing = (isMine: boolean) => {
+		if (isMine && 'content' in data) {
 			setIsEditing(true)
 			setTimeout(() => {
 				if (textareaRef.current) {
@@ -43,9 +62,10 @@ const useContextMenu = (data: IMessageType, isMine: boolean) => {
 	}
 
 	const finishEditing = () => {
-		const trimmedContent = editedContent.trimEnd()
-		if (trimmedContent && trimmedContent !== data.content.trimEnd()) {
-			handleUpdateMessages(trimmedContent)
+		if ('content' in data) {
+			const trimmedContent = editedContent.trimEnd()
+			if (trimmedContent && trimmedContent !== data.content?.trimEnd())
+				handleUpdateMessages(trimmedContent)
 		}
 		setIsEditing(false)
 	}
@@ -67,9 +87,7 @@ const useContextMenu = (data: IMessageType, isMine: boolean) => {
 	}
 
 	useEffect(() => {
-		if (isEditing) {
-			resizeTextarea()
-		}
+		if (isEditing) resizeTextarea()
 	}, [isEditing])
 
 	return {
@@ -83,6 +101,7 @@ const useContextMenu = (data: IMessageType, isMine: boolean) => {
 		isEditing,
 		editedContent,
 		textareaRef,
+		deleteChat,
 	}
 }
 

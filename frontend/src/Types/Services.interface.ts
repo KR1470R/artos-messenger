@@ -33,6 +33,7 @@ export interface IChat {
 	type: number
 	created_at: string
 	updated_at: string
+	activeTab: string
 	lastMessage: string
 }
 export interface IResponseError {

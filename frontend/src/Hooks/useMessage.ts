@@ -3,7 +3,7 @@ import { IMessageProps } from '@/Types/Messages.interface'
 import moment from 'moment'
 import React, { useState } from 'react'
 
-const useMessage = ({ data, isMine, showDate }: IMessageProps) => {
+const useMessage = ({ data }: IMessageProps) => {
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 })
 	const {
 		startEditing,
@@ -13,7 +13,7 @@ const useMessage = ({ data, isMine, showDate }: IMessageProps) => {
 		isEditing,
 		editedContent,
 		textareaRef,
-	} = useContextMenu(data, isMine)
+	} = useContextMenu(data)
 
 	const today = moment().startOf('day')
 	const messageDate = moment(data.created_at)
