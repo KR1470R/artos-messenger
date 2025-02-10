@@ -38,7 +38,6 @@ const useConversationList = () => {
 
 	useEffect(() => {
 		if (!chatsData) return
-
 		const handleMessages = (messages: IMessageType[], chatId: number) => {
 			if (messages.length > 0) {
 				const lastMessage = messages[messages.length - 1].content
@@ -77,9 +76,7 @@ const useConversationList = () => {
 			if (chatId) {
 				setChatId(chatId)
 				joinChat(chatId)
-			} else {
-				console.error('Failed to fetch chat data.')
-			}
+			} else console.error('Failed to fetch chat data.')
 		} catch (error) {
 			const err = error as IResponseError
 			console.error('Error fetching or joining chat:', err.message || 'Unknown error')

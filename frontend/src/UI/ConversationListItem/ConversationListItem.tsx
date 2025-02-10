@@ -15,29 +15,19 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 }) => {
 	const closeContextMenu = () => setContextMenu({ visible: false, x: 0, y: 0 })
 	const { deleteChat } = useContextMenu(data)
-
 	const isUserAll = (item: IUserAll | IChat): item is IUserAll => {
 		return (item as IUserAll).username !== undefined
 	}
-
 	const shortenText = (text: string, maxLength: number = 35): string =>
 		text.length > maxLength ? text.slice(0, maxLength) + '...' : text
-
 	const shortenedMessage = shortenText(lastMessage || ' ')
-
 	const fallbackAvatar =
 		'https://github.com/KR1470R/artos-messenger/blob/main/assets/fallbackAvatar.png?raw=true'
-
 	const [imageSrc, setImageSrc] = useState(
 		isUserAll(data) ? data.avatar_url : fallbackAvatar,
 	)
-
-	const handleImageError = () => {
-		setImageSrc(fallbackAvatar)
-	}
-
+	const handleImageError = () => setImageSrc(fallbackAvatar)
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 })
-
 	const handleContextMenu = (e: React.MouseEvent) => {
 		if (activeTab !== 'messages') return
 		e.preventDefault()
@@ -53,7 +43,6 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 		if (!fitsBelow) y -= menuHeight
 		setContextMenu({ visible: true, x, y })
 	}
-
 	const menuItems = [
 		{
 			type: 'action',

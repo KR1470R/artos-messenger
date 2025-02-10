@@ -3,6 +3,7 @@ import { useChatStore } from '@/Store/useChatStore'
 import { IChat, IUserAll } from '@/Types/Services.interface'
 import { ConversationListItem } from '@/UI/ConversationListItem/ConversationListItem'
 import { TabsChat } from '@/UI/TabsChat/TabsChat'
+import { TabsMain } from '@/UI/TabsMain/TabsMain'
 import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import { ToolbarButton } from '@/UI/ToolbarButton/ToolbarButton'
 import React from 'react'
@@ -27,12 +28,11 @@ const ConversationList: React.FC = () => {
 		<div className='conversationList'>
 			<Toolbar
 				title='Artos Messenger'
-				leftItems={[<ToolbarButton key='cog' icon='ion-ios-cog' />]}
+				leftItems={[]}
 				rightItems={[<ToolbarButton key='add' icon='ion-ios-add-circle-outline' />]}
 			/>
 			<ConversationSearch />
 			<TabsChat activeTab={activeTab} setActiveTab={setActiveTab} />
-
 			{isLoading ? (
 				<div className='loading'>Loading...</div>
 			) : (
@@ -44,7 +44,7 @@ const ConversationList: React.FC = () => {
 									data={item}
 									isActive={chatId === item.id}
 									activeTab={activeTab}
-									lastMessage={lastMessages[item.id] || '(немає повідомлень)'}
+									lastMessage={lastMessages[item.id]}
 									onClick={() => handleItemClickChats(item.id)}
 								/>
 						  ))
@@ -61,6 +61,7 @@ const ConversationList: React.FC = () => {
 						  ))}
 				</div>
 			)}
+			<TabsMain />
 		</div>
 	)
 }
