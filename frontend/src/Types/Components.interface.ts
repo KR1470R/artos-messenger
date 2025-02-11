@@ -38,3 +38,9 @@ export interface IContextMenuProps {
 		className?: string
 	}[]
 }
+export interface SettingsParamsProps {
+	param: string
+	text: string
+	colorIcon: string
+	icon: React.ElementType
+}

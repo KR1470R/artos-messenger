@@ -1,15 +1,15 @@
+import { ConversationList } from '@/Components/Chats/ConversationList/ConversationList'
+import { MessageList } from '@/Components/Chats/MessageList/MessageList'
+import { SettingsContent } from '@/Components/Settings/SettingsContent/SettingsContent'
+import { SettingsList } from '@/Components/Settings/SettingsList/SettingsList'
 import { useAuthStore } from '@/Store/useAuthStore'
-import { useChatStore } from '@/Store/useChatStore'
-import { Auth } from '../Auth/Auth'
-import { ConversationList } from '../ConversationList/ConversationList'
-import { MessageList } from '../MessageList/MessageList'
-import { SettingsContent } from '../SettingsContent/SettingsContent'
-import { SettingsList } from '../SettingsList/SettingsList'
+import { useSettingsStore } from '@/Store/useSettingsStore'
+import { Auth } from '../../Pages/Auth/Auth'
 import './Messenger.css'
 
 const Messenger = () => {
 	const user = useAuthStore(state => state.user)
-	const tabMain = useChatStore(state => state.tabMain)
+	const tabMain = useSettingsStore(state => state.tabMain)
 
 	return user ? (
 		<div className='messenger'>

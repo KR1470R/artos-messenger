@@ -3,7 +3,7 @@
 	width: 100vw;
 	height: 100vh;
 	background: #eeeef1;
-	grid-template-columns: 350px auto;
+	grid-template-columns: 300px auto;
 	grid-template-rows: 60px auto 60px;
 	grid-column-gap: 1px;
 	grid-row-gap: 1px;
@@ -29,9 +29,4 @@
 	background: white;
 	grid-row-start: 1;
 	grid-row-end: span 3;
-}
-
-.footer {
-	grid-column-start: 2;
-	background: white;
 }

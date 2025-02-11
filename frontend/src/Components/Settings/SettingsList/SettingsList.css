@@ -1,0 +1,32 @@
+.settingsList {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	padding: 0px 10px;
+	h1 {
+		padding: 18px 0px;
+	}
+}
+.settingsUser {
+	padding-bottom: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	.avatar {
+		padding-right: 20px;
+		img {
+			object-fit: cover;
+			width: 70px;
+			height: 70px;
+			border-radius: 50%;
+		}
+	}
+	.username {
+		font-size: 16px;
+	}
+	.dataCreate,
+	.dataId {
+		color: #999;
+		font-size: 14px;
+	}
+}

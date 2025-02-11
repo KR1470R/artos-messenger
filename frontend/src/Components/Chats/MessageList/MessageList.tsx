@@ -1,9 +1,9 @@
 import { useMessageList } from '@/Hooks/useMessageList'
+import { Message } from '@/UI/Message/Message'
+import { Toolbar } from '@/UI/Toolbar/Toolbar'
+import { ToolbarButton } from '@/UI/ToolbarButton/ToolbarButton'
 import moment from 'moment'
 import { SlArrowDown } from 'react-icons/sl'
-import { Message } from '../../UI/Message/Message'
-import { Toolbar } from '../../UI/Toolbar/Toolbar'
-import { ToolbarButton } from '../../UI/ToolbarButton/ToolbarButton'
 import { Compose } from '../Compose/Compose'
 import './MessageList.css'
 
