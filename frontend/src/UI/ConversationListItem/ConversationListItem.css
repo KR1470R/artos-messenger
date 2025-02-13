@@ -6,12 +6,12 @@
 }
 
 .conversationListItem:hover {
-	background: #f4f4f8;
+	background: var(--background-button);
 	cursor: pointer;
 }
 
 .conversationListItem.active {
-	background-color: #f4f4f8;
+	background-color: var(--background-button);
 }
 
 .conversationPhoto {
@@ -30,5 +30,5 @@
 }
 .conversationSnippet {
 	font-size: 13px;
-	color: #999;
+	color: var(--border-color);
 }

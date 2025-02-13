@@ -47,7 +47,7 @@ const Auth = () => {
 						)}
 					</div>
 				)}
-				<button className='btn' type='submit'>
+				<button className='btn_login' type='submit'>
 					{isAuthType ? 'Login' : 'Register'}
 				</button>
 				<div

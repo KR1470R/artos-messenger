@@ -2,10 +2,10 @@
 	display: grid;
 	width: 100vw;
 	height: 100vh;
-	background: #eeeef1;
+	background: var(--border-color);
 	grid-template-columns: 300px auto;
 	grid-template-rows: 60px auto 60px;
-	grid-column-gap: 1px;
+	grid-column-gap: 0.5px;
 	grid-row-gap: 1px;
 }
 
@@ -20,13 +20,13 @@
 }
 
 .sidebar {
-	background: white;
+	background: var(--main-color);
 	grid-row-start: 1;
 	grid-row-end: span 3;
 }
 
 .content {
-	background: white;
+	background: var(--main-color);
 	grid-row-start: 1;
 	grid-row-end: span 3;
 }

@@ -10,8 +10,8 @@
 	margin: 0px auto;
 	font-size: 14px;
 	border-radius: 30px;
-	background-color: #fff;
-	color: #999;
+	background-color: var(--main-color);
+	color: var(--border-color);
 	padding: 10px;
 }
 
@@ -22,7 +22,7 @@
 
 .message .bubbleContainer .bubble {
 	margin: 1px 0;
-	background: #f4f4f8;
+	background: var(--background-button);
 	padding: 10px;
 	max-width: 75%;
 	border-radius: 20px;
@@ -33,7 +33,7 @@
 
 .message .bubbleContainer .bubble .messageTime {
 	display: inline-block;
-	color: #000;
+	color: var(--text-color);
 	font-size: 12px;
 	margin-left: 7px;
 	text-align: right;
@@ -46,16 +46,17 @@
 }
 
 .message.mine .bubbleContainer .bubble {
-	background: #007aff;
-	color: #fff;
+	background: var(--button-auth);
+	color: var(--stable-light-color);
 }
 
 .message.mine .bubbleContainer .bubble .messageTime {
-	color: #f4f4f4;
+	color: var(--stable-light-color);
 }
 .messageStatus {
 	font-size: 16px;
 	padding-left: 2px;
+	color: var(--stable-light-color);
 }
 .editTextarea {
 	border: none;

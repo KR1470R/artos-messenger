@@ -5,7 +5,7 @@
 }
 
 .conversationSearchInput {
-	background: #f4f4f8;
+	background: var(--background-button);
 	padding: 8px 10px;
 	border-radius: 10px;
 	border: none;

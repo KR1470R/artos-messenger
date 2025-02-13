@@ -6,9 +6,48 @@
 }
 body {
 	font-family: 'Inter', sans-serif;
-	background: #fff;
-	color: #000;
+	background: var(--main-color);
+	color: var(--text-color);
+	transition: background 0.3s, color 0.3s;
 }
+.lightTheme {
+	--main-color: #fff;
+	--text-color: #000;
+	--box-shadow: #00000026;
+	--button-auth: #007aff;
+	--button-auth-hov: #0063ce;
+	--error-color: #be3144;
+	--border-color: #999;
+	--background-button: #f5f5f5;
+	--context-menu-color: #0a141c;
+	--context-menu-back: linear-gradient(
+		45deg,
+		rgba(255, 255, 255, 0.45) 0%,
+		rgba(255, 255, 255, 0.85) 100%
+	);
+	--background-op: #ffffffcc;
+	--stable-light-color: #e9e6e3;
+}
+.darkTheme {
+	--main-color: #101111;
+	--text-color: #e9e6e3;
+	--box-shadow: #c5c4c45c;
+	--button-auth: #0362cc;
+	--button-auth-hov: #0056b1;
+	--error-color: #d94f52;
+	--border-color: #646464;
+	--background-button: #2d2f30;
+	--context-menu-color: #e9e6e3;
+	--context-menu-back: linear-gradient(
+		45deg,
+		rgba(10, 20, 28, 0.2) 0%,
+		rgba(10, 20, 28, 0.7) 100%
+	);
+	--context-menu-hover: #ffffff1a;
+	--background-op: #0f1011;
+	--stable-light-color: #e9e6e3;
+}
+
 svg {
 	vertical-align: middle;
 	line-height: 1;

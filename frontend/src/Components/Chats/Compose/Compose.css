@@ -3,18 +3,19 @@
 	padding: 0px 10px;
 	display: flex;
 	align-items: center;
-	background: white;
+	background: var(--main-color);
 	position: sticky;
 	width: calc(100% - 20px);
 	bottom: 0;
+	color: var(--text-color);
 }
 
 @supports (backdrop-filter: blur(20px)) {
 	.compose {
-		background-color: rgba(255, 255, 255, 0.8);
+		background-color: var(--background-op);
 		backdrop-filter: blur(20px);
-		border: 1px solid #d4d4d7;
-		border-radius: 10px;
+		border: 0.5px solid var(--border-color);
+		border-radius: 5px;
 	}
 }
 
@@ -30,6 +31,7 @@
 
 .composeInput::placeholder {
 	opacity: 0.3;
+	color: var(--text-color);
 }
 
 .compose .toolbarButton {

@@ -15,7 +15,7 @@
 
 .showMore {
 	cursor: pointer;
-	color: #ff0000;
+	color: var(--error-color);
 	font-weight: bold;
 	display: inline-flex;
 	gap: 2px;
