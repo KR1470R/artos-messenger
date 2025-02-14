@@ -1,0 +1,20 @@
+.themeSwitcher {
+	margin: 30px 20px;
+	display: flex;
+	gap: 20px;
+	align-items: center;
+}
+
+.themeItem {
+	background-color: var(--background-button);
+	border-radius: 20px;
+	.nameMode {
+		text-align: center;
+		padding: 5px 0px;
+	}
+	img {
+		padding: 5px;
+		border-radius: 20px;
+		object-fit: cover;
+	}
+}

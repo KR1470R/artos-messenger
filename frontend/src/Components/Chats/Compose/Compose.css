@@ -7,7 +7,6 @@
 	position: sticky;
 	width: calc(100% - 20px);
 	bottom: 0;
-	color: var(--text-color);
 }
 
 @supports (backdrop-filter: blur(20px)) {
@@ -27,6 +26,7 @@
 	background: none;
 	border: none;
 	outline: none;
+	color: var(--text-color);
 }
 
 .composeInput::placeholder {

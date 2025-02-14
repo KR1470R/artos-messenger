@@ -6,6 +6,8 @@
 	border-bottom: 1px solid var(--border-color);
 	position: sticky;
 	top: 0px;
+	padding: 10px;
+	min-height: 55px;
 }
 
 @supports (backdrop-filter: blur(20px)) {
@@ -20,12 +22,17 @@
 	margin: 0;
 	font-size: 16px;
 	font-weight: 800;
+	line-height: 1;
 }
-
+.toolbarButton {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+}
 .leftItems,
 .rightItems {
 	flex: 1;
-	padding: 10px;
+	padding: 0px 10px;
 	display: flex;
 }
 

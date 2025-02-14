@@ -2,10 +2,6 @@
 	display: flex;
 	flex-direction: column;
 	height: 100%;
-	padding: 0px 10px;
-	h1 {
-		padding: 18px 0px;
-	}
 }
 .settingsUser {
 	padding-bottom: 10px;
