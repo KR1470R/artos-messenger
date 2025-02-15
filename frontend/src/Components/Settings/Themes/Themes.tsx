@@ -17,7 +17,7 @@ const Themes = () => {
 					<img src='/darkTheme.png' alt='Night Mode' />
 					<p className='nameMode'>Night</p>
 				</div>
-				<div className='themeItem' onClick={() => setActiveTheme('compTheme')}>
+				<div className='themeItem' onClick={() => setActiveTheme('systemTheme')}>
 					<img src='/systemTheme.png' alt='System Mode' />
 					<p className='nameMode'>System</p>
 				</div>

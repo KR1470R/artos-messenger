@@ -5,10 +5,27 @@ import './App.css'
 
 const App = () => {
 	const { activeTheme } = useThemeStore()
-
 	useEffect(() => {
-		if (document.body.className !== activeTheme) document.body.className = activeTheme
+		const updateTheme = () => {
+			const theme =
+				activeTheme === 'systemTheme'
+					? window.matchMedia('(prefers-color-scheme: dark)').matches
+						? 'darkTheme'
+						: 'lightTheme'
+					: activeTheme
+			document.body.className = theme
+		}
+		updateTheme()
+		if (activeTheme === 'systemTheme') {
+			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+			mediaQuery.addEventListener('change', updateTheme)
+
+			return () => {
+				mediaQuery.removeEventListener('change', updateTheme)
+			}
+		}
 	}, [activeTheme])
+
 	return (
 		<div className='App'>
 			<Messenger />
