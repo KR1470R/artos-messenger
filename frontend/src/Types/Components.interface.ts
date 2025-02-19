@@ -43,4 +43,5 @@ export interface SettingsParamsProps {
 	text: string
 	colorIcon: string
 	icon: React.ElementType
+	onClick?: () => void
 }

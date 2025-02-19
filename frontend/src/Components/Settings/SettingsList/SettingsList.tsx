@@ -6,15 +6,25 @@ import moment from 'moment'
 import 'moment/locale/uk'
 import { IoIosColorPalette } from 'react-icons/io'
 import { IoPerson } from 'react-icons/io5'
+import { RiLogoutBoxRLine } from 'react-icons/ri'
 import './SettingsList.css'
 
 const SettingsList = () => {
-	const { user } = useAuthStore()
+	const { user, logout } = useAuthStore()
 	const createdDate = moment(user?.created_at).format('D.MM.YYYY HH:mm:ss')
+	const handleLogout = () => {
+		logout()
+		document.cookie.split(';').forEach(cookie => {
+			const [name] = cookie.split('=')
+			document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${
+				window.location.hostname
+			}`
+		})
+	}
 
 	return (
 		<div className='settingsList'>
-			<Toolbar title='Settings' leftItems={[]} rightItems={[]} />{' '}
+			<Toolbar title='Settings' leftItems={[]} rightItems={[]} />
 			<div className='settingsUser'>
 				<p className='avatar'>
 					<img src={user?.avatar_url} alt='avatar_url' />
@@ -37,6 +47,15 @@ const SettingsList = () => {
 				colorIcon='#1e94f9'
 				icon={IoIosColorPalette}
 			/>
+			<div className='logoutContainer'>
+				<SettingsParam
+					param={'logout'}
+					text={'Log Out'}
+					colorIcon='#ca213d'
+					icon={RiLogoutBoxRLine}
+					onClick={handleLogout}
+				/>
+			</div>
 			<TabsMain />
 		</div>
 	)

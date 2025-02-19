@@ -26,3 +26,9 @@
 		font-size: 14px;
 	}
 }
+.logoutContainer {
+	margin-top: auto;
+	padding-bottom: 70px;
+	display: flex;
+	justify-content: center;
+}

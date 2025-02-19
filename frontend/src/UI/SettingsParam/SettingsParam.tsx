@@ -8,13 +8,19 @@ const SettingsParam: React.FC<SettingsParamsProps> = ({
 	text,
 	colorIcon,
 	icon: Icon,
+	onClick,
 }) => {
 	const { activeParam, setActiveParam } = useSettingsStore()
+
+	const handleClick = () => {
+		setActiveParam(param)
+		if (onClick) onClick()
+	}
 
 	return (
 		<div
 			className={`settingsParam ${activeParam === param ? 'active' : ''}`}
-			onClick={() => setActiveParam(param)}
+			onClick={handleClick}
 		>
 			<p className='paramItem'>
 				<span className='icon' style={{ backgroundColor: colorIcon }}>
