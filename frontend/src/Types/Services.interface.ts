@@ -42,3 +42,9 @@ export interface IResponseError {
 	statusCode: string | number
 	timestamp: string
 }
+export interface IPatchUserRequest {
+	username?: string
+	password: string
+	old_password?: string
+	avatar_url?: string
+}
