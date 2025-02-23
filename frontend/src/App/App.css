@@ -25,6 +25,7 @@ body {
 		rgba(255, 255, 255, 0.45) 0%,
 		rgba(255, 255, 255, 0.85) 100%
 	);
+	--context-menu-hover: #e4e3e39d;
 	--background-op: #ffffffcc;
 	--stable-light-color: #e9e6e3;
 }

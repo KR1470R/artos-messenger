@@ -12,7 +12,7 @@ const PatchUser = async (data: IPatchUserRequest): Promise<{ message: string }> 
 		return response.data
 	} catch (error: any) {
 		const err = error?.response?.data || error
-		console.error('Error Patch user:', JSON.stringify(err)) // покращене логування помилок
+		console.error('Error Patch user:', err.message)
 		throw new Error('Patch user failed. Please check credentials and API configuration.')
 	}
 }

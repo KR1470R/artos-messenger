@@ -1,3 +1,4 @@
+import { DeleteCurrentUser } from '@/Services/users/DeleteCurrentUser.service'
 import { PatchUser } from '@/Services/users/PatchUser.service'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { IPatchUserRequest } from '@/Types/Services.interface'
@@ -59,7 +60,13 @@ const MyProfile = () => {
 		}
 	}
 	const avatarUrl = watch('avatar_url', user?.avatar_url)
-
+	const deleteUser = async () => {
+		try {
+			await DeleteCurrentUser()
+		} catch (err: any) {
+			console.error('Error delete user:', err)
+		}
+	}
 	return (
 		<>
 			<Toolbar title='Profile' leftItems={[]} rightItems={[]} />
@@ -163,6 +170,9 @@ const MyProfile = () => {
 						{isSubmitting ? 'Updating...' : 'Update'}
 					</button>
 				</form>
+				<button className='deleteMe' onClick={deleteUser}>
+					Delete me
+				</button>
 			</div>
 		</>
 	)

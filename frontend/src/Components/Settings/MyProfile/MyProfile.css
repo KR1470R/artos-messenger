@@ -2,6 +2,26 @@
 	padding: 20px 10px;
 	width: 80%;
 	margin: 0px auto;
+	button {
+		border: none;
+		outline: none;
+		border-radius: 10px;
+		background-color: var(--background-button);
+		padding: 10px 15px;
+		margin-top: 15px;
+		width: 100%;
+		text-align: left;
+		cursor: pointer;
+		&:hover {
+			background-color: var(--context-menu-hover);
+		}
+	}
+}
+.submitButton {
+	color: var(--text-color);
+}
+.deleteMe {
+	color: var(--error-color);
 }
 .personalData {
 	display: flex;
@@ -60,7 +80,7 @@ hr {
 .changePasswordText {
 	cursor: pointer;
 	color: var(--text-color);
-	margin-top: 20px;
+	margin-top: 15px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -82,19 +102,5 @@ hr {
 .passwordFields.open {
 	max-height: 200px;
 	opacity: 1;
-	margin-top: 10px;
-}
-.submitButton {
-	border: none;
-	outline: none;
-	border: 1px solid var(--border-color);
-	color: var(--text-color);
-	border-radius: 20px;
-	background-color: transparent;
-	padding: 10px 15px;
 	margin-top: 15px;
-	font-size: 16px;
-	&:hover {
-		background-color: var(--background-button);
-	}
 }

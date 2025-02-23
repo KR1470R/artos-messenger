@@ -13,6 +13,7 @@ const useRegistration = () => {
 	const [type, setType] = useState<'login' | 'register'>('login')
 	const isAuthType = type === 'login'
 	const clearErrors = useAuthStore(state => state.clearErrors)
+	const [showPassword, setShowPassword] = useState(false)
 
 	const {
 		register,
@@ -132,6 +133,8 @@ const useRegistration = () => {
 		},
 		setType,
 		errors,
+		showPassword,
+		setShowPassword,
 	}
 }
 

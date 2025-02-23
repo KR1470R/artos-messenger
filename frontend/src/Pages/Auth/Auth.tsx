@@ -1,10 +1,19 @@
 import { useRegistration } from '@/Hooks/useRegistration'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { ErrorMessages } from '@/UI/ErrorMessages/ErrorMessages'
+import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
 import './Auth.css'
 
 const Auth = () => {
-	const { handleSubmit, isAuthType, register, setType, errors } = useRegistration()
+	const {
+		handleSubmit,
+		isAuthType,
+		register,
+		setType,
+		errors,
+		showPassword,
+		setShowPassword,
+	} = useRegistration()
 	const errorsState = useAuthStore(state => state.errorsState)
 
 	return (
@@ -25,11 +34,14 @@ const Auth = () => {
 				</div>
 				<div className='formGroup'>
 					<input
-						type='password'
+						type={showPassword ? 'text' : 'password'}
 						className={`formControl ${errors.password ? 'formError' : ''}`}
 						placeholder='Password'
 						{...register('password')}
 					/>
+					<span className='eyeIcon' onClick={() => setShowPassword(!showPassword)}>
+						{showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
+					</span>
 					{errors.password && (
 						<span className='errorText'>{errors.password.message}</span>
 					)}
