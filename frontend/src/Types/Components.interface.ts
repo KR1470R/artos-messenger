@@ -45,3 +45,12 @@ export interface SettingsParamsProps {
 	icon: React.ElementType
 	onClick?: () => void
 }
+export interface IWarningModal {
+	open: boolean
+	onClose: () => void
+	onConfirm: () => void
+	message: string
+	confirmText: string
+	cancelText: string
+	title: string
+}

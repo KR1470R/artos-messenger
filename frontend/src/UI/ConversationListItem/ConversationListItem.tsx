@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { FaRegTrashCan } from 'react-icons/fa6'
 import { IChat, IUserAll } from '../../Types/Services.interface'
 import { ContextMenu } from '../ContextMenu/ContextMenu'
+import { WarningModal } from '../WarningModal/WarningModal'
 import './ConversationListItem.css'
 
 const ConversationListItem: React.FC<IConversationItem> = ({
@@ -28,6 +29,8 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 	)
 	const handleImageError = () => setImageSrc(fallbackAvatar)
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 })
+	const [isWarningOpen, setWarningOpen] = useState(false)
+
 	const handleContextMenu = (e: React.MouseEvent) => {
 		if (activeTab !== 'messages') return
 		e.preventDefault()
@@ -43,12 +46,20 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 		if (!fitsBelow) y -= menuHeight
 		setContextMenu({ visible: true, x, y })
 	}
+	const cancelDeleteChat = () => {
+		setWarningOpen(true)
+		closeContextMenu()
+	}
+	const confirmDeleteChat = () => {
+		deleteChat()
+		setWarningOpen(false)
+	}
 	const menuItems = [
 		{
 			type: 'action',
 			icon: <FaRegTrashCan />,
 			text: 'Delete Chat',
-			onClick: deleteChat,
+			onClick: cancelDeleteChat,
 			className: 'menuItemDelete',
 		},
 	]
@@ -79,6 +90,15 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 				y={contextMenu.y}
 				onClose={closeContextMenu}
 				items={menuItems}
+			/>
+			<WarningModal
+				open={isWarningOpen}
+				onClose={() => setWarningOpen(false)}
+				onConfirm={confirmDeleteChat}
+				message='Are you sure you want to delete the chat?'
+				confirmText='Delete'
+				cancelText='Cancel'
+				title='Artos Messenger'
 			/>
 		</>
 	)

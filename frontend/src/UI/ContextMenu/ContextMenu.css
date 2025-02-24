@@ -47,7 +47,7 @@
 }
 
 .contextMenu li:hover {
-	background-color: var(--context-menu-back);
+	background-color: var(--context-menu-hover);
 }
 
 .contextMenu .menuIcon {
