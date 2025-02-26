@@ -3,6 +3,7 @@ import { PatchUser } from '@/Services/users/PatchUser.service'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { IPatchUserRequest } from '@/Types/Services.interface'
 import { Toolbar } from '@/UI/Toolbar/Toolbar'
+import { WarningModal } from '@/UI/WarningModal/WarningModal'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
@@ -16,6 +17,10 @@ const MyProfile = () => {
 		old_password: false,
 		new_password: false,
 	})
+	const [deleteWarning, setDeleteWarning] = useState(false)
+	const [passwordWarning, setPasswordWarning] = useState(false)
+	const [pendingData, setPendingData] = useState<IPatchUserRequest | null>(null)
+
 	const {
 		register,
 		handleSubmit,
@@ -37,6 +42,16 @@ const MyProfile = () => {
 	const avatarUrlRegex = /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/i
 
 	const onSubmit = async (data: IPatchUserRequest) => {
+		const isPasswordChanged = data.old_password || data.password
+		if (isPasswordChanged) {
+			setPendingData(data)
+			setPasswordWarning(true)
+		} else {
+			await updateProfile(data)
+		}
+	}
+
+	const updateProfile = async (data: IPatchUserRequest) => {
 		const filteredData = Object.fromEntries(
 			Object.entries(data).filter(
 				([key]) => !['id', 'last_login_at', 'created_at', 'updated_at'].includes(key),
@@ -52,21 +67,36 @@ const MyProfile = () => {
 				username: filteredData.username ?? user?.username ?? '',
 				avatar_url: filteredData.avatar_url ?? user?.avatar_url ?? '',
 			}
-
 			setUser(updatedUser)
 			reset({ ...updatedUser, old_password: '', password: '' })
 		} catch (error) {
 			console.error('Failed to update profile:', error)
 		}
 	}
+
+	const confirmPasswordUpdate = async () => {
+		if (pendingData) {
+			await updateProfile(pendingData)
+			setPendingData(null)
+		}
+		setPasswordWarning(false)
+	}
+
 	const avatarUrl = watch('avatar_url', user?.avatar_url)
+
 	const deleteUser = async () => {
 		try {
 			await DeleteCurrentUser()
-		} catch (err: any) {
-			console.error('Error delete user:', err)
+		} catch (err) {
+			console.error('Error deleting user:', err)
 		}
 	}
+
+	const confirmDeleteMe = () => {
+		deleteUser()
+		setDeleteWarning(false)
+	}
+
 	return (
 		<>
 			<Toolbar title='Profile' leftItems={[]} rightItems={[]} />
@@ -74,7 +104,7 @@ const MyProfile = () => {
 				<form onSubmit={handleSubmit(onSubmit)} className='profile-form'>
 					<div className='personalData'>
 						<div className='personalImage'>
-							<img src={avatarUrl} alt='' />
+							<img src={avatarUrl} alt='User avatar' />
 						</div>
 						<div className='personalInput'>
 							<p className='nameInput'>
@@ -170,10 +200,28 @@ const MyProfile = () => {
 						{isSubmitting ? 'Updating...' : 'Update'}
 					</button>
 				</form>
-				<button className='deleteMe' onClick={deleteUser}>
+				<button className='deleteMe' onClick={() => setDeleteWarning(true)}>
 					Delete me
 				</button>
 			</div>
+			<WarningModal
+				open={passwordWarning}
+				onClose={() => setPasswordWarning(false)}
+				onConfirm={confirmPasswordUpdate}
+				message='You are changing your password. Are you sure you want to proceed?'
+				confirmText='Confirm'
+				cancelText='Cancel'
+				title='Password Change Warning'
+			/>
+			<WarningModal
+				open={deleteWarning}
+				onClose={() => setDeleteWarning(false)}
+				onConfirm={confirmDeleteMe}
+				message='Are you sure you want to delete your account?'
+				confirmText='Delete'
+				cancelText='Cancel'
+				title={user?.username}
+			/>
 		</>
 	)
 }

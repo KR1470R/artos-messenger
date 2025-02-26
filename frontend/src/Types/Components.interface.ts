@@ -52,5 +52,5 @@ export interface IWarningModal {
 	message: string
 	confirmText: string
 	cancelText: string
-	title: string
+	title?: string
 }

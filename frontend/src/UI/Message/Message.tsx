@@ -2,15 +2,21 @@ import { useContextMenu } from '@/Hooks/useContextMenu'
 import { useMessage } from '@/Hooks/useMessage'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { IMessageProps } from '@/Types/Messages.interface'
-import React from 'react'
+import React, { useState } from 'react'
 import { FaEdit, FaRegCopy } from 'react-icons/fa'
 import { FaRegTrashCan } from 'react-icons/fa6'
 import { IoCheckmark, IoCheckmarkDone } from 'react-icons/io5'
 import { ContextMenu } from '../ContextMenu/ContextMenu'
+import { WarningModal } from '../WarningModal/WarningModal'
 import './Message.css'
 
 const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 	const { handleCopyMessage, handleDeleteMessages } = useContextMenu(data)
+	const [warningOpen, setWarningOpen] = useState(false)
+	const confirmDeleteMessage = () => {
+		handleDeleteMessages()
+		setWarningOpen(false)
+	}
 	const user = useAuthStore(state => state.user)
 	const {
 		handleContextMenu,
@@ -49,7 +55,7 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 						type: 'action',
 						icon: <FaRegTrashCan />,
 						text: 'Delete',
-						onClick: handleDeleteMessages,
+						onClick: () => setWarningOpen(true),
 						className: 'menuItemDelete',
 					},
 			  ]
@@ -105,6 +111,15 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 				y={contextMenu.y}
 				onClose={closeContextMenu}
 				items={menuItems}
+			/>
+			<WarningModal
+				open={warningOpen}
+				onClose={() => setWarningOpen(false)}
+				onConfirm={confirmDeleteMessage}
+				message='Delete selected message?'
+				confirmText='Delete'
+				cancelText='Cancel'
+				title='Artos Messenger'
 			/>
 		</>
 	)

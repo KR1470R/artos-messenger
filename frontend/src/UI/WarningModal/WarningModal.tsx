@@ -35,7 +35,13 @@ const WarningModal: FC<IWarningModal> = ({
 			>
 				{title}
 			</DialogTitle>
-			<DialogContent sx={{ color: 'var(--border-color)', padding: '5px 0px' }}>
+			<DialogContent
+				sx={{
+					color: 'var(--text-color)',
+					padding: '5px 0px',
+					fontSize: '14px',
+				}}
+			>
 				<p>{message}</p>
 			</DialogContent>
 			<DialogActions
