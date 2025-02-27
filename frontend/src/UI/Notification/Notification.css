@@ -25,7 +25,21 @@
 	color: var(--text-color);
 	min-width: 300px;
 	max-width: 400px;
-	transition: transform 0.3s ease-in-out;
+	transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+	overflow: hidden;
+}
+
+.message {
+	flex-grow: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: all 0.3s ease-in-out;
+}
+
+.message.expanded {
+	white-space: normal;
+	overflow: visible;
 }
 
 .success {
@@ -50,13 +64,6 @@
 .error-icon {
 	color: var(--error-color);
 	font-size: 24px;
-}
-
-.message {
-	flex-grow: 1;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 
 .actions {

@@ -12,7 +12,7 @@ const DeleteChat = async (chatId: number) => {
 		console.log(error)
 		const err = error as IResponseError
 		console.error('Error in delete chat:', err.message || 'Unknown error')
-		throw new Error('Failed to retrieve existing chat.')
+		throw new Error(`Error in delete chat: ${err.message}`)
 	}
 }
 

@@ -13,7 +13,7 @@ const GetUsers = async () => {
 	} catch (error) {
 		const err = error as IResponseError
 		console.error('Error fetching users:', err.message || 'Unknown error')
-		throw new Error('Get users failed. Please check credentials and API configuration.')
+		throw new Error(`Error fetching users:' ${err.message}`)
 	}
 }
 

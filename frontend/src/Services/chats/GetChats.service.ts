@@ -13,7 +13,7 @@ const GetChats = async (): Promise<IChat[]> => {
 	} catch (error) {
 		const err = error as IResponseError
 		console.error('Failed to retrieve chats:', err || 'Unknown error')
-		throw new Error('Failed to retrieve chats.')
+		throw new Error(`Failed to retrieve chats: ${err.message}`)
 	}
 }
 

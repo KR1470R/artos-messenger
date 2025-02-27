@@ -17,7 +17,7 @@ const GetCurrentUser = async (): Promise<void> => {
 		const err = error as IResponseError
 		console.error('Error fetching user data:', err.message)
 		useAuthStore.getState().setError(err.message || 'Unknown error')
-		throw new Error('Failed to fetch user data. Please check API configuration.')
+		throw new Error(`Error fetching user data: ${err.message}`)
 	}
 }
 

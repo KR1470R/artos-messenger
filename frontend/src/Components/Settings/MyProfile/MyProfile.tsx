@@ -13,7 +13,7 @@ import { SlArrowDown, SlArrowUp } from 'react-icons/sl'
 import './MyProfile.css'
 
 const MyProfile = () => {
-	const { user, setUser } = useAuthStore()
+	const { user, setUser, logout } = useAuthStore()
 	const [showPasswordFields, setShowPasswordFields] = useState(false)
 	const [showPassword, setShowPassword] = useState({
 		old_password: false,
@@ -71,10 +71,20 @@ const MyProfile = () => {
 			}
 			setUser(updatedUser)
 			reset({ ...updatedUser, old_password: '', password: '' })
-			setNotification({ message: 'Profile updated successfully!', type: 'success' })
-		} catch (error) {
-			console.error('Failed to update profile:', error)
-			setNotification({ message: 'Failed to update profile.', type: 'error' })
+			setNotification({
+				message: 'Profile updated successfully!',
+				type: 'success',
+			})
+		} catch (error: any) {
+			let errorMessage = 'Failed to update profile.'
+			if (error?.response?.data?.message)
+				errorMessage = `Error: ${error.response.data.message}`
+			else if (error?.message) errorMessage = `Error: ${error.message}`
+
+			setNotification({
+				message: errorMessage,
+				type: 'error',
+			})
 		}
 	}
 
@@ -91,10 +101,14 @@ const MyProfile = () => {
 	const deleteUser = async () => {
 		try {
 			await DeleteCurrentUser()
+			logout()
 			setNotification({ message: 'Account deleted successfully!', type: 'success' })
-		} catch (err) {
-			console.error('Error deleting user:', err)
-			setNotification({ message: 'Failed to delete account.', type: 'error' })
+		} catch (err: any) {
+			let errorMessage = 'Failed to delete account.'
+			if (err?.response?.data?.message)
+				errorMessage = `Error: ${err.response.data.message}`
+			else if (err?.message) errorMessage = `Error: ${err.message}`
+			setNotification({ message: errorMessage, type: 'error' })
 		}
 	}
 

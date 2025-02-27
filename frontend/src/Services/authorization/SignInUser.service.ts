@@ -21,7 +21,7 @@ const SignInUser = async (userData: IUserData): Promise<void> => {
 		const err = error as IResponseError
 		const { setError } = useAuthStore.getState()
 		setError(`${err}`)
-		throw new Error('Sign-in failed, please check credentials.')
+		throw new Error(`Sign-in failed, please check credentials. ${err.message}`)
 	}
 }
 

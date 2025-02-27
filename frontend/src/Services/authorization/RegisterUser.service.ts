@@ -16,7 +16,7 @@ const RegisterUser = async (userData: IUserData): Promise<IResponseAuth> => {
 	} catch (error) {
 		const err = error as IResponseError
 		console.error('Registration failed:', err || 'Unknown error')
-		throw new Error('Registration failed')
+		throw new Error(`Registration failed: ${err}`)
 	}
 }
 

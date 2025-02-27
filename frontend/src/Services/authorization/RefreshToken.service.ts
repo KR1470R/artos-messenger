@@ -27,6 +27,7 @@ export const RefreshToken = async (): Promise<string> => {
 			err.message || 'Unknown error',
 		)
 		TokenService.clearToken()
-		throw new Error('Failed to refresh token')
+		throw new Error(`Token refresh failed. Please log in again.
+			${err.message}`)
 	}
 }

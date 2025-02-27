@@ -14,7 +14,7 @@ const CreateChat = async (targetUserId: number) => {
 	} catch (error) {
 		const err = error as IResponseError
 		console.error('Error in CreateChat:', err.message || 'Unknown error')
-		throw new Error('Failed to retrieve existing chat.')
+		throw new Error(`Error in CreateChat: ${err.message}`)
 	}
 }
 

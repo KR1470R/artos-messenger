@@ -1,4 +1,4 @@
-import { IPatchUserRequest } from '@/Types/Services.interface'
+import { IPatchUserRequest, IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
 const patchUserUrl = process.env.REACT_APP_USERS_ME_ROUTE
@@ -10,10 +10,10 @@ const PatchUser = async (data: IPatchUserRequest): Promise<{ message: string }> 
 	try {
 		const response = await ApiClient.patch<{ message: string }>(patchUserUrl, data)
 		return response.data
-	} catch (error: any) {
-		const err = error?.response?.data || error
+	} catch (error) {
+		const err = error as IResponseError
 		console.error('Error Patch user:', err.message)
-		throw new Error('Patch user failed. Please check credentials and API configuration.')
+		throw new Error(`Error Patch user: ${err.message}`)
 	}
 }
 

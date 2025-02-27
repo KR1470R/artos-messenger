@@ -28,7 +28,7 @@ const Notification = ({ message, type, open, onClose }: INotificationProps) => {
 		timerRef.current = setTimeout(() => {
 			setVisible(false)
 			setTimeout(onClose, 500)
-		}, 300000000000000)
+		}, 3000)
 	}
 	const handleMouseEnter = () => clearTimeout(timerRef.current!)
 	const handleMouseLeave = () => startTimer()
@@ -53,7 +53,7 @@ const Notification = ({ message, type, open, onClose }: INotificationProps) => {
 						<ErrorOutline className='error-icon' />
 					)}
 				</div>
-				<div className='message'>
+				<div className={`message ${expanded ? 'expanded' : ''}`}>
 					{expanded
 						? message
 						: `${message.slice(0, 30)}${message.length > 30 ? '...' : ''}`}

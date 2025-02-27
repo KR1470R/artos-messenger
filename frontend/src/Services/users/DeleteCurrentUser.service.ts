@@ -14,7 +14,7 @@ const DeleteCurrentUser = async () => {
 	} catch (error) {
 		const err = error as IResponseError
 		console.error('Error delete user:', err.message)
-		throw new Error('Failed to delete user. Please check API configuration.')
+		throw new Error(`Error delete user: ${err.message}`)
 	}
 }
 

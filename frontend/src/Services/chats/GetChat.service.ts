@@ -13,7 +13,7 @@ const GetChat = async (id: number) => {
 	} catch (error) {
 		const err = error as IResponseError
 		console.error('Failed to get chats:', err || 'Unknown error')
-		throw new Error('Failed to retrieve existing chat.')
+		throw new Error(`Failed to get chats: ${err.message}`)
 	}
 }
 export { GetChat }
