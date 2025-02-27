@@ -1,3 +1,4 @@
+import { REGEX } from '@/constants'
 import { TokenService } from '@/Services/authorization/accessTokenMemory'
 import { RegisterUser } from '@/Services/authorization/RegisterUser.service'
 import { SignInUser } from '@/Services/authorization/SignInUser.service'
@@ -29,10 +30,6 @@ const useRegistration = () => {
 			avatar_url: '',
 		},
 	})
-
-	const usernameRegex = /^[a-zA-Zа-яА-ЯёЁЇїІіЄєҐґ0-9_\-!@#$%^&*()]{3,20}$/
-	const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,20}$/
-	const avatarUrlRegex = /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/i
 
 	const { mutateAsync: registerAsync } = useMutation({
 		mutationKey: ['register'],
@@ -105,7 +102,7 @@ const useRegistration = () => {
 					return register(field, {
 						required: 'Username is required',
 						pattern: {
-							value: usernameRegex,
+							value: REGEX.USERNAME,
 							message:
 								'Username must be 3-20 characters and contain only letters, numbers, underscores, or dashes',
 						},
@@ -114,7 +111,7 @@ const useRegistration = () => {
 					return register(field, {
 						required: 'Password is required',
 						pattern: {
-							value: passwordRegex,
+							value: REGEX.PASSWORD,
 							message:
 								'Password must be 6-20 characters, include at least one letter and one number',
 						},
@@ -123,7 +120,7 @@ const useRegistration = () => {
 					return register(field, {
 						required: !isAuthType ? 'Avatar URL is required for registration' : undefined,
 						pattern: {
-							value: avatarUrlRegex,
+							value: REGEX.AVATAR_URL,
 							message: 'Avatar URL must be a valid image link (jpg, jpeg, png, gif)',
 						},
 					})

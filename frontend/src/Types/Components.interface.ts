@@ -54,3 +54,9 @@ export interface IWarningModal {
 	cancelText: string
 	title?: string
 }
+export interface INotificationProps {
+	message: string
+	type: 'success' | 'error'
+	open: boolean
+	onClose: () => void
+}

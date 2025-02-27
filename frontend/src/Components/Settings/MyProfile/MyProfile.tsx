@@ -1,7 +1,9 @@
+import { REGEX } from '@/constants'
 import { DeleteCurrentUser } from '@/Services/users/DeleteCurrentUser.service'
 import { PatchUser } from '@/Services/users/PatchUser.service'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { IPatchUserRequest } from '@/Types/Services.interface'
+import { Notification } from '@/UI/Notification/Notification'
 import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import { WarningModal } from '@/UI/WarningModal/WarningModal'
 import { useState } from 'react'
@@ -20,6 +22,10 @@ const MyProfile = () => {
 	const [deleteWarning, setDeleteWarning] = useState(false)
 	const [passwordWarning, setPasswordWarning] = useState(false)
 	const [pendingData, setPendingData] = useState<IPatchUserRequest | null>(null)
+	const [notification, setNotification] = useState<{
+		message: string
+		type: 'success' | 'error'
+	} | null>(null)
 
 	const {
 		register,
@@ -36,10 +42,6 @@ const MyProfile = () => {
 			password: '',
 		},
 	})
-
-	const usernameRegex = /^[a-zA-Zа-яА-ЯёЁЇїІіЄєҐґ0-9_\-!@#$%^&*()]{3,20}$/
-	const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,20}$/
-	const avatarUrlRegex = /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/i
 
 	const onSubmit = async (data: IPatchUserRequest) => {
 		const isPasswordChanged = data.old_password || data.password
@@ -69,8 +71,10 @@ const MyProfile = () => {
 			}
 			setUser(updatedUser)
 			reset({ ...updatedUser, old_password: '', password: '' })
+			setNotification({ message: 'Profile updated successfully!', type: 'success' })
 		} catch (error) {
 			console.error('Failed to update profile:', error)
+			setNotification({ message: 'Failed to update profile.', type: 'error' })
 		}
 	}
 
@@ -87,8 +91,10 @@ const MyProfile = () => {
 	const deleteUser = async () => {
 		try {
 			await DeleteCurrentUser()
+			setNotification({ message: 'Account deleted successfully!', type: 'success' })
 		} catch (err) {
 			console.error('Error deleting user:', err)
+			setNotification({ message: 'Failed to delete account.', type: 'error' })
 		}
 	}
 
@@ -111,7 +117,7 @@ const MyProfile = () => {
 								<input
 									{...register('username', {
 										pattern: {
-											value: usernameRegex,
+											value: REGEX.USERNAME,
 											message:
 												'Username should be between 3 and 20 characters long and contain only letters, digits, and special characters.',
 										},
@@ -127,7 +133,7 @@ const MyProfile = () => {
 								<input
 									{...register('avatar_url', {
 										pattern: {
-											value: avatarUrlRegex,
+											value: REGEX.AVATAR_URL,
 											message:
 												'Please enter a valid avatar URL (e.g. .jpg, .jpeg, .png, .gif).',
 										},
@@ -172,7 +178,7 @@ const MyProfile = () => {
 								type={showPassword.new_password ? 'text' : 'password'}
 								{...register('password', {
 									pattern: {
-										value: passwordRegex,
+										value: REGEX.PASSWORD,
 										message:
 											'Password should be between 6 and 20 characters and contain at least one letter and one number.',
 									},
@@ -222,6 +228,15 @@ const MyProfile = () => {
 				cancelText='Cancel'
 				title={user?.username}
 			/>
+
+			{notification && (
+				<Notification
+					message={notification.message}
+					type={notification.type}
+					open={Boolean(notification)}
+					onClose={() => setNotification(null)}
+				/>
+			)}
 		</>
 	)
 }
