@@ -9,6 +9,7 @@ body {
 	background: var(--main-color);
 	color: var(--text-color);
 	transition: background 0.3s, color 0.3s;
+	font-size: 14px;
 }
 .lightTheme {
 	--main-color: #fff;

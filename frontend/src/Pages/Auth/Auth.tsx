@@ -1,6 +1,5 @@
 import { useRegistration } from '@/Hooks/useRegistration'
-import { useAuthStore } from '@/Store/useAuthStore'
-import { ErrorMessages } from '@/UI/ErrorMessages/ErrorMessages'
+import { Notification } from '@/UI/Notification/Notification'
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
 import './Auth.css'
 
@@ -13,8 +12,9 @@ const Auth = () => {
 		errors,
 		showPassword,
 		setShowPassword,
+		errorMessage,
+		setErrorMessage,
 	} = useRegistration()
-	const errorsState = useAuthStore(state => state.errorsState)
 
 	return (
 		<div className='wrapper'>
@@ -27,10 +27,6 @@ const Auth = () => {
 						placeholder='User name'
 						{...register('username')}
 					/>
-					{errorsState.length > 0 && <ErrorMessages errorsState={errorsState} />}
-					{errors.username && (
-						<span className='errorText'>{errors.username.message}</span>
-					)}
 				</div>
 				<div className='formGroup'>
 					<input
@@ -42,9 +38,6 @@ const Auth = () => {
 					<span className='eyeIcon' onClick={() => setShowPassword(!showPassword)}>
 						{showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
 					</span>
-					{errors.password && (
-						<span className='errorText'>{errors.password.message}</span>
-					)}
 				</div>
 				{!isAuthType && (
 					<div className='formGroup'>
@@ -54,21 +47,33 @@ const Auth = () => {
 							placeholder='Avatar URL'
 							{...register('avatar_url')}
 						/>
-						{errors.avatar_url && (
-							<span className='errorText'>{errors.avatar_url.message}</span>
-						)}
 					</div>
 				)}
-				<button className='btn_login' type='submit'>
-					{isAuthType ? 'Login' : 'Register'}
-				</button>
 				<div
 					onClick={() => setType(isAuthType ? 'register' : 'login')}
 					className='btn_register'
 				>
 					I want to {isAuthType ? 'Register' : 'Login'}
 				</div>
+				<button className='btn_login' type='submit'>
+					{isAuthType ? 'Login' : 'Register'}
+				</button>
+				{Object.keys(errors).length > 0 && (
+					<div className='errorContainer'>
+						{Object.values(errors).map((error, index) => (
+							<p key={index} className='errorText'>
+								{error.message}
+							</p>
+						))}
+					</div>
+				)}
 			</form>
+			<Notification
+				message={errorMessage}
+				type='error'
+				open={!!errorMessage}
+				onClose={() => setErrorMessage('')}
+			/>
 		</div>
 	)
 }

@@ -7,31 +7,29 @@ import {
 	ExpandMore,
 } from '@mui/icons-material'
 import { IconButton, Snackbar } from '@mui/material'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './Notification.css'
 
 const Notification = ({ message, type, open, onClose }: INotificationProps) => {
 	const [expanded, setExpanded] = useState(false)
 	const [visible, setVisible] = useState(false)
 	const timerRef = useRef<NodeJS.Timeout | null>(null)
-
+	const handleMouseEnter = () => clearTimeout(timerRef.current!)
+	const handleMouseLeave = () => startTimer()
+	const startTimer = useCallback(() => {
+		clearTimeout(timerRef.current!)
+		timerRef.current = setTimeout(() => {
+			setVisible(false)
+			setTimeout(onClose, 500)
+		}, 3000)
+	}, [onClose])
 	useEffect(() => {
 		if (open) {
 			setVisible(true)
 			startTimer()
 		} else setVisible(false)
 		return () => clearTimeout(timerRef.current!)
-	}, [open])
-
-	const startTimer = () => {
-		clearTimeout(timerRef.current!)
-		timerRef.current = setTimeout(() => {
-			setVisible(false)
-			setTimeout(onClose, 500)
-		}, 3000)
-	}
-	const handleMouseEnter = () => clearTimeout(timerRef.current!)
-	const handleMouseLeave = () => startTimer()
+	}, [open, startTimer])
 
 	return (
 		<Snackbar

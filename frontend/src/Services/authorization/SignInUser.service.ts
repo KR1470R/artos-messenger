@@ -1,4 +1,3 @@
-import { useAuthStore } from '@/Store/useAuthStore'
 import { IResponseAuth, IResponseError, IUserData } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 import { GetCurrentUser } from '../users/GetCurrentUser.service'
@@ -19,8 +18,6 @@ const SignInUser = async (userData: IUserData): Promise<void> => {
 		await GetCurrentUser()
 	} catch (error) {
 		const err = error as IResponseError
-		const { setError } = useAuthStore.getState()
-		setError(`${err}`)
 		throw new Error(`Sign-in failed, please check credentials. ${err.message}`)
 	}
 }
