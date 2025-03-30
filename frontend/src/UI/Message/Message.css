@@ -1,6 +1,9 @@
 .message {
 	display: flex;
 	flex-direction: column;
+	height: auto;
+	min-height: min-content; 
+	max-height: fit-content; 
 }
 
 .message .timestamp {

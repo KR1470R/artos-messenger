@@ -5,6 +5,7 @@ import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import { WarningModal } from '@/UI/WarningModal/WarningModal'
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
 import { SlArrowDown, SlArrowUp } from 'react-icons/sl'
+
 import './MyProfile.css'
 
 const MyProfile = () => {

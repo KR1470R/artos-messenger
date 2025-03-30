@@ -1,5 +1,5 @@
+import { TokenService } from '@/Services/authorization/AccessTokenMemory'
 import axios from 'axios'
-import { TokenService } from '../authorization/accessTokenMemory'
 import { handle401Error } from './errorHandlingService'
 
 const ApiClient = axios.create({

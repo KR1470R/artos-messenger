@@ -1,4 +1,4 @@
-import { TokenService } from '../authorization/accessTokenMemory'
+import { TokenService } from '@/Services/authorization/AccessTokenMemory'
 import { disconnectSocket } from '../socket'
 
 export const handle401Error = async (error: any): Promise<any> => {

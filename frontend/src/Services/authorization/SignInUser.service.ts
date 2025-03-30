@@ -1,7 +1,7 @@
 import { IResponseAuth, IResponseError, IUserData } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 import { GetCurrentUser } from '../users/GetCurrentUser.service'
-import { TokenService } from './accessTokenMemory'
+import { TokenService } from './AccessTokenMemory'
 
 const signInUrl = process.env.REACT_APP_AUTH_SIGN_IN_ROUTE
 
