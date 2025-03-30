@@ -1,0 +1,39 @@
+.compose {
+	margin: 10px;
+	padding: 0px 10px;
+	display: flex;
+	align-items: center;
+	background: var(--main-color);
+	position: sticky;
+	width: calc(100% - 20px);
+	bottom: 0;
+}
+
+@supports (backdrop-filter: blur(20px)) {
+	.compose {
+		background-color: var(--background-op);
+		backdrop-filter: blur(20px);
+		border: 0.5px solid var(--border-color);
+		border-radius: 5px;
+	}
+}
+
+.composeInput {
+	flex: 1;
+	border: none;
+	font-size: 14px;
+	height: 40px;
+	background: none;
+	border: none;
+	outline: none;
+	color: var(--text-color);
+}
+
+.composeInput::placeholder {
+	opacity: 0.3;
+	color: var(--text-color);
+}
+
+.compose .toolbarButton {
+	margin: 0px 15px;
+}

@@ -1,15 +1,15 @@
 .toolbarButton {
-  color: #007aff;
-  font-size: 28px;
-  transition: all 0.1s;
+	color: var(--button-auth);
+	font-size: 28px;
+	transition: all 0.1s;
 }
 
 .toolbarButton:hover {
-  cursor: pointer;
-  color: #0063ce;
+	cursor: pointer;
+	color: var(--button-auth-hov);
 }
 
 .toolbarButton:active {
-  color: #007aff;
-  opacity: 0.25;
+	color: var(--button-auth);
+	opacity: 0.25;
 }

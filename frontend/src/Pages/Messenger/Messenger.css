@@ -1,0 +1,32 @@
+.messenger {
+	display: grid;
+	width: 100vw;
+	height: 100vh;
+	background: var(--border-color);
+	grid-template-columns: 300px auto;
+	grid-template-rows: 60px auto 60px;
+	grid-column-gap: 0.5px;
+	grid-row-gap: 1px;
+}
+
+.container {
+	padding: 10px;
+}
+
+.scrollable {
+	position: relative;
+	overflow-y: scroll;
+	-webkit-overflow-scrolling: touch;
+}
+
+.sidebar {
+	background: var(--main-color);
+	grid-row-start: 1;
+	grid-row-end: span 3;
+}
+
+.content {
+	background: var(--main-color);
+	grid-row-start: 1;
+	grid-row-end: span 3;
+}

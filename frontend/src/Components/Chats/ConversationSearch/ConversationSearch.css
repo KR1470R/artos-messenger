@@ -1,0 +1,22 @@
+.conversationSearch {
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+}
+
+.conversationSearchInput {
+	background: var(--background-button);
+	padding: 8px 10px;
+	border-radius: 10px;
+	border: none;
+	font-size: 14px;
+	color: var(--text-color);
+}
+
+.conversationSearchInput::placeholder {
+	text-align: center;
+}
+
+.conversationSearchInput:focus::placeholder {
+	text-align: left;
+}

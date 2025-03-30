@@ -1,6 +1,6 @@
+import { IToolBar } from '@/Types/Components.interface'
 import React from 'react'
 import './Toolbar.css'
-import { IToolBar } from '@/Types/Components.interface'
 const Toolbar: React.FC<IToolBar> = ({ title, leftItems, rightItems }) => {
 	return (
 		<div className='toolbar'>

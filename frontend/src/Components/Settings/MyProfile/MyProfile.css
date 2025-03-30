@@ -1,0 +1,106 @@
+.profileContainer {
+	padding: 20px 10px;
+	width: 80%;
+	margin: 0px auto;
+	button {
+		border: none;
+		outline: none;
+		border-radius: 10px;
+		background-color: var(--background-button);
+		padding: 10px 15px;
+		margin-top: 15px;
+		width: 100%;
+		text-align: left;
+		cursor: pointer;
+		&:hover {
+			background-color: var(--context-menu-hover);
+		}
+	}
+}
+.submitButton {
+	color: var(--text-color);
+}
+.deleteMe {
+	color: var(--error-color);
+}
+.personalData {
+	display: flex;
+	background-color: var(--background-button);
+	padding: 10px 15px;
+	border-radius: 10px;
+	.personalImage img {
+		width: 70px;
+		height: 70px;
+		border-radius: 50%;
+		object-fit: cover;
+	}
+}
+hr {
+	opacity: 0.7;
+	height: 1px;
+	background-color: var(--border-color);
+	margin: 5px 0px;
+}
+.personalInput,
+.passwordInput {
+	font-size: 16px;
+	margin-left: 10px;
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	input {
+		background-color: transparent;
+		padding: 5px 0px;
+		border: none;
+		outline: none;
+		width: 100%;
+		color: var(--text-color);
+	}
+}
+.passwordInput {
+	position: relative;
+	display: flex;
+	align-items: center;
+	input {
+		width: 100%;
+		padding-right: 35px;
+	}
+	.eyeIcon {
+		position: absolute;
+		right: 10px;
+		cursor: pointer;
+		color: var(--text-color);
+		font-size: 18px;
+	}
+}
+.inputError {
+	font-size: 12px;
+	color: var(--error-color);
+}
+.changePasswordText {
+	cursor: pointer;
+	color: var(--text-color);
+	margin-top: 15px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	span {
+		padding-left: 10px;
+	}
+}
+
+.passwordFields {
+	max-height: 0;
+	overflow: hidden;
+	opacity: 0;
+	transition: max-height 0.4s ease-in-out, opacity 0.3s ease-in-out;
+	background-color: var(--background-button);
+	border-radius: 10px;
+	padding: 10px 15px;
+}
+
+.passwordFields.open {
+	max-height: 200px;
+	opacity: 1;
+	margin-top: 15px;
+}

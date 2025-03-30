@@ -1,0 +1,75 @@
+.notification-container {
+	opacity: 0;
+	transform: translateX(100%);
+	transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.notification-container.show {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+.notification-container.hide {
+	opacity: 0;
+	transform: translateX(100%);
+}
+
+.notification {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 12px 16px;
+	border-radius: 8px;
+	box-shadow: 0px 2px 15px var(--box-shadow);
+	background: var(--background-op);
+	color: var(--text-color);
+	min-width: 300px;
+	max-width: 400px;
+	transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;
+	overflow: hidden;
+}
+
+.message {
+	flex-grow: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: all 0.3s ease-in-out;
+}
+
+.message.expanded {
+	white-space: normal;
+	overflow: visible;
+}
+
+.success {
+	border-left: 5px solid var(--button-auth);
+}
+
+.error {
+	border-left: 5px solid var(--error-color);
+}
+
+.icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.success-icon {
+	color: var(--button-auth);
+	font-size: 24px;
+}
+
+.error-icon {
+	color: var(--error-color);
+	font-size: 24px;
+}
+
+.actions {
+	display: flex;
+	gap: 5px;
+	svg {
+		color: var(--text-color);
+	}
+}

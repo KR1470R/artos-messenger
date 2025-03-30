@@ -1,0 +1,45 @@
+.messageList {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+}
+
+.messageListContainer {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	padding: 10px 10px 0;
+	overflow-y: auto;
+}
+.scrollBut {
+	position: absolute;
+	bottom: 70px;
+	right: 20px;
+	background-color: var(--main-color);
+	border-radius: 50%;
+	border: 1px solid var(--border-color);
+}
+.messageLen {
+	position: absolute;
+	top: -2px;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 20px;
+	height: 20px;
+	padding: 5px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	border-radius: 50%;
+	background-color: var(--button-auth);
+	color: var(--text-color);
+	font-size: 16px;
+}
+.scrollBot {
+	svg {
+		color: var(--border-color);
+		padding: 8px;
+		font-size: 35px;
+	}
+}

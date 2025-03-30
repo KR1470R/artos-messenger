@@ -1,6 +1,6 @@
 import { IMessageType } from '@/Types/Messages.interface'
 import { io, Socket } from 'socket.io-client'
-import { TokenService } from './authorization/AccessTokenMemory'
+import { TokenService } from './authorization/accessTokenMemory'
 
 export const socket: Socket = io(
 	`${process.env.REACT_APP_WS_URL}${process.env.REACT_APP_WS_MESSAGES_ROUTE}`,
@@ -47,7 +47,38 @@ export const fetchMessages = (chatId: number, pageSize: number, pageNum: number)
 		page_num: pageNum,
 	})
 }
-
+export const markMessageAsRead = (
+	chatId: number,
+	messageId: number,
+	is_read: boolean,
+) => {
+	if (!socket.connected) connectSocket()
+	socket.emit('update_message', {
+		chat_id: chatId,
+		id: messageId,
+		is_read,
+	})
+}
+export const updateMessage = (
+	chatId: number,
+	messageId: number,
+	content: string,
+	is_read: boolean,
+) => {
+	if (!socket.connected) connectSocket()
+	socket.emit('update_message', {
+		chat_id: chatId,
+		id: messageId,
+		content,
+		is_read,
+	})
+}
+export const deleteMessages = (chatId: number, id: number) => {
+	socket.emit('delete_message', {
+		chat_id: chatId,
+		id,
+	})
+}
 export const subscribeToNewMessages = (callback: (message: IMessageType) => void) => {
 	socket.on('new_message', callback)
 }
@@ -64,7 +95,22 @@ export const unsubscribeFromFetchMessages = (
 ) => {
 	socket.off('find_many_messages', callback)
 }
-
+export const subscribeToUpdatedMessages = (callback: (message: IMessageType) => void) => {
+	socket.on('updated_message', callback)
+}
+export const unsubscribeFromUpdatedMessages = (
+	callback: (message: IMessageType) => void,
+) => {
+	socket.off('updated_message', callback)
+}
+export const subscribeToDeleteMessage = (callback: (message: IMessageType) => void) => {
+	socket.on('deleted_message', callback)
+}
+export const unsubscribeFromDeleteMessage = (
+	callback: (message: IMessageType) => void,
+) => {
+	socket.off('deleted_message', callback)
+}
 export const disconnectSocket = () => {
 	if (socket.connected) socket.disconnect()
 }

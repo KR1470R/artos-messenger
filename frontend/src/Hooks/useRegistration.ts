@@ -1,9 +1,10 @@
-import { TokenService } from '@/Services/authorization/AccessTokenMemory'
+import { REGEX } from '@/constants'
+import { TokenService } from '@/Services/authorization/accessTokenMemory'
 import { RegisterUser } from '@/Services/authorization/RegisterUser.service'
 import { SignInUser } from '@/Services/authorization/SignInUser.service'
 import { connectSocket, disconnectSocket, socket } from '@/Services/socket'
-import { useAuthStore } from '@/Store/useAuthStore'
-import { IUserData } from '@/Types/Services.interface'
+import { GetCurrentUser } from '@/Services/users/GetCurrentUser.service'
+import { IResponseError, IUserData } from '@/Types/Services.interface'
 import { useMutation } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
@@ -11,8 +12,8 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 const useRegistration = () => {
 	const [type, setType] = useState<'login' | 'register'>('login')
 	const isAuthType = type === 'login'
-	const login = useAuthStore(state => state.login)
-	const clearErrors = useAuthStore(state => state.clearErrors)
+	const [showPassword, setShowPassword] = useState(false)
+	const [errorMessage, setErrorMessage] = useState<string>('')
 
 	const {
 		register,
@@ -29,23 +30,20 @@ const useRegistration = () => {
 		},
 	})
 
-	const usernameRegex = /^[a-zA-Zа-яА-ЯёЁЇїІіЄєҐґ0-9_\-!@#$%^&*()]{3,20}$/
-	const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{6,20}$/
-	const avatarUrlRegex = /^https?:\/\/.*\.(jpg|jpeg|png|gif)$/i
-
 	const { mutateAsync: registerAsync } = useMutation({
 		mutationKey: ['register'],
 		mutationFn: RegisterUser,
-		onError: err => {
+		onError: (err: IResponseError) => {
 			console.error('Error during registration:', err)
+			setErrorMessage(err.message)
 		},
 		onSuccess: async () => {
 			try {
-				clearErrors()
 				const { username, password } = watch()
 				await signInAsync({ username, password })
 			} catch (err) {
 				console.error('Sign-in failed after registration:', err)
+				setErrorMessage(`Sign-in failed after registration: ${err}`)
 			}
 		},
 	})
@@ -53,30 +51,36 @@ const useRegistration = () => {
 	const { mutateAsync: signInAsync } = useMutation({
 		mutationKey: ['login'],
 		mutationFn: SignInUser,
-		onError: (err: any) => {
-			if (err.response?.status === 401) {
+		onError: (err: IResponseError) => {
+			if (err.statusCode === 401) {
 				console.error('Login error: Invalid credentials provided.')
+				setErrorMessage('Invalid username or password.')
 			} else {
 				console.error('Login error: Unexpected server issue.', err)
+				setErrorMessage(`Login error: Unexpected server issue. ${err}`)
 			}
 		},
-		onSuccess: ({ id, username }) => {
-			clearErrors()
-			login(id, username)
-			connectSocket()
+		onSuccess: async () => {
+			try {
+				await GetCurrentUser()
+				connectSocket()
+			} catch (err) {
+				console.error('Error fetching user data after login:', err)
+				setErrorMessage('Failed to retrieve user data after login.')
+			}
 		},
 	})
 
 	const onSubmit: SubmitHandler<IUserData> = async formData => {
 		try {
-			if (isAuthType) {
+			setErrorMessage('')
+			if (isAuthType)
 				await signInAsync({ username: formData.username, password: formData.password })
-			} else {
-				await registerAsync(formData)
-			}
+			else await registerAsync(formData)
 			reset()
 		} catch (err) {
 			console.error('Error during submission:', err)
+			setErrorMessage(`Error during submission: ${err}`)
 		}
 	}
 
@@ -100,7 +104,7 @@ const useRegistration = () => {
 					return register(field, {
 						required: 'Username is required',
 						pattern: {
-							value: usernameRegex,
+							value: REGEX.USERNAME,
 							message:
 								'Username must be 3-20 characters and contain only letters, numbers, underscores, or dashes',
 						},
@@ -109,7 +113,7 @@ const useRegistration = () => {
 					return register(field, {
 						required: 'Password is required',
 						pattern: {
-							value: passwordRegex,
+							value: REGEX.PASSWORD,
 							message:
 								'Password must be 6-20 characters, include at least one letter and one number',
 						},
@@ -118,7 +122,7 @@ const useRegistration = () => {
 					return register(field, {
 						required: !isAuthType ? 'Avatar URL is required for registration' : undefined,
 						pattern: {
-							value: avatarUrlRegex,
+							value: REGEX.AVATAR_URL,
 							message: 'Avatar URL must be a valid image link (jpg, jpeg, png, gif)',
 						},
 					})
@@ -128,6 +132,10 @@ const useRegistration = () => {
 		},
 		setType,
 		errors,
+		showPassword,
+		setShowPassword,
+		errorMessage,
+		setErrorMessage,
 	}
 }
 

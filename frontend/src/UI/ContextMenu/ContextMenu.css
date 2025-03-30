@@ -1,0 +1,87 @@
+.contextMenu {
+	position: absolute;
+	background-color: linear-gradient(
+		45deg,
+		rgba(255, 255, 255, 0.45) 0%,
+		rgba(255, 255, 255, 0.85) 100%
+	);
+	backdrop-filter: blur(25px);
+	border-radius: 8px;
+	border: 1px solid var(--context-menu-back);
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 2px rgb(0 0 0 / 3%),
+		0 4px 4px rgb(0 0 0 / 4%), 0 10px 8px rgb(0 0 0 / 5%), 0 15px 15px rgb(0 0 0 / 6%),
+		0 30px 30px rgb(0 0 0 / 7%), 0 70px 65px rgba(0, 0, 0, 0.09);
+	z-index: 1000;
+	min-width: 150px;
+	max-width: 280px;
+	padding: 3px;
+	overflow: hidden;
+	animation: fadeIn 0.2s ease-in-out;
+}
+
+.contextMenu ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.contextMenu li {
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	cursor: pointer;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	font-size: 14px;
+	color: var(--context-menu-color);
+	border-radius: 4px;
+	opacity: 0;
+	animation: fadeInListItem 0.3s ease-out forwards;
+}
+
+.contextMenu li:nth-child(n) {
+	animation-delay: calc(0.05s * var(--index));
+}
+.contextMenu li.menuItemDelete,
+.contextMenu li.menuItemDelete .menuIcon {
+	color: var(--error-color);
+}
+
+.contextMenu li:hover {
+	background-color: var(--context-menu-hover);
+}
+
+.contextMenu .menuIcon {
+	font-size: 13px;
+	color: var(--context-menu-color);
+	transition: color 0.2s ease;
+	display: flex;
+	align-items: center;
+	padding-right: 5px;
+}
+
+.contextMenu hr {
+	margin: 6px 5px;
+	border: none;
+	border-top: 0.5px solid var(--context-menu-back);
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes fadeInListItem {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
