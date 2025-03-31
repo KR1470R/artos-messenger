@@ -1,7 +1,7 @@
 import { IResponseAuth, IResponseError, IUserData } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
-const registerUrl = process.env.REACT_APP_USERS_REGISTER_ROUTE
+const registerUrl = import.meta.env.VITE_USERS_REGISTER_ROUTE
 
 if (!registerUrl) {
 	throw new Error('Environment variables for API routes are not defined.')

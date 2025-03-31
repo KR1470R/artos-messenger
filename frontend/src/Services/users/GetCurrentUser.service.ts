@@ -2,10 +2,10 @@ import { useAuthStore } from '@/Store/useAuthStore'
 import { IResponseError, IUser } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
-const getUserUrl = process.env.REACT_APP_USERS_ME_ROUTE
+const getUserUrl = import.meta.env.VITE_USERS_ME_ROUTE
 
 if (!getUserUrl) {
-	throw new Error('Environment variable REACT_APP_USERS_ME_ROUTE is not defined.')
+	throw new Error('Environment variable VITE_USERS_ME_ROUTE is not defined.')
 }
 
 const GetCurrentUser = async (): Promise<void> => {

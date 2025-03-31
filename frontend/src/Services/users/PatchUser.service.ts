@@ -1,9 +1,9 @@
 import { IPatchUserRequest, IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
-const patchUserUrl = process.env.REACT_APP_USERS_ME_ROUTE
+const patchUserUrl = import.meta.env.VITE_USERS_ME_ROUTE
 if (!patchUserUrl) {
-	throw new Error('Environment variable REACT_APP_USERS_ME_ROUTE is not defined.')
+	throw new Error('Environment variable VITE_USERS_ME_ROUTE is not defined.')
 }
 
 const PatchUser = async (data: IPatchUserRequest): Promise<{ message: string }> => {
