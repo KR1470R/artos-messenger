@@ -1,9 +1,9 @@
 import { IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
-const deleteChatsUrl = process.env.REACT_APP_CHATS_ROUTE
+const deleteChatsUrl = import.meta.env.VITE_CHATS_ROUTE
 if (!deleteChatsUrl) {
-	throw new Error('Environment variable REACT_APP_CHATS_ROUTE is not defined.')
+	throw new Error('Environment variable VITE_CHATS_ROUTE is not defined!')
 }
 const DeleteChat = async (chatId: number) => {
 	try {

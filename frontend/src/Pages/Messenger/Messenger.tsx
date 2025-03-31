@@ -4,7 +4,7 @@ import { SettingsContent } from '@/Components/Settings/SettingsContent/SettingsC
 import { SettingsList } from '@/Components/Settings/SettingsList/SettingsList'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { useSettingsStore } from '@/Store/useSettingsStore'
-import { Auth } from '../../Pages/Auth/Auth'
+import { Auth } from '../Auth/Auth'
 import './Messenger.css'
 
 const Messenger = () => {

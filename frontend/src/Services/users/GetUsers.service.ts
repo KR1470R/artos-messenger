@@ -1,9 +1,9 @@
 import { IResponseError, IUserAll } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
-const getUsersUrl = process.env.REACT_APP_USERS_ROUTE
+const getUsersUrl = import.meta.env.VITE_USERS_ROUTE
 if (!getUsersUrl) {
-	throw new Error('Environment variable REACT_APP_USERS_ROUTE is not defined.')
+	throw new Error('Environment variable VITE_USERS_ROUTE is not defined.')
 }
 
 const GetUsers = async () => {
