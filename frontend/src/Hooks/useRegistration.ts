@@ -1,5 +1,5 @@
 import { REGEX } from '@/constants'
-import { TokenService } from '@/Services/authorization/accessTokenMemory'
+import { TokenService } from '@/Services/authorization/AccessTokenMemory'
 import { RegisterUser } from '@/Services/authorization/RegisterUser.service'
 import { SignInUser } from '@/Services/authorization/SignInUser.service'
 import { connectSocket, disconnectSocket, socket } from '@/Services/socket'

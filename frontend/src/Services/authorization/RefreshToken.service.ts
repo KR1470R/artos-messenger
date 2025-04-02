@@ -1,13 +1,11 @@
 import { IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
-import { TokenService } from './accessTokenMemory'
+import { TokenService } from './AccessTokenMemory'
 
-const refreshUrl = process.env.REACT_APP_AUTH_REFRESH_TOKEN_ROUTE
+const refreshUrl = import.meta.env.VITE_AUTH_REFRESH_TOKEN_ROUTE
 
 if (!refreshUrl) {
-	throw new Error(
-		'Environment variable REACT_APP_AUTH_REFRESH_TOKEN_ROUTE is not defined.',
-	)
+	throw new Error('Environment variable VITE_AUTH_REFRESH_TOKEN_ROUTE is not defined.')
 }
 
 export const RefreshToken = async (): Promise<string> => {

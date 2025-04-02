@@ -1,12 +1,12 @@
 import { IResponseAuth, IResponseError, IUserData } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 import { GetCurrentUser } from '../users/GetCurrentUser.service'
-import { TokenService } from './accessTokenMemory'
+import { TokenService } from './AccessTokenMemory'
 
-const signInUrl = process.env.REACT_APP_AUTH_SIGN_IN_ROUTE
+const signInUrl = import.meta.env.VITE_AUTH_SIGN_IN_ROUTE
 
 if (!signInUrl) {
-	throw new Error('Environment variable REACT_APP_AUTH_SIGN_IN_ROUTE is not defined.')
+	throw new Error('Environment variable VITE_AUTH_SIGN_IN_ROUTE is not defined.')
 }
 
 const SignInUser = async (userData: IUserData): Promise<void> => {

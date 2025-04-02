@@ -1,9 +1,9 @@
 import { IChat, IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
-const createChatsUrl = process.env.REACT_APP_CHATS_ROUTE
+const createChatsUrl = import.meta.env.VITE_CHATS_ROUTE
 if (!createChatsUrl) {
-	throw new Error('Environment variable REACT_APP_CHATS_ROUTE is not defined.')
+	throw new Error('Environment variable VITE_CHATS_ROUTE is not defined.')
 }
 
 const GetChats = async (): Promise<IChat[]> => {

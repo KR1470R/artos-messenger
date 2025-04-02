@@ -1,9 +1,9 @@
 import { IResponseError } from '@/Types/Services.interface'
 import { ApiClient } from '../network/ApiClient'
 
-const deleteUserUrl = process.env.REACT_APP_USERS_ME_ROUTE
+const deleteUserUrl = import.meta.env.VITE_USERS_ME_ROUTE
 if (!deleteUserUrl) {
-	throw new Error('Environment variable REACT_APP_USERS_ME_ROUTE is not defined.')
+	throw new Error('Environment variable VITE_USERS_ME_ROUTE is not defined.')
 }
 
 const DeleteCurrentUser = async () => {
