@@ -9,7 +9,6 @@ const DeleteChat = async (chatId: number) => {
 	try {
 		await ApiClient.delete(`${deleteChatsUrl}/${chatId}`)
 	} catch (error) {
-		console.log(error)
 		const err = error as IResponseError
 		console.error('Error in delete chat:', err.message || 'Unknown error')
 		throw new Error(`Error in delete chat: ${err.message}`)

@@ -1,7 +1,6 @@
 import { REGEX } from '@/constants'
 import { useProfile } from '@/Hooks/useProfile'
 import { Notification } from '@/UI/Notification/Notification'
-import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import { WarningModal } from '@/UI/WarningModal/WarningModal'
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa'
 import { SlArrowDown, SlArrowUp } from 'react-icons/sl'
@@ -32,7 +31,6 @@ const MyProfile = () => {
 	} = useProfile()
 	return (
 		<>
-			<Toolbar title='Profile' leftItems={[]} rightItems={[]} />
 			<div className='profileContainer'>
 				<form onSubmit={handleSubmit(onSubmit)} className='profile-form'>
 					<div className='personalData'>

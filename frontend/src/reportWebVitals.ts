@@ -1,6 +1,6 @@
 import * as webVitals from 'web-vitals'
 
-const reportWebVitals = (onPerfEntry?: (metric: any) => void) => {
+const reportWebVitals = (onPerfEntry?: (metric: unknown) => void) => {
 	if (onPerfEntry && typeof onPerfEntry === 'function') {
 		webVitals.onCLS(onPerfEntry)
 		webVitals.onFID(onPerfEntry)

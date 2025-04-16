@@ -1,5 +1,4 @@
 import { useThemeStore } from '@/Store/useThemeStore'
-import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import './Themes.css'
 
 const Themes = () => {
@@ -7,7 +6,6 @@ const Themes = () => {
 
 	return (
 		<>
-			<Toolbar title='Themes' leftItems={[]} rightItems={[]} />
 			<div className='themeSwitcher'>
 				<div className='themeItem' onClick={() => setActiveTheme('lightTheme')}>
 					<img src='/lightTheme.png' alt='Day Mode' />
