@@ -104,3 +104,8 @@ hr {
 	opacity: 1;
 	margin-top: 15px;
 }
+@media (max-width: 768px) {
+	.profileContainer {
+		width: 95%;
+	}
+}

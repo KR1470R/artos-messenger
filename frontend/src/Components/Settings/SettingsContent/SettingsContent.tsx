@@ -1,7 +1,7 @@
 import { useSettingsStore } from '@/Store/useSettingsStore'
 import { Toolbar } from '@/UI/Toolbar/Toolbar'
-import { ToolbarButton } from '@/UI/ToolbarButton/ToolbarButton'
 import { lazy, Suspense } from 'react'
+import { BsArrowLeftShort } from 'react-icons/bs'
 
 const MyProfile = lazy(() =>
 	import('../MyProfile/MyProfile').then(module => ({ default: module.MyProfile })),
@@ -13,6 +13,7 @@ const Themes = lazy(() =>
 )
 const SettingsContent: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 	const activeParam = useSettingsStore(state => state.activeParam)
+	if (activeParam !== 'profile' && activeParam !== 'themes') return null
 	const title =
 		activeParam === 'profile'
 			? 'My Profile'
@@ -25,7 +26,14 @@ const SettingsContent: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 				title={title}
 				leftItems={
 					onBack
-						? [<ToolbarButton key='back' icon='ion-ios-arrow-back' onClick={onBack} />]
+						? [
+								<p className='backBut' onClick={onBack}>
+									<span className='iconBack'>
+										<BsArrowLeftShort />
+									</span>
+									Back
+								</p>,
+						  ]
 						: []
 				}
 				rightItems={[]}

@@ -5,12 +5,15 @@ import { TabsMain } from '@/UI/TabsMain/TabsMain'
 import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import moment from 'moment'
 import 'moment/locale/uk'
+import React from 'react'
 import { IoIosColorPalette } from 'react-icons/io'
 import { IoPerson } from 'react-icons/io5'
 import { RiLogoutBoxRLine } from 'react-icons/ri'
 import './SettingsList.css'
 
-const SettingsList: React.FC<{ onSelectChat?: () => void }> = ({ onSelectChat }) => {
+const SettingsList: React.FC<{
+	onSelectSetting?: (param: 'profile' | 'themes') => void
+}> = ({ onSelectSetting }) => {
 	const { user, logout } = useAuthStore()
 	const setActiveParam = useSettingsStore(state => state.setActiveParam)
 	const createdDate = moment(user?.created_at).format('D.MM.YYYY HH:mm:ss')
@@ -26,7 +29,7 @@ const SettingsList: React.FC<{ onSelectChat?: () => void }> = ({ onSelectChat })
 
 	const openParam = (param: 'profile' | 'themes') => {
 		setActiveParam(param)
-		onSelectChat?.()
+		onSelectSetting?.(param)
 	}
 
 	return (
