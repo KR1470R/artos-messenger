@@ -1,6 +1,6 @@
 .toolbarButton {
 	color: var(--button-auth);
-	font-size: 28px;
+	font-size: var(--font-size-xxl);
 	transition: all 0.1s;
 }
 

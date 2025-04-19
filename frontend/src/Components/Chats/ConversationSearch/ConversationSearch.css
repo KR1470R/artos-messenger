@@ -9,7 +9,7 @@
 	padding: 8px 10px;
 	border-radius: 10px;
 	border: none;
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	color: var(--text-color);
 }
 

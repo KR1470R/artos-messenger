@@ -23,11 +23,11 @@
 }
 
 .conversationTitle {
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	font-weight: bold;
 	margin: 0;
 }
 .conversationSnippet {
-	font-size: 13px;
+	font-size: var(--font-size-xs);
 	color: var(--border-color);
 }

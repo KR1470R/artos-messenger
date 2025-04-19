@@ -35,14 +35,14 @@
 	border-radius: 50%;
 	background-color: var(--button-auth);
 	color: var(--text-color);
-	font-size: 16px;
+	font-size: var(--font-size-md);
 }
 .backBut {
 	display: flex;
 	align-items: center;
 	.iconBack {
 		svg {
-			font-size: 25px;
+			font-size: var(--font-size-xxl);
 		}
 	}
 }

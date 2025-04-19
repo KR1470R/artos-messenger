@@ -14,7 +14,7 @@
 	justify-content: center;
 	align-items: center;
 	cursor: pointer;
-	font-size: 25px;
+	font-size: var(--font-size-xxl);
 	padding: 5px;
 	color: var(--border-color);
 	transition: color 0.3s ease, background-color 0.3s ease;

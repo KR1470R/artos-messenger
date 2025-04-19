@@ -25,7 +25,7 @@ body {
 .formSignInHeading {
 	color: var(--text-color);
 	margin-bottom: 30px;
-	font-size: 24px;
+	font-size: var(--font-size-xxl);
 	font-weight: bold;
 	text-align: center;
 }
@@ -39,7 +39,7 @@ body {
 
 .formControl {
 	width: 100%;
-	font-size: 16px;
+	font-size: var(--font-size-md);
 	padding: 12px 15px;
 	border: 1px solid var(--border-color);
 	border-radius: 5px;
@@ -63,7 +63,7 @@ body {
 	color: var(--stable-light-color);
 	border: none;
 	border-radius: 5px;
-	font-size: 16px;
+	font-size: var(--font-size-md);
 	font-weight: 500;
 	cursor: pointer;
 	transition: background-color 0.3s ease;
@@ -92,7 +92,7 @@ body {
 	transform: translateY(-50%);
 	cursor: pointer;
 	color: var(--text-color);
-	font-size: 18px;
+	font-size: var(--font-size-lg);
 	display: flex;
 	align-items: center;
 	justify-content: center;

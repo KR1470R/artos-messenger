@@ -21,7 +21,7 @@
 			border-radius: 10px;
 			color: var(--stable-light-color);
 			svg {
-				font-size: 20px;
+				font-size: var(--font-size-xl);
 			}
 		}
 	}

@@ -18,12 +18,12 @@
 		}
 	}
 	.username {
-		font-size: 16px;
+		font-size: var(--font-size-md);
 	}
 	.dataCreate,
 	.dataId {
 		color: var(--border-color);
-		font-size: 14px;
+		font-size: var(--font-size-sm);
 	}
 }
 .logoutContainer {
