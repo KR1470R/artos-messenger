@@ -13,7 +13,12 @@ const Themes = lazy(() =>
 )
 const SettingsContent: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 	const activeParam = useSettingsStore(state => state.activeParam)
+	const setActiveParam = useSettingsStore(state => state.setActiveParam)
 	if (activeParam !== 'profile' && activeParam !== 'themes') return null
+	const handleBack = () => {
+		setActiveParam(null)
+		onBack?.()
+	}
 	const title =
 		activeParam === 'profile'
 			? 'My Profile'
@@ -27,7 +32,7 @@ const SettingsContent: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
 				leftItems={
 					onBack
 						? [
-								<p className='backBut' onClick={onBack}>
+								<p className='backBut' onClick={handleBack}>
 									<span className='iconBack'>
 										<BsArrowLeftShort />
 									</span>
