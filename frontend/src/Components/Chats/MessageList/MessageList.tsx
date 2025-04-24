@@ -3,11 +3,14 @@ import { Message } from '@/UI/Message/Message'
 import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import { ToolbarButton } from '@/UI/ToolbarButton/ToolbarButton'
 import moment from 'moment'
+import React from 'react'
+import { BsArrowLeftShort } from 'react-icons/bs'
 import { SlArrowDown } from 'react-icons/sl'
 import { Compose } from '../Compose/Compose'
+
 import './MessageList.css'
 
-const MessageList = () => {
+const MessageList: React.FC<{ onBack?: () => void }> = React.memo(({ onBack }) => {
 	const {
 		selectedUser,
 		messages,
@@ -23,7 +26,18 @@ const MessageList = () => {
 		<div className='messageList'>
 			<Toolbar
 				title={`Chat with ${selectedUser?.username || '...'}`}
-				leftItems={[]}
+				leftItems={
+					onBack
+						? [
+								<p className='backBut' onClick={onBack}>
+									<span className='iconBack'>
+										<BsArrowLeftShort />
+									</span>
+									Back
+								</p>,
+						  ]
+						: []
+				}
 				rightItems={[
 					<ToolbarButton key='info' icon='ion-ios-information-circle-outline' />,
 				]}
@@ -56,6 +70,6 @@ const MessageList = () => {
 			<Compose onSend={handleSend} />
 		</div>
 	)
-}
+})
 
 export { MessageList }

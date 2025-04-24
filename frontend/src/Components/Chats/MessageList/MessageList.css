@@ -1,7 +1,7 @@
 .messageList {
 	display: flex;
 	flex-direction: column;
-	height: 100vh;
+	height: 100%;
 }
 
 .messageListContainer {
@@ -18,6 +18,7 @@
 	background-color: var(--main-color);
 	border-radius: 50%;
 	border: 1px solid var(--border-color);
+	cursor: pointer;
 }
 .messageLen {
 	position: absolute;
@@ -34,7 +35,16 @@
 	border-radius: 50%;
 	background-color: var(--button-auth);
 	color: var(--text-color);
-	font-size: 16px;
+	font-size: var(--font-size-md);
+}
+.backBut {
+	display: flex;
+	align-items: center;
+	.iconBack {
+		svg {
+			font-size: var(--font-size-xxl);
+		}
+	}
 }
 .scrollBot {
 	svg {

@@ -3,18 +3,32 @@
 	display: flex;
 	gap: 20px;
 	align-items: center;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+	padding-bottom: 3px;
+}
+
+.themeSwitcher::-webkit-scrollbar {
+	height: 6px;
+}
+
+.themeSwitcher::-webkit-scrollbar-thumb {
+	background: var(--background-button);
+	border-radius: 10px;
 }
 
 .themeItem {
 	background-color: var(--background-button);
 	border-radius: 20px;
-	.nameMode {
-		text-align: center;
-		padding: 5px 0px;
-	}
-	img {
-		padding: 5px;
-		border-radius: 20px;
-		object-fit: cover;
-	}
+}
+
+.themeItem .nameMode {
+	text-align: center;
+	padding: 5px 0px;
+}
+
+.themeItem img {
+	padding: 5px;
+	border-radius: 20px;
+	object-fit: cover;
 }

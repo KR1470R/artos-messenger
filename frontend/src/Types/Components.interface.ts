@@ -60,3 +60,9 @@ export interface INotificationProps {
 	open: boolean
 	onClose: () => void
 }
+
+export interface IScreenStackProps {
+	children: React.ReactNode[]
+	activeIndex: number
+	onBack?: () => void
+}

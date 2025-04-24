@@ -9,7 +9,7 @@ interface IThemeStore {
 export const useThemeStore = create<IThemeStore>()(
 	persist(
 		set => ({
-			activeTheme: 'darkTheme',
+			activeTheme: 'systemTheme',
 			setActiveTheme: theme => {
 				const newTheme =
 					theme === 'systemTheme'

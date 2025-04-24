@@ -1,16 +1,21 @@
 import { useAuthStore } from '@/Store/useAuthStore'
+import { useSettingsStore } from '@/Store/useSettingsStore'
 import { SettingsParam } from '@/UI/SettingsParam/SettingsParam'
 import { TabsMain } from '@/UI/TabsMain/TabsMain'
 import { Toolbar } from '@/UI/Toolbar/Toolbar'
 import moment from 'moment'
 import 'moment/locale/uk'
+import React from 'react'
 import { IoIosColorPalette } from 'react-icons/io'
 import { IoPerson } from 'react-icons/io5'
 import { RiLogoutBoxRLine } from 'react-icons/ri'
 import './SettingsList.css'
 
-const SettingsList = () => {
+const SettingsList: React.FC<{
+	onSelectSetting?: (param: 'profile' | 'themes') => void
+}> = ({ onSelectSetting }) => {
 	const { user, logout } = useAuthStore()
+	const setActiveParam = useSettingsStore(state => state.setActiveParam)
 	const createdDate = moment(user?.created_at).format('D.MM.YYYY HH:mm:ss')
 	const handleLogout = () => {
 		logout()
@@ -20,6 +25,11 @@ const SettingsList = () => {
 				window.location.hostname
 			}`
 		})
+	}
+
+	const openParam = (param: 'profile' | 'themes') => {
+		setActiveParam(param)
+		onSelectSetting?.(param)
 	}
 
 	return (
@@ -40,12 +50,14 @@ const SettingsList = () => {
 				text={'My Profile'}
 				colorIcon='#ca213d'
 				icon={IoPerson}
+				onClick={() => openParam('profile')}
 			/>
 			<SettingsParam
 				param={'themes'}
 				text={'Color Theme'}
 				colorIcon='#1e94f9'
 				icon={IoIosColorPalette}
+				onClick={() => openParam('themes')}
 			/>
 			<div className='logoutContainer'>
 				<SettingsParam

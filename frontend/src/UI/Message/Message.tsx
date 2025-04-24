@@ -10,7 +10,7 @@ import { ContextMenu } from '../ContextMenu/ContextMenu'
 import { WarningModal } from '../WarningModal/WarningModal'
 import './Message.css'
 
-const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
+const Message: React.FC<IMessageProps> = React.memo(({ data, isMine, showDate }) => {
 	const { handleCopyMessage, handleDeleteMessages } = useContextMenu(data)
 	const [warningOpen, setWarningOpen] = useState(false)
 	const confirmDeleteMessage = () => {
@@ -123,6 +123,6 @@ const Message: React.FC<IMessageProps> = ({ data, isMine, showDate }) => {
 			/>
 		</>
 	)
-}
+})
 
 export { Message }

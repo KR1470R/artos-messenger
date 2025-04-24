@@ -59,7 +59,6 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 			className: 'menuItemDelete',
 		},
 	]
-
 	return (
 		<>
 			<div

@@ -8,25 +8,32 @@
 	grid-column-gap: 0.5px;
 	grid-row-gap: 1px;
 }
-
 .container {
 	padding: 10px;
 }
-
 .scrollable {
 	position: relative;
 	overflow-y: scroll;
 	-webkit-overflow-scrolling: touch;
 }
-
 .sidebar {
 	background: var(--main-color);
 	grid-row-start: 1;
 	grid-row-end: span 3;
 }
-
 .content {
 	background: var(--main-color);
 	grid-row-start: 1;
 	grid-row-end: span 3;
+}
+@media (max-width: 768px) {
+	.messenger {
+		display: block;
+		width: 100vw;
+		height: 100vh;
+		overflow: hidden;
+	}
+	.messenger > * {
+		height: 100%;
+	}
 }

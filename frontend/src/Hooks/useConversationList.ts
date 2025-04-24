@@ -12,7 +12,7 @@ import { useChatStore } from '@/Store/useChatStore'
 import { IMessageType } from '@/Types/Messages.interface'
 import { IChat, IResponseError, IUserAll } from '@/Types/Services.interface'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const useConversationList = () => {
 	const [activeTab, setActiveTab] = useState<'messages' | 'users'>('messages')
@@ -32,16 +32,20 @@ const useConversationList = () => {
 	})
 
 	const isLoading = activeTab === 'messages' ? isChatsLoading : isUsersLoading
-	const getRenderContent = (): IChat[] | IUserAll[] => {
+	const getRenderContent = useMemo(() => {
 		return activeTab === 'messages' ? chatsData || [] : usersData || []
-	}
+	}, [activeTab, chatsData, usersData])
 
 	useEffect(() => {
 		if (!chatsData) return
+		const handlers: Array<() => void> = []
 		const handleMessages = (messages: IMessageType[], chatId: number) => {
 			if (messages.length > 0) {
 				const lastMessage = messages[messages.length - 1].content
-				setLastMessages(prev => ({ ...prev, [chatId]: lastMessage }))
+				setLastMessages(prev => {
+					if (prev[chatId] === lastMessage) return prev
+					return { ...prev, [chatId]: lastMessage }
+				})
 			}
 		}
 		chatsData.forEach(chat => {
@@ -50,10 +54,11 @@ const useConversationList = () => {
 			const messageHandler = (messages: IMessageType[]) =>
 				handleMessages(messages, chat.id)
 			subscribeToFetchMessages(messageHandler)
-			return () => {
-				unsubscribeFromFetchMessages(messageHandler)
-			}
+			handlers.push(() => unsubscribeFromFetchMessages(messageHandler))
 		})
+		return () => {
+			handlers.forEach(unsub => unsub())
+		}
 	}, [chatsData])
 
 	const handleItemClickUsers = async (userSelect: { id: number; username: string }) => {
@@ -86,7 +91,7 @@ const useConversationList = () => {
 	return {
 		activeTab,
 		setActiveTab,
-		getRenderContent,
+		renderContent: getRenderContent,
 		isLoading,
 		handleItemClickUsers,
 		handleItemClickChats,

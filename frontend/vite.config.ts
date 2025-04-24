@@ -16,10 +16,10 @@ export default defineConfig({
 		},
 	},
 	build: {
-		target: 'esnext',
-		minify: 'esbuild',
+		target: 'es2017',
+		minify: false,
 		outDir: 'build',
-		cssCodeSplit: true,
+		cssCodeSplit: false,
 		sourcemap: false,
 		chunkSizeWarningLimit: 1000,
 		rollupOptions: {

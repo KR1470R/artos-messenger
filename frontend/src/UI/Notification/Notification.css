@@ -58,12 +58,12 @@
 
 .success-icon {
 	color: var(--button-auth);
-	font-size: 24px;
+	font-size: var(--font-size-xxl);
 }
 
 .error-icon {
 	color: var(--error-color);
-	font-size: 24px;
+	font-size: var(--font-size-xxl);
 }
 
 .actions {

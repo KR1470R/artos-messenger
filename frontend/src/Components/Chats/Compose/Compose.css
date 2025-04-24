@@ -21,7 +21,7 @@
 .composeInput {
 	flex: 1;
 	border: none;
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	height: 40px;
 	background: none;
 	border: none;

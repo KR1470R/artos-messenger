@@ -9,7 +9,6 @@ if (!deleteUserUrl) {
 const DeleteCurrentUser = async () => {
 	try {
 		const response = await ApiClient.delete(deleteUserUrl)
-		console.log(response)
 		return response.data
 	} catch (error) {
 		const err = error as IResponseError

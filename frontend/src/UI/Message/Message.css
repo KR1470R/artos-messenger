@@ -2,8 +2,8 @@
 	display: flex;
 	flex-direction: column;
 	height: auto;
-	min-height: min-content; 
-	max-height: fit-content; 
+	min-height: min-content;
+	max-height: fit-content;
 }
 
 .message .timestamp {
@@ -11,7 +11,7 @@
 	text-align: center;
 	display: inline-block;
 	margin: 0px auto;
-	font-size: 14px;
+	font-size: var(--font-size-sm);
 	border-radius: 30px;
 	background-color: var(--main-color);
 	color: var(--border-color);
@@ -19,7 +19,7 @@
 }
 
 .message .bubbleContainer {
-	font-size: 16px;
+	font-size: var(--font-size-md);
 	display: flex;
 }
 
@@ -37,7 +37,7 @@
 .message .bubbleContainer .bubble .messageTime {
 	display: inline-block;
 	color: var(--text-color);
-	font-size: 12px;
+	font-size: var(--font-size-xs);
 	margin-left: 7px;
 	text-align: right;
 	vertical-align: bottom;
@@ -57,7 +57,7 @@
 	color: var(--stable-light-color);
 }
 .messageStatus {
-	font-size: 16px;
+	font-size: var(--font-size-md);
 	padding-left: 2px;
 	color: var(--stable-light-color);
 }

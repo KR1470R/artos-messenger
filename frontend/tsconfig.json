@@ -16,9 +16,6 @@
 		"noEmit": true,
 		"jsx": "react-jsx",
 		"types": ["jest", "node"],
-		"incremental": true,
-		"composite": true,
-		"tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo",
 		"paths": {
 			"@/*": ["./src/*"]
 		}
