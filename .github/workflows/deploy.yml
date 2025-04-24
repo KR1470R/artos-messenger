@@ -94,8 +94,8 @@ jobs:
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
             cd artos-messenger
-            mv backend-configs/.env.* ./backend/configs
-            mv frontend-configs/.env.* ./frontend
+            cp backend-configs/.env.* ./backend/configs
+            cp frontend-configs/.env.* ./frontend
 
       - name: Restart the application
         uses: appleboy/ssh-action@master
