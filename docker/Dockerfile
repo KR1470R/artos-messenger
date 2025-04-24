@@ -5,7 +5,7 @@ WORKDIR /app/frontend
 COPY frontend/package*.json ./
 RUN npm install
 COPY frontend/ ./
-RUN npm run build
+RUN NODE_OPTIONS="--max-old-space-size=768" npm run build
 
 # Stage 2: Build the backend
 FROM node:18-alpine AS backend_builder
