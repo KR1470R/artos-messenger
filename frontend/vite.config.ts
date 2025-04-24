@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vite'
@@ -17,11 +17,12 @@ export default defineConfig({
 	},
 	build: {
 		target: 'es2017',
-		minify: false,
+		minify: 'esbuild',
 		outDir: 'build',
 		cssCodeSplit: false,
 		sourcemap: false,
 		chunkSizeWarningLimit: 1000,
+		reportCompressedSize: false,
 		rollupOptions: {
 			input: 'index.html',
 			output: {
