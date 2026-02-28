@@ -93,6 +93,10 @@ export async function up(knex: Knex): Promise<void> {
       .index()
       .references('id')
       .inTable('users');
+    table.text('ciphertext').nullable();
+    table.text('nonce').nullable();
+    table.text('sender_eph_pub').nullable();
+    table.integer('e2ee_version').notNullable().defaultTo(1);
     table.text('content').notNullable();
     table.boolean('is_read').notNullable().defaultTo(false);
     table
