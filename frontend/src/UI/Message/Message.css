@@ -1,5 +1,5 @@
 .message {
-	display: flex;
+	display: contents;
 	flex-direction: column;
 	height: auto;
 	min-height: min-content;
