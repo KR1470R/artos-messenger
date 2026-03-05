@@ -127,7 +127,7 @@ export function encodeContent(parts: EncryptedParts): string {
 }
 
 export function decodeContent(content: string): EncryptedParts | null {
-  if (!content.startsWith(PREFIX)) return null
+  if (!content || !content.startsWith(PREFIX)) return null
   const rest = content.slice(PREFIX.length)
   const colonIdx = rest.indexOf(':')
   if (colonIdx === -1) return null

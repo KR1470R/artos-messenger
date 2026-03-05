@@ -95,17 +95,18 @@ const useConversationList = () => {
     if (chatId === useChatStore.getState().chatId) return
     try {
       const chat = await GetChat(chatId)
-			console.log('handleItemClickChats', chatId)
-      setChatId(chatId)
-      joinChat(chatId)
 
+      // Set recipientId BEFORE setChatId so it's in the store when
+      // useMessageList's fetch effect fires and messages arrive
       const otherMember = chat?.members?.find(
         (m: { user_id: number }) => m.user_id !== user?.id,
       )
       setRecipientId(otherMember?.user_id ?? null)
+
+      setChatId(chatId)
+      joinChat(chatId)
     } catch (error) {
       console.error('❌ Error fetching or joining chat:', error)
-      // GetChat failed (e.g. backend error) — still open the chat
       setChatId(chatId)
       joinChat(chatId)
       setRecipientId(null)

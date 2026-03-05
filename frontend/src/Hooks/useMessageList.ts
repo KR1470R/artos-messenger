@@ -16,7 +16,7 @@ import {
 import { useAuthStore } from '@/Store/useAuthStore'
 import { useChatStore } from '@/Store/useChatStore'
 import { IMessageType } from '@/Types/Messages.interface'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useScroll } from './useScroll'
 import { useE2EE } from './useE2EE'
 
@@ -29,24 +29,6 @@ const useMessageList = () => {
     useScroll(messages)
   const { encryptFor, decryptFrom } = useE2EE()
 
-  // Keep a ref to decryptMessages so the socket handler always uses latest version
-  // without needing it in the effect dep array (which would cause re-subscription)
-  const decryptMessagesRef = useRef<(raw: IMessageType[], partnerId: number) => Promise<IMessageType[]>>()
-
-  const decryptMessages = useCallback(
-    async (raw: IMessageType[], partnerId: number): Promise<IMessageType[]> => {
-      return Promise.all(
-        raw.map(async msg => ({
-          ...msg,
-          content: await decryptFrom(msg.sender_id, msg.content, partnerId),
-        })),
-      )
-    },
-    [decryptFrom],
-  )
-
-  decryptMessagesRef.current = decryptMessages
-
   const updateUnreadMessagesLen = useCallback(() => {
     return messages.filter(message => {
       return Number(message.is_read) === 0 && message.sender_id !== user?.id
@@ -57,30 +39,23 @@ const useMessageList = () => {
 
   useEffect(() => {
     if (!chatId) return
-
-    setMessages([]) // clear previous chat messages immediately
-
     const handleMessages = async (fetchedMessages: IMessageType[]) => {
+      // Read recipientId at call time (not from closure) to avoid stale value
       const currentRecipientId = useChatStore.getState().recipientId
-			console.log('handle, ', fetchedMessages, currentRecipientId, decryptMessagesRef.current, !currentRecipientId || !decryptMessagesRef.current)
-      if (!currentRecipientId || !decryptMessagesRef.current) {
+      if (!currentRecipientId) {
         setMessages(fetchedMessages)
         return
       }
-			try {
-				console.log('SUKA')
-				const decrypted = await decryptMessagesRef.current(fetchedMessages, currentRecipientId)
-				console.log('decrypted', decrypted)
-				setMessages(decrypted)
-			} catch (err) {
-				console.log('decrypted err', err)
-				return;
-			}
+      const decrypted = await Promise.all(
+        fetchedMessages.map(async msg => ({
+          ...msg,
+          content: await decryptFrom(msg.sender_id, msg.content, currentRecipientId),
+        }))
+      )
+      setMessages(decrypted)
     }
-
-    subscribeToFetchMessages(handleMessages)
     fetchMessages(chatId, 20, 1)
-
+    subscribeToFetchMessages(handleMessages)
     return () => {
       unsubscribeFromFetchMessages(handleMessages)
     }
@@ -104,7 +79,7 @@ const useMessageList = () => {
     return () => {
       unsubscribeFromNewMessages(handleNewMessage)
     }
-  }, [chatId, user?.id, decryptFrom])
+  }, [chatId, user?.id])
 
   // ─── Read receipts ────────────────────────────────────────────────────────
 
@@ -211,17 +186,13 @@ const useMessageList = () => {
 
   const handleSend = async (messageContent: string) => {
     if (!messageContent.trim() || !chatId || !user) return
-
     let payload = messageContent
     if (recipientId) {
       const encrypted = await encryptFor(recipientId, messageContent)
       if (encrypted) payload = encrypted
     }
-
     createMessage(chatId, payload)
-    setTimeout(() => {
-      scrollToBottom()
-    }, 0)
+    setTimeout(() => scrollToBottom(), 0)
   }
 
   return {

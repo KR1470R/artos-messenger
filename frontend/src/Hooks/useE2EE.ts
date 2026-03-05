@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 import {
   clearKeysFromStorage,
   decodeContent,
@@ -15,36 +15,16 @@ import {
 } from '@/Services/e2ee'
 import { fetchUserPublicKeys, registerPublicKey } from '@/Services/e2ee/e2ee.api'
 
-// ─── Module-level singletons ──────────────────────────────────────────────────
-// Kept outside React so they survive re-renders, chat switches, and are shared
-// across every useE2EE() call site (useMessageList, useRegistration, etc.)
-
-// Shared AES key per partner userId, derived once per session
-const sharedKeyCache = new Map<number, CryptoKey>()
-
-// Resolves once initE2EE has written keys to localStorage and registered them.
-// Any call to encryptFor/decryptFrom awaits this before proceeding so that
-// messages sent immediately after login are never silently sent as plaintext.
-let readyResolve: (() => void) | null = null
-let readyPromise: Promise<void> = new Promise(res => { readyResolve = res })
-
-function resetReadiness() {
-  readyPromise = new Promise(res => { readyResolve = res })
-}
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 const useE2EE = () => {
+  // Per-hook-instance cache — no global singleton, no readiness gate that can hang
+  const sharedKeyCache = useRef<Map<number, CryptoKey>>(new Map())
 
   // ─── Internal: derive or retrieve shared key ──────────────────────────────
 
   const getSharedKey = useCallback(
     async (partnerId: number): Promise<CryptoKey | null> => {
-      // Wait until initE2EE has finished writing our own keys to localStorage
-      await readyPromise
-
-      if (sharedKeyCache.has(partnerId)) {
-        return sharedKeyCache.get(partnerId)!
+      if (sharedKeyCache.current.has(partnerId)) {
+        return sharedKeyCache.current.get(partnerId)!
       }
 
       const myPair = await loadKeysFromStorage()
@@ -61,7 +41,7 @@ const useE2EE = () => {
       const theirPublicKey = await importPublicKey(partnerKeys[0].public_key)
       const sharedKey = await deriveSharedKey(myPair.privateKey, theirPublicKey)
 
-      sharedKeyCache.set(partnerId, sharedKey)
+      sharedKeyCache.current.set(partnerId, sharedKey)
       return sharedKey
     },
     [],
@@ -70,29 +50,19 @@ const useE2EE = () => {
   // ─── Init: called once after sign-in ─────────────────────────────────────
 
   const initE2EE = useCallback(async (hasE2EEKey: boolean): Promise<void> => {
-    try {
-      const deviceId = getDeviceId()
-      const existingPair = await loadKeysFromStorage()
+    const deviceId = getDeviceId()
+    const existingPair = await loadKeysFromStorage()
 
-      if (existingPair) {
-        // Keys already in localStorage — re-publish this device's public key
-        const pubB64 = await exportPublicKey(existingPair.publicKey)
-        await registerPublicKey(pubB64, deviceId)
-      } else {
-        // No local keys — generate a fresh pair and publish it.
-        // If hasE2EEKey is true another device has keys; we create our own device
-        // pair. Pre-existing encrypted history won't be readable on this device,
-        // which is an accepted trade-off without a passphrase-backup scheme.
-        const pair = await generateKeyPair()
-        await saveKeysToStorage(pair)
-        const pubB64 = await exportPublicKey(pair.publicKey)
-        await registerPublicKey(pubB64, deviceId)
-      }
-    } finally {
-      // Always unblock encryptFor/decryptFrom, even if registration failed,
-      // so the app doesn't hang. Falls back to plaintext gracefully.
-      readyResolve?.()
+    if (existingPair) {
+      const pubB64 = await exportPublicKey(existingPair.publicKey)
+      await registerPublicKey(pubB64, deviceId)
+      return
     }
+
+    const pair = await generateKeyPair()
+    await saveKeysToStorage(pair)
+    const pubB64 = await exportPublicKey(pair.publicKey)
+    await registerPublicKey(pubB64, deviceId)
   }, [])
 
   // ─── Encrypt for a recipient ──────────────────────────────────────────────
@@ -107,17 +77,15 @@ const useE2EE = () => {
     [getSharedKey],
   )
 
-  // ─── Decrypt a message from a sender ─────────────────────────────────────
+  // ─── Decrypt a message ────────────────────────────────────────────────────
+  // partnerId is always the OTHER participant's id regardless of who sent it.
+  // This ensures we always derive: deriveSharedKey(myPriv, partnerPub).
 
-  // The shared key is always derived from the OTHER participant's public key.
-  // Whether the message was sent by me or by them, the key is the same:
-  //   deriveSharedKey(myPriv, partnerPub)
-  // So we need the partner's id, not the sender's id.
-  // partnerId = senderId when they sent it; = recipientId when I sent it.
   const decryptFrom = useCallback(
     async (senderId: number, content: string, partnerId: number): Promise<string> => {
+      if (!content) return content ?? ''
       const parts = decodeContent(content)
-      if (!parts) return content // not an e2ee message — pass through as-is
+      if (!parts) return content // plaintext — pass through
 
       const sharedKey = await getSharedKey(partnerId)
       if (!sharedKey) return '[🔒 encrypted]'
@@ -134,10 +102,8 @@ const useE2EE = () => {
   // ─── Cleanup on logout ────────────────────────────────────────────────────
 
   const clearE2EE = useCallback(() => {
-    sharedKeyCache.clear()
+    sharedKeyCache.current.clear()
     clearKeysFromStorage()
-    // Reset the readiness gate for the next login
-    resetReadiness()
   }, [])
 
   return { initE2EE, encryptFor, decryptFrom, clearE2EE }
