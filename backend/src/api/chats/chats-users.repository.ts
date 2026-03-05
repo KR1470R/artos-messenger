@@ -52,6 +52,8 @@ export class ChatsUsersRepository implements IChatsUsersRepository {
       .delete();
   }
 
+  // Returns rows for the given userId (optionally filtered to one chat).
+  // Used for membership checks and listing a user's own chats.
   public async findMany(userId: number, chatId?: number) {
     return await this.db(this.entity)
       .select('id', 'chat_id', 'user_id', 'role_id', 'created_at', 'updated_at')
@@ -61,6 +63,13 @@ export class ChatsUsersRepository implements IChatsUsersRepository {
       .modify((qb) => {
         if (chatId) qb.where({ chat_id: chatId });
       });
+  }
+
+  // Returns ALL member rows for a given chat — no user_id filter.
+  public async findManyByChatId(chatId: number) {
+    return await this.db(this.entity)
+      .select('id', 'chat_id', 'user_id', 'role_id', 'created_at', 'updated_at')
+      .where({ chat_id: chatId });
   }
 
   public async findDirectChat(userId: number, targetUserId: number) {

@@ -4,6 +4,7 @@ import { Groups } from '#api/groups/groups.entity';
 import { Messages } from '#api/messages/messages.entity';
 import { Users } from '#api/users/users.entity';
 import { ChatUserRoles } from '#api/chat-user-roles/chat-user-roles.entity';
+import { E2eeKeys } from '#api/e2ee/e2ee-keys.entity';
 
 declare module 'knex/types/tables' {
   interface Tables {
@@ -13,5 +14,6 @@ declare module 'knex/types/tables' {
     chats: Chats;
     chats_users: ChatsUsers;
     groups: Groups;
+    e2ee_keys: E2eeKeys;
   }
 }

@@ -2,18 +2,14 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from '#api/users/users.module';
+import { E2eeModule } from '#api/e2ee/e2ee.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtHttpStrategy } from './strategies';
 import { JwtAuthHttpGuard } from './guards';
 
 @Module({
-  imports: [
-    JwtModule.register({
-      global: true,
-    }),
-    UsersModule,
-  ],
+  imports: [JwtModule.register({ global: true }), UsersModule, E2eeModule],
   controllers: [AuthController],
   providers: [
     AuthService,
