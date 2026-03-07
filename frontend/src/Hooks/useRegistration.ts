@@ -3,7 +3,6 @@ import { TokenService } from '@/Services/authorization/AccessTokenMemory'
 import { RegisterUser } from '@/Services/authorization/RegisterUser.service'
 import { SignInUser } from '@/Services/authorization/SignInUser.service'
 import { connectSocket, disconnectSocket, socket } from '@/Services/socket'
-import { GetCurrentUser } from '@/Services/users/GetCurrentUser.service'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { IResponseError, IUserData } from '@/Types/Services.interface'
 import { useMutation } from '@tanstack/react-query'
@@ -15,40 +14,26 @@ const useRegistration = () => {
   const [type, setType] = useState<'login' | 'register'>('login')
   const isAuthType = type === 'login'
   const [showPassword, setShowPassword] = useState(false)
+  const [showPassphrase, setShowPassphrase] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
-  const { initE2EE } = useE2EE()
+  const { initE2EERegister, initE2EELogin } = useE2EE()
 
   const {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm<IUserData>({
     mode: 'onChange',
-    defaultValues: {
-      username: '',
-      password: '',
-      avatar_url: '',
-    },
+    defaultValues: { username: '', password: '', passphrase: '', avatar_url: '' },
   })
 
   const { mutateAsync: registerAsync } = useMutation({
     mutationKey: ['register'],
     mutationFn: RegisterUser,
     onError: (err: IResponseError) => {
-      console.error('Error during registration:', err)
       setErrorMessage(err.message)
-    },
-    onSuccess: async () => {
-      try {
-        const { username, password } = watch()
-        await signInAsync({ username, password })
-      } catch (err) {
-        console.error('Sign-in failed after registration:', err)
-        setErrorMessage(`Sign-in failed after registration: ${err}`)
-      }
     },
   })
 
@@ -57,31 +42,9 @@ const useRegistration = () => {
     mutationFn: SignInUser,
     onError: (err: IResponseError) => {
       if (err.statusCode === 401) {
-        console.error('Login error: Invalid credentials provided.')
         setErrorMessage('Invalid username or password.')
       } else {
-        console.error('Login error: Unexpected server issue.', err)
-        setErrorMessage(`Login error: Unexpected server issue. ${err}`)
-      }
-    },
-    onSuccess: async () => {
-      try {
-        await GetCurrentUser()
-
-        // Initialise E2EE keys — MUST complete before connectSocket so that
-        // the first message the user sends is never silently sent as plaintext.
-        const hasE2EEKey = useAuthStore.getState().hasE2EEKey
-        try {
-          await initE2EE(hasE2EEKey)
-        } catch (err) {
-          // Non-fatal: key init failed, app continues without encryption
-          console.error('E2EE init failed (non-fatal):', err)
-        }
-
-        connectSocket()
-      } catch (err) {
-        console.error('Error fetching user data after login:', err)
-        setErrorMessage('Failed to retrieve user data after login.')
+        setErrorMessage(`Login error: ${err.message}`)
       }
     },
   })
@@ -89,13 +52,47 @@ const useRegistration = () => {
   const onSubmit: SubmitHandler<IUserData> = async formData => {
     try {
       setErrorMessage('')
-      if (isAuthType)
-        await signInAsync({ username: formData.username, password: formData.password })
-      else await registerAsync(formData)
+
+      if (isAuthType) {
+        // Login flow
+        const loginFormData = {
+          username: formData.username,
+	        password: formData.password,
+        }
+        await signInAsync(loginFormData)
+        const hasE2EEKey = useAuthStore.getState().hasE2EEKey
+        if (hasE2EEKey) {
+          try {
+            await initE2EELogin(formData.passphrase)
+          } catch {
+            // Wrong passphrase — block login, clear token
+            TokenService.clearToken()
+            useAuthStore.getState().logout()
+            setErrorMessage('Incorrect passphrase. Please try again.')
+            return
+          }
+        }
+      } else {
+        const registerFormData = {
+          username: formData.username,
+	        password: formData.password,
+          avatar_url: formData.avatar_url,
+        }
+        // Register flow
+        await registerAsync(registerFormData)
+
+        const loginFormData = {
+          username: formData.username,
+	        password: formData.password,
+        }
+        await signInAsync(loginFormData)
+        await initE2EERegister(formData.passphrase)
+      }
+
+      connectSocket()
       reset()
     } catch (err) {
-      console.error('Error during submission:', err)
-      setErrorMessage(`Error during submission: ${err}`)
+      // Errors already handled in mutation onError, nothing to do
     }
   }
 
@@ -113,15 +110,14 @@ const useRegistration = () => {
   return {
     handleSubmit: handleSubmit(onSubmit),
     isAuthType,
-    register: (field: any) => {
+    register: (field: keyof IUserData) => {
       switch (field) {
         case 'username':
           return register(field, {
             required: 'Username is required',
             pattern: {
               value: REGEX.USERNAME,
-              message:
-                'Username must be 3-20 characters and contain only letters, numbers, underscores, or dashes',
+              message: 'Username must be 3-20 characters, letters, numbers, underscores or dashes',
             },
           })
         case 'password':
@@ -129,9 +125,12 @@ const useRegistration = () => {
             required: 'Password is required',
             pattern: {
               value: REGEX.PASSWORD,
-              message:
-                'Password must be 6-20 characters, include at least one letter and one number',
+              message: 'Password must be 6-20 characters with at least one letter and one number',
             },
+          })
+        case 'passphrase':
+          return register(field, {
+            required: 'Passphrase is required',
           })
         case 'avatar_url':
           return register(field, {
@@ -149,6 +148,8 @@ const useRegistration = () => {
     errors,
     showPassword,
     setShowPassword,
+    showPassphrase,
+    setShowPassphrase,
     errorMessage,
     setErrorMessage,
   }

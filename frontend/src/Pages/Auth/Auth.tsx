@@ -12,6 +12,8 @@ const Auth = () => {
 		errors,
 		showPassword,
 		setShowPassword,
+		showPassphrase,
+		setShowPassphrase,
 		errorMessage,
 		setErrorMessage,
 	} = useRegistration()
@@ -20,6 +22,7 @@ const Auth = () => {
 		<div className='wrapper'>
 			<form onSubmit={handleSubmit} className='formSignIn'>
 				<h2 className='formSignInHeading'>{isAuthType ? 'Login' : 'Registration'}</h2>
+
 				<div className='formGroup'>
 					<input
 						type='text'
@@ -28,6 +31,7 @@ const Auth = () => {
 						{...register('username')}
 					/>
 				</div>
+
 				<div className='formGroup'>
 					<input
 						type={showPassword ? 'text' : 'password'}
@@ -39,6 +43,7 @@ const Auth = () => {
 						{showPassword ? <FaRegEye /> : <FaRegEyeSlash />}
 					</span>
 				</div>
+
 				{!isAuthType && (
 					<div className='formGroup'>
 						<input
@@ -49,15 +54,30 @@ const Auth = () => {
 						/>
 					</div>
 				)}
+
+				<div className='formGroup'>
+					<input
+						type={showPassphrase ? 'text' : 'password'}
+						className={`formControl ${errors.passphrase ? 'formError' : ''}`}
+						placeholder={isAuthType ? 'Passphrase' : 'Create passphrase (min. 8 characters)'}
+						{...register('passphrase')}
+					/>
+					<span className='eyeIcon' onClick={() => setShowPassphrase(!showPassphrase)}>
+						{showPassphrase ? <FaRegEye /> : <FaRegEyeSlash />}
+					</span>
+				</div>
+
 				<div
 					onClick={() => setType(isAuthType ? 'register' : 'login')}
 					className='btn_register'
 				>
 					I want to {isAuthType ? 'Register' : 'Login'}
 				</div>
+
 				<button className='btn_login' type='submit'>
 					{isAuthType ? 'Login' : 'Register'}
 				</button>
+
 				{Object.keys(errors).length > 0 && (
 					<div className='errorContainer'>
 						{Object.values(errors).map((error, index) => (
@@ -68,6 +88,7 @@ const Auth = () => {
 					</div>
 				)}
 			</form>
+
 			<Notification
 				message={errorMessage}
 				type='error'

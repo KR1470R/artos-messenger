@@ -171,3 +171,75 @@ export function getDeviceId(): string {
   }
   return id
 }
+
+// ─── Passphrase-based private key backup ─────────────────────────────────────
+// Uses PBKDF2 to derive a wrapping key from the passphrase, then AES-GCM to
+// encrypt/decrypt the raw PKCS8 private key bytes.
+
+export interface KdfParams {
+  salt: string      // base64
+  iterations: number
+}
+
+export interface EncryptedKeyBackup {
+  encrypted_private_key: string  // base64 AES-GCM ciphertext (includes 12-byte IV prepended)
+  kdf_params: string             // JSON-stringified KdfParams
+}
+
+async function deriveWrappingKey(passphrase: string, salt: ArrayBuffer): Promise<CryptoKey> {
+  const passphraseKey = await subtle.importKey(
+    'raw',
+    new TextEncoder().encode(passphrase),
+    'PBKDF2',
+    false,
+    ['deriveKey'],
+  )
+  return subtle.deriveKey(
+    { name: 'PBKDF2', salt, hash: 'SHA-256', iterations: 310_000 },
+    passphraseKey,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt'],
+  )
+}
+
+export async function encryptPrivateKeyWithPassphrase(
+  privateKey: CryptoKey,
+  passphrase: string,
+): Promise<EncryptedKeyBackup> {
+  const saltBytes = window.crypto.getRandomValues(new Uint8Array(16))
+  const iterations = 310_000
+  const wrappingKey = await deriveWrappingKey(passphrase, saltBytes.buffer)
+
+  const pkcs8 = await subtle.exportKey('pkcs8', privateKey)
+  const iv = window.crypto.getRandomValues(new Uint8Array(12))
+  const ciphertext = await subtle.encrypt({ name: 'AES-GCM', iv }, wrappingKey, pkcs8)
+
+  // Prepend IV to ciphertext so we only store one blob
+  const combined = new Uint8Array(iv.byteLength + ciphertext.byteLength)
+  combined.set(iv, 0)
+  combined.set(new Uint8Array(ciphertext), iv.byteLength)
+
+  const kdfParams: KdfParams = { salt: bufToBase64(saltBytes.buffer), iterations }
+
+  return {
+    encrypted_private_key: bufToBase64(combined.buffer),
+    kdf_params: JSON.stringify(kdfParams),
+  }
+}
+
+export async function decryptPrivateKeyWithPassphrase(
+  backup: EncryptedKeyBackup,
+  passphrase: string,
+): Promise<CryptoKey> {
+  const kdfParams: KdfParams = JSON.parse(backup.kdf_params)
+  const saltBuf = base64ToBuf(kdfParams.salt)
+  const wrappingKey = await deriveWrappingKey(passphrase, saltBuf)
+
+  const combined = new Uint8Array(base64ToBuf(backup.encrypted_private_key))
+  const iv = combined.slice(0, 12)
+  const ciphertext = combined.slice(12)
+
+  const pkcs8 = await subtle.decrypt({ name: 'AES-GCM', iv }, wrappingKey, ciphertext)
+  return importPrivateKey(bufToBase64(pkcs8))
+}

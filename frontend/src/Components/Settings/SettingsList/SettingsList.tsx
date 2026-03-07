@@ -1,3 +1,4 @@
+import { disconnectSocket } from '@/Services/socket'
 import { useAuthStore } from '@/Store/useAuthStore'
 import { useSettingsStore } from '@/Store/useSettingsStore'
 import { SettingsParam } from '@/UI/SettingsParam/SettingsParam'
@@ -17,14 +18,15 @@ const SettingsList: React.FC<{
 	const { user, logout } = useAuthStore()
 	const setActiveParam = useSettingsStore(state => state.setActiveParam)
 	const createdDate = moment(user?.created_at).format('D.MM.YYYY HH:mm:ss')
+
 	const handleLogout = () => {
-		logout()
 		document.cookie.split(';').forEach(cookie => {
 			const [name] = cookie.split('=')
-			document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${
-				window.location.hostname
-			}`
+			document.cookie = `${name.trim()}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname}`
 		})
+		disconnectSocket()
+		logout()
+		localStorage.clear()
 	}
 
 	const openParam = (param: 'profile' | 'themes') => {

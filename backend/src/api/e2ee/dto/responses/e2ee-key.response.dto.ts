@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class E2eeKeyResponseDto {
+export default class E2eeKeyResponseDto {
   @ApiProperty({ description: 'Record id.' })
   id: number;
 

@@ -28,4 +28,33 @@ export class E2eeRepository implements IE2EERepository {
       .where({ user_id: userId })
       .orderBy('updated_at', 'desc');
   }
+
+  // Stores the passphrase-encrypted private key for the account.
+  // Applied to all device rows — any device can restore from backup.
+  public async upsertBackup(
+    userId: number,
+    encryptedPrivateKey: string,
+    kdfParams: string,
+  ): Promise<void> {
+    await this.db(this.entity).where({ user_id: userId }).update({
+      encrypted_private_key: encryptedPrivateKey,
+      kdf_params: kdfParams,
+    });
+  }
+
+  public async findBackup(
+    userId: number,
+  ): Promise<Pick<E2eeKeys, 'encrypted_private_key' | 'kdf_params'> | null> {
+    const row = await this.db(this.entity)
+      .where({ user_id: userId })
+      .whereNotNull('encrypted_private_key')
+      .orderBy('updated_at', 'desc')
+      .first();
+
+    if (!row) return null;
+    return {
+      encrypted_private_key: row.encrypted_private_key,
+      kdf_params: row.kdf_params,
+    };
+  }
 }

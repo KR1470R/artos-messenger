@@ -1,4 +1,5 @@
 import { ApiClient } from '@/Services/network/ApiClient'
+import { EncryptedKeyBackup } from './e2ee'
 
 // ApiClient already has baseURL = VITE_API_URL — use relative paths only.
 
@@ -24,5 +25,14 @@ export const registerPublicKey = async (
 
 export const fetchUserPublicKeys = async (userId: number): Promise<E2eeKeyRecord[]> => {
   const res = await ApiClient.get<E2eeKeyRecord[]>(`/e2ee/keys/${userId}`)
+  return res.data
+}
+
+export const uploadKeyBackup = async (backup: EncryptedKeyBackup): Promise<void> => {
+  await ApiClient.put('/e2ee/backup', backup)
+}
+
+export const fetchKeyBackup = async (): Promise<EncryptedKeyBackup> => {
+  const res = await ApiClient.get<EncryptedKeyBackup>('/e2ee/backup')
   return res.data
 }

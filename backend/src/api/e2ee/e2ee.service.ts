@@ -1,5 +1,13 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { CreateE2EEKeyRequestDto } from './dto/requests';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  CreateE2EEKeyRequestDto,
+  UploadKeyBackupRequestDto,
+} from './dto/requests';
 import { E2EEKeysRepositoryToken } from './constants';
 import { IE2EERepository } from './interfaces';
 
@@ -38,5 +46,49 @@ export class E2eeService {
   async hasKeys(userId: number): Promise<boolean> {
     const keys = await this.repo.findByUser(userId);
     return keys.length > 0;
+  }
+
+  async uploadBackup(
+    userId: number,
+    data: UploadKeyBackupRequestDto,
+  ): Promise<void> {
+    // Validate it's at least plausible base64
+    if (
+      !isBase64(data.encrypted_private_key) ||
+      data.encrypted_private_key.length < 40
+    ) {
+      throw new BadRequestException(
+        'encrypted_private_key must be a valid base64 string.',
+      );
+    }
+    // Validate kdf_params is parseable JSON with expected shape
+    try {
+      const params = JSON.parse(data.kdf_params);
+      if (!params.salt || !params.iterations) throw new Error();
+    } catch {
+      throw new BadRequestException(
+        'kdf_params must be JSON with salt and iterations fields.',
+      );
+    }
+
+    const hasExisting = await this.hasKeys(userId);
+    if (!hasExisting) {
+      throw new BadRequestException(
+        'No public key registered for this user yet.',
+      );
+    }
+
+    await this.repo.upsertBackup(
+      userId,
+      data.encrypted_private_key,
+      data.kdf_params,
+    );
+  }
+
+  async getBackup(userId: number) {
+    const backup = await this.repo.findBackup(userId);
+    if (!backup)
+      throw new NotFoundException('No key backup found for this user.');
+    return backup;
   }
 }

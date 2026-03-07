@@ -23,6 +23,13 @@ export async function up(knex: Knex): Promise<void> {
       .notNullable()
       .defaultTo(knex.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
     table.unique(['user_id', 'device_id']);
+
+    // Stores the user's PKCS8 private key encrypted with their passphrase.
+    // NULL until the user sets a passphrase backup. Opaque blob to the server.
+    table.text('encrypted_private_key').nullable().defaultTo(null);
+    // KDF params stored alongside so we can re-derive the wrapping key on restore.
+    // Format: JSON { salt: base64, iterations: number }
+    table.text('kdf_params').nullable().defaultTo(null);
   });
 }
 

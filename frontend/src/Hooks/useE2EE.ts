@@ -3,9 +3,11 @@ import {
   clearKeysFromStorage,
   decodeContent,
   decryptMessage,
+  decryptPrivateKeyWithPassphrase,
   deriveSharedKey,
   encodeContent,
   encryptMessage,
+  encryptPrivateKeyWithPassphrase,
   exportPublicKey,
   generateKeyPair,
   getDeviceId,
@@ -13,20 +15,21 @@ import {
   loadKeysFromStorage,
   saveKeysToStorage,
 } from '@/Services/e2ee'
-import { fetchUserPublicKeys, registerPublicKey } from '@/Services/e2ee/e2ee.api'
+import {
+  fetchKeyBackup,
+  fetchUserPublicKeys,
+  registerPublicKey,
+  uploadKeyBackup,
+} from '@/Services/e2ee/e2ee.api'
 
 const useE2EE = () => {
-  // Per-hook-instance cache — no global singleton, no readiness gate that can hang
   const sharedKeyCache = useRef<Map<number, CryptoKey>>(new Map())
-
-  // ─── Internal: derive or retrieve shared key ──────────────────────────────
 
   const getSharedKey = useCallback(
     async (partnerId: number): Promise<CryptoKey | null> => {
       if (sharedKeyCache.current.has(partnerId)) {
         return sharedKeyCache.current.get(partnerId)!
       }
-
       const myPair = await loadKeysFromStorage()
       if (!myPair) return null
 
@@ -40,16 +43,29 @@ const useE2EE = () => {
 
       const theirPublicKey = await importPublicKey(partnerKeys[0].public_key)
       const sharedKey = await deriveSharedKey(myPair.privateKey, theirPublicKey)
-
       sharedKeyCache.current.set(partnerId, sharedKey)
       return sharedKey
     },
     [],
   )
 
-  // ─── Init: called once after sign-in ─────────────────────────────────────
+  // Called after successful registration.
+  // Generates keypair, registers public key, encrypts private key with passphrase, uploads backup.
+  const initE2EERegister = useCallback(async (passphrase: string): Promise<void> => {
+    const deviceId = getDeviceId()
+    const pair = await generateKeyPair()
+    await saveKeysToStorage(pair)
+    const pubB64 = await exportPublicKey(pair.publicKey)
+    await registerPublicKey(pubB64, deviceId)
+    const backup = await encryptPrivateKeyWithPassphrase(pair.privateKey, passphrase)
+    await uploadKeyBackup(backup)
+  }, [])
 
-  const initE2EE = useCallback(async (hasE2EEKey: boolean): Promise<void> => {
+  // Called after successful login.
+  // If keys exist in localStorage → just re-register public key.
+  // If new device → fetch backup, decrypt with passphrase (throws if wrong — caller handles it),
+  //   restore keypair, register new public key.
+  const initE2EELogin = useCallback(async (passphrase: string): Promise<void> => {
     const deviceId = getDeviceId()
     const existingPair = await loadKeysFromStorage()
 
@@ -59,13 +75,16 @@ const useE2EE = () => {
       return
     }
 
-    const pair = await generateKeyPair()
-    await saveKeysToStorage(pair)
-    const pubB64 = await exportPublicKey(pair.publicKey)
+    // New device — restore from backup using passphrase
+    const backup = await fetchKeyBackup()
+    // Throws DOMException if passphrase is wrong — let caller catch and show error
+    const privateKey = await decryptPrivateKeyWithPassphrase(backup, passphrase)
+    const freshPair = await generateKeyPair()
+    const restoredPair = { publicKey: freshPair.publicKey, privateKey }
+    await saveKeysToStorage(restoredPair)
+    const pubB64 = await exportPublicKey(restoredPair.publicKey)
     await registerPublicKey(pubB64, deviceId)
   }, [])
-
-  // ─── Encrypt for a recipient ──────────────────────────────────────────────
 
   const encryptFor = useCallback(
     async (recipientId: number, plaintext: string): Promise<string | null> => {
@@ -77,19 +96,13 @@ const useE2EE = () => {
     [getSharedKey],
   )
 
-  // ─── Decrypt a message ────────────────────────────────────────────────────
-  // partnerId is always the OTHER participant's id regardless of who sent it.
-  // This ensures we always derive: deriveSharedKey(myPriv, partnerPub).
-
   const decryptFrom = useCallback(
     async (senderId: number, content: string, partnerId: number): Promise<string> => {
       if (!content) return content ?? ''
       const parts = decodeContent(content)
-      if (!parts) return content // plaintext — pass through
-
+      if (!parts) return content
       const sharedKey = await getSharedKey(partnerId)
       if (!sharedKey) return '[🔒 encrypted]'
-
       try {
         return await decryptMessage(parts, sharedKey)
       } catch {
@@ -99,14 +112,12 @@ const useE2EE = () => {
     [getSharedKey],
   )
 
-  // ─── Cleanup on logout ────────────────────────────────────────────────────
-
   const clearE2EE = useCallback(() => {
     sharedKeyCache.current.clear()
     clearKeysFromStorage()
   }, [])
 
-  return { initE2EE, encryptFor, decryptFrom, clearE2EE }
+  return { initE2EERegister, initE2EELogin, encryptFor, decryptFrom, clearE2EE }
 }
 
 export { useE2EE }
