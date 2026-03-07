@@ -52,6 +52,10 @@ const useRegistration = () => {
   const onSubmit: SubmitHandler<IUserData> = async formData => {
     try {
       setErrorMessage('')
+      if (!formData.passphrase) {
+        setErrorMessage('No passphrase provided. Please try again.')
+        return
+      }
 
       if (isAuthType) {
         // Login flow
@@ -68,6 +72,8 @@ const useRegistration = () => {
             // Wrong passphrase — block login, clear token
             TokenService.clearToken()
             useAuthStore.getState().logout()
+            localStorage.clear()
+            disconnectSocket()
             setErrorMessage('Incorrect passphrase. Please try again.')
             return
           }

@@ -1,5 +1,5 @@
 import { ApiClient } from '@/Services/network/ApiClient'
-import { EncryptedKeyBackup } from './e2ee'
+import { EncryptedKeyBackup } from './'
 
 // ApiClient already has baseURL = VITE_API_URL — use relative paths only.
 
