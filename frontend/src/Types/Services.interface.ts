@@ -2,6 +2,7 @@ export interface IUserData {
 	username: string
 	password: string
 	avatar_url?: string
+	passphrase?: string;
 }
 
 export interface IUserAll {

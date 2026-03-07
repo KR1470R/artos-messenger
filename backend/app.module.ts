@@ -1,6 +1,7 @@
 import { AuthModule } from '#api/auth/auth.module';
 import { ChatUserRolesModule } from '#api/chat-user-roles/chat-user-roles.module';
 import { ChatsModule } from '#api/chats/chats.module';
+import { E2eeModule } from '#api/e2ee/e2ee.module';
 import { GroupsModule } from '#api/groups/groups.module';
 import { MessagesModule } from '#api/messages/messages.module';
 import { UsersModule } from '#api/users/users.module';
@@ -30,6 +31,7 @@ import { join } from 'path';
     GroupsModule,
     MessagesModule,
     UsersModule,
+    E2eeModule,
   ],
   providers: [
     {

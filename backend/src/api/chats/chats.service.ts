@@ -1,10 +1,10 @@
 import {
-  ConflictException,
   ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import { ChatsRepositoryToken, ChatsUsersRepositoryToken } from './constants';
 import { IChatsRepository, IChatsUsersRepository } from './interfaces';
@@ -60,22 +60,24 @@ export class ChatsService {
       await this.chatsUsersRepository.findMany(logginedUserId)
     ).map((chat) => chat.chat_id);
     const data = await this.chatsRepository.findMany(relatedChatsIds, query);
-    return {
-      data,
-    };
+    return { data };
   }
 
   public async processFindOne(logginedUserId: number, chatId: number) {
     const targetChat = await this.chatsRepository.findOne(chatId);
     if (!targetChat) throw new NotFoundException('Chat not found.');
 
-    const chatMembers = await this.chatsUsersRepository.findMany(
+    // Verify the requesting user is actually a member of this chat
+    const userMembership = await this.chatsUsersRepository.findOne(
       logginedUserId,
-      targetChat.id,
+      chatId,
     );
-
-    if (!chatMembers.find((member) => member.user_id === logginedUserId))
+    if (!userMembership)
       throw new ForbiddenException('User does not persist in this chat.');
+
+    // Fetch ALL members of the chat (not filtered by userId)
+    const chatMembers =
+      await this.chatsUsersRepository.findManyByChatId(chatId);
 
     return {
       ...targetChat,

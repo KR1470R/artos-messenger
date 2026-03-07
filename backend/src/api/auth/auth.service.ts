@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Password } from '#common/utils';
 import { UsersRepositoryToken } from '#api/users/constants';
 import IUsersRepository from '#api/users/interfaces/users.repository.interface';
+import { E2eeService } from '#api/e2ee/e2ee.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @Inject(UsersRepositoryToken)
     private readonly usersRepository: IUsersRepository,
+    private readonly e2eeService: E2eeService,
   ) {
     this.JWT_SECRET = this.configService.getOrThrow('JWT_TOKEN_SECRET');
     this.JWT_REFRESH_SECRET = this.configService.getOrThrow(
@@ -25,54 +27,52 @@ export class AuthService {
   }
 
   public async processSignIn(username: string, password: string) {
-    const user = (await this.usersRepository.findOne(
-      {
-        username,
-      },
-      true,
-    ))!;
+    const user = (await this.usersRepository.findOne({ username }, true))!;
 
     if (!user) throw new UnauthorizedException('Invalid credentials');
 
-    if (await Password.compare(user.password, password)) {
-      const token = await this.jwtService.signAsync(
+    if (!(await Password.compare(user.password, password))) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const [token, refreshToken, hasE2EEKey] = await Promise.all([
+      this.jwtService.signAsync(
         { username: user.username, id: user.id },
-        {
-          secret: this.JWT_SECRET,
-          expiresIn: this.JWT_TOKEN_EXPIRES_IN,
-        },
-      );
-      const refreshToken = await this.jwtService.signAsync(
+        { secret: this.JWT_SECRET, expiresIn: this.JWT_TOKEN_EXPIRES_IN },
+      ),
+      this.jwtService.signAsync(
         { username: user.username, id: user.id },
         {
           secret: this.JWT_REFRESH_SECRET,
           expiresIn: this.JWR_REFRESH_TOKEN_EXPIRES_IN,
         },
-      );
-      return { token, refreshToken };
-    } else {
-      throw new Error('Invalid credentials');
-    }
+      ),
+      this.e2eeService.hasKeys(user.id),
+    ]);
+
+    return { token, refreshToken, hasE2EEKey };
   }
 
   public async processRefreshToken(previousToken: string) {
     const { username, id } = (await this.jwtService.verifyAsync(previousToken, {
       secret: this.JWT_REFRESH_SECRET,
     })) as { username: string; id: number };
-    const newToken = await this.jwtService.signAsync(
-      { username, id },
-      {
-        secret: this.JWT_SECRET,
-        expiresIn: this.JWT_TOKEN_EXPIRES_IN,
-      },
-    );
-    const newRefreshToken = await this.jwtService.signAsync(
-      { username, id },
-      {
-        secret: this.JWT_REFRESH_SECRET,
-        expiresIn: this.JWR_REFRESH_TOKEN_EXPIRES_IN,
-      },
-    );
-    return { token: newToken, refreshToken: newRefreshToken };
+
+    const [newToken, newRefreshToken, hasE2EEKey] = await Promise.all([
+      this.jwtService.signAsync(
+        { username, id },
+        { secret: this.JWT_SECRET, expiresIn: this.JWT_TOKEN_EXPIRES_IN },
+      ),
+      this.jwtService.signAsync(
+        { username, id },
+        {
+          secret: this.JWT_REFRESH_SECRET,
+          expiresIn: this.JWR_REFRESH_TOKEN_EXPIRES_IN,
+        },
+      ),
+      this.e2eeService.hasKeys(id),
+    ]);
+
+    return { token: newToken, refreshToken: newRefreshToken, hasE2EEKey };
   }
 }

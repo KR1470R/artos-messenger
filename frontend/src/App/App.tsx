@@ -5,6 +5,7 @@ import './App.css'
 
 const App = () => {
 	const { activeTheme } = useThemeStore()
+
 	useEffect(() => {
 		const updateTheme = () => {
 			const theme =
@@ -19,7 +20,6 @@ const App = () => {
 		if (activeTheme === 'systemTheme') {
 			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 			mediaQuery.addEventListener('change', updateTheme)
-
 			return () => {
 				mediaQuery.removeEventListener('change', updateTheme)
 			}

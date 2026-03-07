@@ -18,7 +18,11 @@ export class UsersRepository implements IUsersRepository {
     > & { avatar_url?: string },
   ) {
     return await this.db(this.entity)
-      .insert(data)
+      .insert({
+        username: data?.username,
+        password: data?.password,
+        avatar_url: data?.avatar_url,
+      })
       .then(([id]) => id);
   }
 
