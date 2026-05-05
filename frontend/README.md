@@ -32,3 +32,11 @@ Serves the built application locally to test the production build.
 ## Learn More
 
 You can learn more about Vite by visiting the [official documentation](https://vitejs.dev/).
+
+### Tests
+
+Install dependencies
+`npm i -D jest-environment-jsdom @peculiar/webcrypto ts-jest jest @types/jest`
+
+Now you can run the tests
+`npm run test`
