@@ -11,6 +11,7 @@ import { IoIosColorPalette } from 'react-icons/io'
 import { IoPerson } from 'react-icons/io5'
 import { RiLogoutBoxRLine } from 'react-icons/ri'
 import './SettingsList.css'
+import { DEFAULT_AVATAR } from '@/constants'
 
 const SettingsList: React.FC<{
 	onSelectSetting?: (param: 'profile' | 'themes') => void
@@ -39,7 +40,7 @@ const SettingsList: React.FC<{
 			<Toolbar title='Settings' leftItems={[]} rightItems={[]} />
 			<div className='settingsUser'>
 				<p className='avatar'>
-					<img src={user?.avatar_url} alt='avatar_url' />
+					<img src={user?.avatar_url || DEFAULT_AVATAR} alt='avatar_url' />
 				</p>
 				<div className='contentUser'>
 					<p className='username'>{user?.username}</p>
