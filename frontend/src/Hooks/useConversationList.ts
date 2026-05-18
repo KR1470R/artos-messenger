@@ -111,6 +111,7 @@ const useConversationList = (
       const otherMember = chat?.members?.find(
         (m: { user_id: number }) => m.user_id !== user?.id,
       )
+      setSelectedUser(otherMember)
       setRecipientId(otherMember?.user_id ?? null)
 
       setChatId(chatId)

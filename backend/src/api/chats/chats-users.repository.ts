@@ -68,7 +68,18 @@ export class ChatsUsersRepository implements IChatsUsersRepository {
   // Returns ALL member rows for a given chat — no user_id filter.
   public async findManyByChatId(chatId: number) {
     return await this.db(this.entity)
-      .select('id', 'chat_id', 'user_id', 'role_id', 'created_at', 'updated_at')
+      .select(
+        'chats_users.id',
+        'chats_users.chat_id',
+        'chats_users.user_id',
+        'users.username',
+        'chats_users.role_id',
+        'chats_users.created_at',
+        'chats_users.updated_at',
+      )
+      .leftJoin('users', function () {
+        this.on('users.id', '=', 'chats_users.user_id');
+      })
       .where({ chat_id: chatId });
   }
 
