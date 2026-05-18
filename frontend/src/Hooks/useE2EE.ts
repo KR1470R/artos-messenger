@@ -102,11 +102,11 @@ const useE2EE = () => {
       const parts = decodeContent(content)
       if (!parts) return content
       const sharedKey = await getSharedKey(partnerId)
-      if (!sharedKey) return '[🔒 encrypted]'
+      if (!sharedKey) return '[encrypted]'
       try {
         return await decryptMessage(parts, sharedKey)
       } catch {
-        return '[🔒 decryption failed]'
+        return '[decryption failed]'
       }
     },
     [getSharedKey],
