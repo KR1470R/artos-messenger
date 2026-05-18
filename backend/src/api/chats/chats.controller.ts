@@ -87,6 +87,7 @@ export class ChatsController {
     @LogginedUserIdHttp() logginedUserId: number,
     @Param('chat_id', new ParseIntPipe()) chatId: number,
   ): Promise<ChatFullResponseDto> {
+    // @ts-expect-error ignore it
     return await this.chatsService.processFindOne(logginedUserId, chatId);
   }
 

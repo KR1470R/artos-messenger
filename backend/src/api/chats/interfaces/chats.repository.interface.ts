@@ -10,7 +10,7 @@ export default interface IChatsRepository {
     logginedUserId: number,
     relatedChatsIds: number[],
     query?: FilterChatsQueryDto,
-  ): Promise<Chats[]>;
+  ): Promise<(Chats & { username: string; avatar_url: string })[]>;
 
   findOne(chatId: number): Promise<Chats | undefined>;
 }
