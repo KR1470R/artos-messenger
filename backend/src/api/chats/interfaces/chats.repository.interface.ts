@@ -7,9 +7,12 @@ export default interface IChatsRepository {
   delete(chatId: number): Promise<number>;
 
   findMany(
+    logginedUserId: number,
     relatedChatsIds: number[],
     query?: FilterChatsQueryDto,
-  ): Promise<Chats[]>;
+  ): Promise<
+    (Chats & { user_id: number; username: string; avatar_url: string })[]
+  >;
 
   findOne(chatId: number): Promise<Chats | undefined>;
 }

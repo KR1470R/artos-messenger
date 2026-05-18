@@ -16,7 +16,9 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import axios from 'axios'
 
-const useConversationList = () => {
+const useConversationList = (
+  decryptFrom?: (senderId: number, content: string, partnerId: number) => Promise<string>
+) => {
   const [activeTab, setActiveTab] = useState<'messages' | 'users'>('messages')
   const [lastMessages, setLastMessages] = useState<Record<number, string>>({})
   const { selectedUser, setSelectedUser, setChatId, setRecipientId } = useChatStore()
@@ -42,12 +44,20 @@ const useConversationList = () => {
   useEffect(() => {
     if (!chatsData) return
     const handlers: Array<() => void> = []
-    const handleMessages = (messages: IMessageType[], chatId: number) => {
+    const handleMessages = async (messages: IMessageType[], chatId: number, senderId: number) => {
       if (messages.length > 0) {
-        const lastMessage = messages[messages.length - 1].content
+        const raw = messages[messages.length - 1]
+        let content = raw.content
+
+        if (decryptFrom && content?.startsWith('e2ee:')) {
+          content = await decryptFrom(raw.sender_id, content, senderId)
+        }
+
+        if (content === '[decryption failed]') return;
+
         setLastMessages(prev => {
-          if (prev[chatId] === lastMessage) return prev
-          return { ...prev, [chatId]: lastMessage }
+          if (prev[chatId] === content) return prev
+          return { ...prev, [chatId]: content }
         })
       }
     }
@@ -55,7 +65,7 @@ const useConversationList = () => {
       joinChat(chat.id)
       fetchMessages(chat.id, 1, 1)
       const messageHandler = (messages: IMessageType[]) =>
-        handleMessages(messages, chat.id)
+        handleMessages(messages, chat.id, chat.user_id).catch(console.error)
       subscribeToFetchMessages(messageHandler)
       handlers.push(() => unsubscribeFromFetchMessages(messageHandler))
     })
@@ -101,6 +111,7 @@ const useConversationList = () => {
       const otherMember = chat?.members?.find(
         (m: { user_id: number }) => m.user_id !== user?.id,
       )
+      setSelectedUser(otherMember)
       setRecipientId(otherMember?.user_id ?? null)
 
       setChatId(chatId)

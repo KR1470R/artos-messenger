@@ -25,7 +25,7 @@ const MessageList: React.FC<{ onBack?: () => void }> = React.memo(({ onBack }) =
 	return (
 		<div className='messageList'>
 			<Toolbar
-				title={'Chat'}
+				title={selectedUser?.username ? `Chat with ${selectedUser?.username}` : 'Chat'}
 				leftItems={
 					onBack
 						? [

@@ -6,6 +6,7 @@ import { IChat, IUserAll } from '../../Types/Services.interface'
 import { ContextMenu } from '../ContextMenu/ContextMenu'
 import { WarningModal } from '../WarningModal/WarningModal'
 import './ConversationListItem.css'
+import { DEFAULT_AVATAR } from '@/constants'
 
 const ConversationListItem: React.FC<IConversationItem> = ({
 	data,
@@ -22,12 +23,10 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 	const shortenText = (text: string, maxLength: number = 35): string =>
 		text.length > maxLength ? text.slice(0, maxLength) + '...' : text
 	const shortenedMessage = shortenText(lastMessage || ' ')
-	const fallbackAvatar =
-		'https://github.com/KR1470R/artos-messenger/blob/main/assets/fallbackAvatar.png?raw=true'
 	const [imageSrc, setImageSrc] = useState(
-		isUserAll(data) ? data.avatar_url : fallbackAvatar,
+		(isUserAll(data) ? data.avatar_url : null) || DEFAULT_AVATAR,
 	)
-	const handleImageError = () => setImageSrc(fallbackAvatar)
+	const handleImageError = () => setImageSrc(DEFAULT_AVATAR)
 	const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0 })
 	const [warningOpen, setWarningOpen] = useState(false)
 

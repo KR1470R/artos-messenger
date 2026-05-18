@@ -26,7 +26,9 @@ export default interface IChatsUsersRepository {
   // Used by processFindOne to populate the full members list.
   findManyByChatId: (
     chatId: number,
-  ) => Promise<Pick<ChatsUsers, 'id' | 'chat_id' | 'user_id' | 'role_id'>[]>;
+  ) => Promise<
+    (Pick<ChatsUsers, 'id' | 'chat_id' | 'user_id' | 'role_id'> & 'username')[]
+  >;
 
   findDirectChat: (
     userId: number,

@@ -1,4 +1,4 @@
-import { REGEX } from '@/constants'
+import { REGEX, DEFAULT_AVATAR } from '@/constants'
 import { useProfile } from '@/Hooks/useProfile'
 import { Notification } from '@/UI/Notification/Notification'
 import { WarningModal } from '@/UI/WarningModal/WarningModal'
@@ -35,7 +35,7 @@ const MyProfile = () => {
 				<form onSubmit={handleSubmit(onSubmit)} className='profile-form'>
 					<div className='personalData'>
 						<div className='personalImage'>
-							<img src={avatarUrl} alt='User avatar' />
+							<img src={avatarUrl || DEFAULT_AVATAR} alt='User avatar' />
 						</div>
 						<div className='personalInput'>
 							<p className='nameInput'>

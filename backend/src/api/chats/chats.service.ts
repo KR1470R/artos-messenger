@@ -59,7 +59,11 @@ export class ChatsService {
     const relatedChatsIds = (
       await this.chatsUsersRepository.findMany(logginedUserId)
     ).map((chat) => chat.chat_id);
-    const data = await this.chatsRepository.findMany(relatedChatsIds, query);
+    const data = await this.chatsRepository.findMany(
+      logginedUserId,
+      relatedChatsIds,
+      query,
+    );
     return { data };
   }
 

@@ -82,7 +82,7 @@ const useRegistration = () => {
         const registerFormData = {
           username: formData.username,
 	        password: formData.password,
-          avatar_url: formData.avatar_url,
+          avatar_url: formData.avatar_url || undefined,
         }
         // Register flow
         await registerAsync(registerFormData)
@@ -140,7 +140,7 @@ const useRegistration = () => {
           })
         case 'avatar_url':
           return register(field, {
-            required: !isAuthType ? 'Avatar URL is required for registration' : undefined,
+            required: undefined, // !isAuthType ? 'Avatar URL is required for registration' : undefined,
             pattern: {
               value: REGEX.AVATAR_URL,
               message: 'Avatar URL must be a valid image link (jpg, jpeg, png, gif)',

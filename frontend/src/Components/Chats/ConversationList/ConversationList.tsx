@@ -9,18 +9,20 @@ import { ToolbarButton } from '@/UI/ToolbarButton/ToolbarButton'
 import React from 'react'
 import { ConversationSearch } from '../ConversationSearch/ConversationSearch'
 import './ConversationList.css'
+import { useE2EE } from '@/Hooks/useE2EE'
 
 const ConversationList: React.FC<{ onSelectChat?: () => void }> = React.memo(
 	({ onSelectChat }) => {
-		const {
-			activeTab,
-			setActiveTab,
-			renderContent,
-			isLoading,
-			handleItemClickUsers,
-			handleItemClickChats,
-			lastMessages,
-		} = useConversationList()
+    const { decryptFrom } = useE2EE()
+    const {
+      activeTab,
+      setActiveTab,
+      renderContent,
+      isLoading,
+      handleItemClickUsers,
+      handleItemClickChats,
+      lastMessages,
+    } = useConversationList(decryptFrom)
 		const { chatId, selectedUser } = useChatStore()
 		return (
 			<div className='conversationList'>

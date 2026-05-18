@@ -13,6 +13,21 @@ export default class ChatShortResponseDto {
   type: number;
 
   @ApiProperty({
+    description: 'User id of chat opponent.',
+  })
+  user_id: number;
+
+  @ApiProperty({
+    description: 'Username of chat opponent.',
+  })
+  username: string;
+
+  @ApiProperty({
+    description: 'Username of chat opponent.',
+  })
+  avatar_url: string;
+
+  @ApiProperty({
     description: 'Chat creation date.',
     example: '2021-09-01T00:00:00.000Z',
   })
