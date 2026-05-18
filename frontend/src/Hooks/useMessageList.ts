@@ -46,12 +46,14 @@ const useMessageList = () => {
         setMessages(fetchedMessages)
         return
       }
+
       const decrypted = await Promise.all(
         fetchedMessages.map(async msg => ({
           ...msg,
           content: await decryptFrom(msg.sender_id, msg.content, currentRecipientId),
         }))
       )
+
       setMessages(decrypted)
     }
     fetchMessages(chatId, 20, 1)
@@ -84,7 +86,6 @@ const useMessageList = () => {
   // ─── Read receipts ────────────────────────────────────────────────────────
 
   const observeMessages = useCallback(() => {
-    if (!chatId) return console.log(chatId)
     const observer = new IntersectionObserver(
       entries => {
         entries.forEach(entry => {

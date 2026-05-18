@@ -53,6 +53,8 @@ const useConversationList = (
           content = await decryptFrom(raw.sender_id, content, senderId)
         }
 
+        if (content === '[decryption failed]') return;
+
         setLastMessages(prev => {
           if (prev[chatId] === content) return prev
           return { ...prev, [chatId]: content }
