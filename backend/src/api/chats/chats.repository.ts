@@ -45,6 +45,7 @@ export class ChatsRepository implements IChatsRepository {
       .select(
         'chats.id',
         'chats.type',
+        'users.id as user_id',
         'users.username',
         'users.avatar_url',
         'chats.created_at',
@@ -60,7 +61,11 @@ export class ChatsRepository implements IChatsRepository {
       .andWhere('chats_users.user_id', '!=', logginedUserId)
       .modify((qb) => {
         if (query?.type) qb.whereIn('type', query.type);
-      })) as (Chats & { username: string; avatar_url: string })[];
+      })) as (Chats & {
+      user_id: number;
+      username: string;
+      avatar_url: string;
+    })[];
   }
 
   public async findOne(chatId: number) {

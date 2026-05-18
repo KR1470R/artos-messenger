@@ -13,6 +13,11 @@ export default class ChatShortResponseDto {
   type: number;
 
   @ApiProperty({
+    description: 'User id of chat opponent.',
+  })
+  user_id: number;
+
+  @ApiProperty({
     description: 'Username of chat opponent.',
   })
   username: string;
