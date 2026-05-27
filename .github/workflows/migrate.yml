@@ -31,16 +31,16 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -L ${{ secrets.DB_PORT }}:127.0.0.1:${{ secrets.DB_PORT }} ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_rsa -N &
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -L ${{ secrets.DB_PORT }}:127.0.0.1:${{ secrets.DB_PORT }} ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_ed25519 -N &
 
       - name: Run Migrations and Seeds
         run: |
           cd backend
           npm run migrate:rollback
           npm run migrate:up
-          # npm run seed:run # no seeds yet
+          npm run seed:run
         env:
           NODE_ENV: ${{ inputs.environment }}
           DB_HOST: ${{ secrets.DB_HOST }}

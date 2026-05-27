@@ -55,10 +55,15 @@ jobs:
           cd backend
           NODE_ENV=test npm run migrate:up
 
-      - name: Run tests
+      - name: Run tests on backend
         run: |
           cd backend
           npm run test:cov
+
+      - name: Run tests on frontend
+        run: |
+          cd frontend
+          npm run test
 
       - name: Clear old application
         uses: appleboy/ssh-action@master
