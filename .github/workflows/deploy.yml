@@ -89,7 +89,7 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           source: 'backend, frontend, docker, assets'
-          target: '/${{ secrets.SERVER_USERNAME }}/var/www/artos-messenger'
+          target: '/var/www/artos-messenger'
 
       - name: Restore configs backup
         uses: appleboy/ssh-action@master
