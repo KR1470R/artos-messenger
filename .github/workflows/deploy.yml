@@ -73,6 +73,7 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
+            [ ! -d backend-configs ] && mkdir artos-messenger
             cd artos-messenger
             [ ! -d backend-configs ] && mkdir backend-configs
             [ ! -d frontend-configs ] && mkdir frontend-configs
@@ -88,7 +89,7 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           source: 'backend, frontend, docker, assets'
-          target: '/${{ secrets.SERVER_USERNAME }}/artos-messenger'
+          target: '/${{ secrets.SERVER_USERNAME }}/var/www/artos-messenger'
 
       - name: Restore configs backup
         uses: appleboy/ssh-action@master
