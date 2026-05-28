@@ -91,17 +91,17 @@ jobs:
           source: 'backend, frontend, docker, assets'
           target: '/var/www/artos-messenger'
 
-      - name: Restore configs backup
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SERVER_SSH_PORT }}
-          script: |
-            cd /var/www/artos-messenger
-            cp backend-configs/.env.* ./backend/configs
-            cp frontend-configs/.env.* ./frontend
+      # - name: Restore configs backup
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.SERVER_IP }}
+      #     username: ${{ secrets.SERVER_USERNAME }}
+      #     key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
+      #     port: ${{ secrets.SERVER_SSH_PORT }}
+      #     script: |
+      #       cd /var/www/artos-messenger
+      #       cp backend-configs/.env.* ./backend/configs
+      #       cp frontend-configs/.env.* ./frontend
 
       - name: Restart the application
         uses: appleboy/ssh-action@master
