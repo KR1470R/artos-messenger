@@ -99,7 +99,7 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
-            cd artos-messenger
+            cd /var/www/artos-messenger
             cp backend-configs/.env.* ./backend/configs
             cp frontend-configs/.env.* ./frontend
 
