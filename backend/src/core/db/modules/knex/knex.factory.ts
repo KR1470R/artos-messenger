@@ -36,9 +36,14 @@ export default function KnexConfigFactory(
     host: configService.getOrThrow('DB_HOST'),
     user: configService.getOrThrow('DB_USER'),
     port: Number(configService.getOrThrow('DB_PORT')),
-    password: configService.getOrThrow('DB_PASS'),
     database: configService.getOrThrow('DB_NAME'),
+    password: undefined,
   };
+  const password = configService.get('DB_PASS');
+  if (password) {
+    connectionParams.password = password;
+  }
+
   const poolParams = {
     min: Number(configService.getOrThrow('DB_MIN_CONN')),
     max: Number(configService.getOrThrow('DB_MAX_CONN')),
