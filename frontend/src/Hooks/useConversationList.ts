@@ -66,6 +66,10 @@ const useConversationList = (
 
     const handleFetchedMessages = async (messages: IMessageType[], chatId: number, senderId: number) => {
       if (messages.length === 0) return
+      // Each chat registers its own handler but all handlers receive every
+      // find_many_messages response. Guard by chat_id so a response for
+      // chat B doesn't overwrite the preview/unread count for chat A.
+      if (messages[0].chat_id !== chatId) return
       const raw = messages[messages.length - 1]
       let content = raw.content
 
