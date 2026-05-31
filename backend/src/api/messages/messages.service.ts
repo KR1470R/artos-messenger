@@ -27,8 +27,9 @@ export class MessagesService {
 
   /**
    * Tracks the most-recently-connected socket for each user.
-   * Used to deliver `new_chat_notification` to users who are online
-   * but haven't called join_chat for a newly-created chat yet.
+   * Used to deliver cross-chat notifications (new_chat_notification,
+   * chat_deleted) to users who are online regardless of which chats
+   * they have joined.
    */
   private readonly userSockets: Map<number, Socket> = new Map();
 
@@ -62,7 +63,7 @@ export class MessagesService {
     await this.assertUserAccess(userId, chatId);
 
     // Register/update the user's global socket reference so we can send
-    // cross-chat notifications (e.g. new_chat_notification) to them.
+    // cross-chat notifications (e.g. new_chat_notification, chat_deleted).
     this.userSockets.set(userId, socket);
 
     // handle scenario when user disconnects unexpectedly
@@ -75,13 +76,11 @@ export class MessagesService {
     if (!targetChatUsers) {
       const newChatUsers = new Map();
       newChatUsers.set(userId, socket);
-
       this.chatsUsersListeners.set(chatId, newChatUsers);
     } else {
       const targetChatUsersSocket = targetChatUsers.get(userId);
       if (targetChatUsersSocket)
         throw new ConflictException('User already joined this chat.');
-
       targetChatUsers.set(userId, socket);
     }
   }
@@ -122,6 +121,22 @@ export class MessagesService {
     }
   }
 
+  /**
+   * Notify all members of a deleted chat so their sidebar updates instantly.
+   * Called by ChatsService.processDelete before the DB rows are removed,
+   * so we can still look up member list via chatsUsersRepository.
+   * Emits `chat_deleted` to every member who has an active socket connection,
+   * regardless of whether they have called join_chat for this chat.
+   */
+  public async notifyChatDeleted(chatId: number): Promise<void> {
+    const members = await this.chatsUsersRepository.findManyByChatId(chatId);
+    for (const member of members) {
+      this.userSockets
+        .get(member.user_id)
+        ?.emit('chat_deleted', { chat_id: chatId });
+    }
+  }
+
   public async processCreate(
     logginedUserId: number,
     data: CreateMessageRequestDto,
@@ -139,13 +154,7 @@ export class MessagesService {
       initiator_id: logginedUserId,
     });
 
-    // Notify chat members who are connected (userSockets) but have not yet
-    // joined this chat room (chatsUsersListeners). This covers the case where
-    // someone receives a message in a brand-new chat and their sidebar needs
-    // to refresh without a manual page reload.
-    // We include sender_id and content so the frontend can immediately show
-    // the correct preview snippet and unread badge without waiting for the
-    // query refetch to complete.
+    // Notify members who are connected but haven't joined this chat room yet.
     const chatMembers = await this.chatsUsersRepository.findManyByChatId(
       data.chat_id,
     );

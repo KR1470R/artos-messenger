@@ -136,3 +136,18 @@ export const unsubscribeFromNewChatNotification = (
 export const disconnectSocket = () => {
 	if (socket.connected) socket.disconnect()
 }
+
+// ── Chat deleted notification ─────────────────────────────────────────────────
+// Emitted by the server to all chat members when the chat is deleted.
+// Both the deleter and their opponent receive this so their sidebars
+// update in real-time without a page refresh.
+export const subscribeToChatDeleted = (
+	callback: (data: { chat_id: number }) => void,
+) => {
+	socket.on('chat_deleted', callback)
+}
+export const unsubscribeFromChatDeleted = (
+	callback: (data: { chat_id: number }) => void,
+) => {
+	socket.off('chat_deleted', callback)
+}

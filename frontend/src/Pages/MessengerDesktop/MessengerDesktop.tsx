@@ -1,9 +1,9 @@
 import { ConversationList } from '@/Components/Chats/ConversationList/ConversationList'
 import { MessageList } from '@/Components/Chats/MessageList/MessageList'
+import { useChatStore } from '@/Store/useChatStore'
 import { useSettingsStore } from '@/Store/useSettingsStore'
 import { lazy, Suspense } from 'react'
 import '../Messenger/Messenger.css'
-
 
 const SettingsList = lazy(() =>
 	import('@/Components/Settings/SettingsList/SettingsList').then(module => ({
@@ -18,6 +18,7 @@ const SettingsContent = lazy(() =>
 
 const MessengerDesktop = () => {
 	const tabMain = useSettingsStore(state => state.tabMain)
+	const chatId = useChatStore(state => state.chatId)
 
 	return (
 		<div className='messenger'>
@@ -27,7 +28,11 @@ const MessengerDesktop = () => {
 						<ConversationList />
 					</div>
 					<div className='scrollable content'>
-						<MessageList />
+						{chatId ? (
+							<MessageList />
+						) : (
+							<div className='noChatSelected' />
+						)}
 					</div>
 				</>
 			) : (

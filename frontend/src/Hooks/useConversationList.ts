@@ -5,9 +5,11 @@ import {
   fetchMessages,
   INewChatNotification,
   joinChat,
+  subscribeToChatDeleted,
   subscribeToFetchMessages,
   subscribeToNewChatNotification,
   subscribeToNewMessages,
+  unsubscribeFromChatDeleted,
   unsubscribeFromFetchMessages,
   unsubscribeFromNewChatNotification,
   unsubscribeFromNewMessages,
@@ -31,8 +33,6 @@ const useConversationList = (
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
 
-  // Stable refs so socket handlers always read the latest values without
-  // needing to be torn down and re-subscribed on every render.
   const decryptFromRef = useRef(decryptFrom)
   useEffect(() => { decryptFromRef.current = decryptFrom }, [decryptFrom])
 
@@ -59,7 +59,7 @@ const useConversationList = (
     return activeTab === 'messages' ? chatsData || [] : usersData || []
   }, [activeTab, chatsData, usersData])
 
-  // ── Subscribe to last-message previews (initial fetch per chat) ──────────────
+  // ── Initial last-message preview per chat ────────────────────────────────────
   useEffect(() => {
     if (!chatsData) return
     const handlers: Array<() => void> = []
@@ -79,11 +79,21 @@ const useConversationList = (
         if (prev[chatId] === content) return prev
         return { ...prev, [chatId]: content }
       })
+
+      // Recompute unread count from the fetched batch so it survives page
+      // refreshes. Only count messages from the other person that aren't read.
+      const currentUserId = useAuthStore.getState().user?.id
+      const unread = messages.filter(
+        m => m.sender_id !== currentUserId && Number(m.is_read) === 0,
+      ).length
+      if (unread > 0) {
+        setUnreadCounts(prev => ({ ...prev, [chatId]: unread }))
+      }
     }
 
     chatsData.forEach(chat => {
       joinChat(chat.id)
-      fetchMessages(chat.id, 1, 1)
+      fetchMessages(chat.id, 50, 1)
       const messageHandler = (messages: IMessageType[]) =>
         handleFetchedMessages(messages, chat.id, chat.user_id).catch(console.error)
       subscribeToFetchMessages(messageHandler)
@@ -95,9 +105,8 @@ const useConversationList = (
     }
   }, [chatsData])
 
-  // ── Real-time: new_message → update preview + unread badge ───────────────────
-  // Empty deps: subscribe once on mount, read latest values via refs.
-  // This handles messages in chats the user has already joined.
+  // ── Real-time new_message: preview + unread badge ────────────────────────────
+  // Empty deps — subscribed once on mount, reads latest values via refs.
   useEffect(() => {
     const handleNewMessage = async (msg: IMessageType) => {
       let content = msg.content
@@ -124,27 +133,17 @@ const useConversationList = (
     return () => unsubscribeFromNewMessages(handleNewMessage)
   }, [])
 
-  // ── New-chat notification: first message in a chat we haven't joined yet ─────
-  // The server sends this instead of new_message when the recipient hasn't
-  // called join_chat for the chat (i.e. it's brand new to them). It carries
-  // the content and sender_id so we can update the sidebar immediately, then
-  // we invalidate the query to fetch the full chat metadata.
+  // ── First message in a brand-new chat ────────────────────────────────────────
   useEffect(() => {
     const handleNewChatNotification = async (data: INewChatNotification) => {
-      // Immediately invalidate so the chat row appears in the list
       queryClient.invalidateQueries({ queryKey: ['chats'] })
 
-      // Decrypt the preview snippet if needed.
-      // For a brand-new chat we don't have a chatsData entry yet, so we use
-      // sender_id as the partnerId — correct for direct chats.
       let content = data.content
       if (decryptFromRef.current && content?.startsWith('e2ee:')) {
         content = await decryptFromRef.current(data.sender_id, content, data.sender_id)
         if (content === '[decryption failed]') return
       }
 
-      // Set the preview and the unread badge right away, before the refetch
-      // resolves. This is what makes the first message show up highlighted.
       setLastMessages(prev => ({ ...prev, [data.chat_id]: content }))
 
       const activeChatId = useChatStore.getState().chatId
@@ -160,7 +159,39 @@ const useConversationList = (
     return () => unsubscribeFromNewChatNotification(handleNewChatNotification)
   }, [queryClient])
 
-  // ── Clear unread count when a chat is opened ─────────────────────────────────
+  // ── Real-time chat deletion for both the deleter and the opponent ────────────
+  useEffect(() => {
+    const handleChatDeleted = ({ chat_id }: { chat_id: number }) => {
+      // Remove the chat from the React Query cache immediately — no refetch needed.
+      queryClient.setQueryData<IChat[]>(['chats'], prev =>
+        prev ? prev.filter(c => c.id !== chat_id) : prev,
+      )
+
+      // Clean up local state for the removed chat
+      setLastMessages(prev => {
+        const next = { ...prev }
+        delete next[chat_id]
+        return next
+      })
+      setUnreadCounts(prev => {
+        const next = { ...prev }
+        delete next[chat_id]
+        return next
+      })
+
+      // If this chat was currently open, close it
+      if (useChatStore.getState().chatId === chat_id) {
+        useChatStore.getState().setChatId(null as any)
+        useChatStore.getState().setSelectedUser(null as any)
+        useChatStore.getState().setRecipientId(null)
+      }
+    }
+
+    subscribeToChatDeleted(handleChatDeleted)
+    return () => unsubscribeFromChatDeleted(handleChatDeleted)
+  }, [queryClient])
+
+  // ── Clear unread when a chat is opened ───────────────────────────────────────
   const clearUnread = (chatId: number) => {
     setUnreadCounts(prev => {
       if (!prev[chatId]) return prev
