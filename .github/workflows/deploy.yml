@@ -1,13 +1,13 @@
 name: Deploy Backend Application on Remote Server
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       environment:
         type: environment
         description: 'Environment to deploy the application'
         required: true
-      node_env: 
+      node_env:
         type: choice
         description: 'Node environment to run the application'
         default: 'development'
@@ -20,52 +20,40 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up MySQL
-        run: |
-          sudo systemctl start mysql
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
-      - name: Install Backend Dependencies
-        run: |
-          cd backend
-          npm install
-      
-      - name: Install Frontend Dependencies
-        run: |
-          cd frontend
-          npm install
+      - name: Set up MySQL (for tests)
+        run: sudo systemctl start mysql
 
-      - name: Check if frontend build is successful
-        run: |
-          cd frontend
-          npm run build
-      
-      - name: Create Database for tests
-        run: |
-          mysql -e 'CREATE DATABASE ${{ vars.DB_NAME_TEST }};' -uroot -proot
-        
-      - name: Migrate Test Database
-        run: |
-          cd backend
-          NODE_ENV=test npm run migrate:up
+      - name: Install backend dependencies
+        run: cd backend && npm install
 
-      - name: Run tests on backend
-        run: |
-          cd backend
-          npm run test:cov
+      - name: Install frontend dependencies
+        run: cd frontend && npm install
 
-      - name: Run tests on frontend
-        run: |
-          cd frontend
-          npm run test
+      - name: Build frontend (smoke-check)
+        run: cd frontend && npm run build
 
-      - name: Clear old application
+      - name: Create test database
+        run: mysql -e 'CREATE DATABASE ${{ vars.DB_NAME_TEST }};' -uroot -proot
+
+      - name: Run backend migrations (test DB)
+        run: cd backend && NODE_ENV=test npm run migrate:up
+
+      - name: Run backend tests
+        run: cd backend && npm run test:cov
+
+      - name: Run frontend tests
+        run: cd frontend && npm run test
+
+      # ── Deploy source to server ─────────────────────────────────────────────
+
+      - name: Back up server configs and clear old source
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -73,37 +61,23 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
-            [ ! -d backend-configs ] && mkdir artos-messenger
-            cd artos-messenger
-            [ ! -d backend-configs ] && mkdir backend-configs
-            [ ! -d frontend-configs ] && mkdir frontend-configs
-            cp -r backend/configs/.env.* ./backend-configs
-            cp -r frontend/.env.* ./frontend-configs
+            cd ~/${{ secrets.SERVER_USERNAME }}/artos-messenger
+            mkdir -p backend-configs frontend-configs
+            cp -r backend/configs/.env.* ./backend-configs/ || true
+            cp -r frontend/.env.* ./frontend-configs/ || true
             rm -rf backend frontend docker assets
 
-      - name: Deploy to Server
+      - name: Copy new source to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
-          source: 'backend, frontend, docker, assets'
-          target: '/var/www/artos-messenger'
+          source: 'backend,frontend,docker,assets'
+          target: '~/${{ secrets.SERVER_USERNAME }}/artos-messenger'
 
-      # - name: Restore configs backup
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.SERVER_IP }}
-      #     username: ${{ secrets.SERVER_USERNAME }}
-      #     key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
-      #     port: ${{ secrets.SERVER_SSH_PORT }}
-      #     script: |
-      #       cd /var/www/artos-messenger
-      #       cp backend-configs/.env.* ./backend/configs
-      #       cp frontend-configs/.env.* ./frontend
-
-      - name: Restart the application
+      - name: Restore configs, install deps, build and restart
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
@@ -113,4 +87,25 @@ jobs:
           script: |
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
+
+            cd ~/${{ secrets.SERVER_USERNAME }}/artos-messenger
+
+            # Restore environment configs
+            cp backend-configs/.env.* ./backend/configs/
+            cp frontend-configs/.env.* ./frontend/
+
+            # Install dependencies (picks up any new packages)
+            cd backend && npm install --production
+            cd ../frontend && npm install
+
+            # Build frontend for production
+            npm run build
+
+            # Build backend
+            cd ../backend && npm run build
+
+            # Run any pending migrations on the live database
+            NODE_ENV=${{ inputs.node_env }} npm run migrate:up
+
+            # Restart the application with the freshly built code
             pm2 restart artos-messenger
