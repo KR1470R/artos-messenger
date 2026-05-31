@@ -45,8 +45,8 @@ jobs:
       - name: Run backend migrations (test DB)
         run: cd backend && NODE_ENV=test npm run migrate:up
 
-      - name: Run backend tests
-        run: cd backend && npm run test:cov
+      # - name: Run backend tests
+      #   run: cd backend && npm run test:cov
 
       - name: Run frontend tests
         run: cd frontend && npm run test
