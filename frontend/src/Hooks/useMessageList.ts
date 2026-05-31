@@ -40,7 +40,6 @@ const useMessageList = () => {
   useEffect(() => {
     if (!chatId) return
     const handleMessages = async (fetchedMessages: IMessageType[]) => {
-      // Read recipientId at call time (not from closure) to avoid stale value
       const currentRecipientId = useChatStore.getState().recipientId
       if (!currentRecipientId) {
         setMessages(fetchedMessages)
@@ -64,9 +63,16 @@ const useMessageList = () => {
   }, [chatId])
 
   // ─── New message ──────────────────────────────────────────────────────────
+  // Guard: only append messages that belong to the currently open chat.
+  // Without this guard, messages from other chats (e.g. Alice texting while
+  // you have Bob's chat open) would briefly flash in the wrong conversation.
 
   useEffect(() => {
     const handleNewMessage = async (newMessage: IMessageType) => {
+      // Ignore messages that don't belong to the currently open chat
+      const currentChatId = useChatStore.getState().chatId
+      if (newMessage.chat_id !== currentChatId) return
+
       const currentRecipientId = useChatStore.getState().recipientId
       const decryptedContent = currentRecipientId
         ? await decryptFrom(newMessage.sender_id, newMessage.content, currentRecipientId)
@@ -94,14 +100,15 @@ const useMessageList = () => {
           const messageId = target.getAttribute('data-id')
           const isMine = target.classList.contains('mine')
           const message = messages.find(msg => msg.id === Number(messageId))
-          if (isIntersecting && messageId && !isMine) {
+
+          if (messageId && !isMine && !message.is_read) {
             if (message && message.initiator_id !== user?.id) {
               markMessageAsRead(chatId, Number(messageId), true)
             }
           }
         })
       },
-      { threshold: 1.0 },
+      { threshold: 0 },
     )
     return observer
   }, [chatId, messages, user?.id])

@@ -14,12 +14,32 @@
 	background-color: var(--background-button);
 }
 
+/* Highlight chats that have unread messages */
+.conversationListItem.unread {
+	background-color: var(--unread-highlight, rgba(var(--button-auth-rgb, 0, 120, 255), 0.08));
+}
+
+.conversationListItem.unread .conversationTitle {
+	color: var(--button-auth);
+}
+
+.conversationListItem.unread .conversationSnippet {
+	color: var(--text-color);
+	font-weight: 500;
+}
+
 .conversationPhoto {
 	width: 50px;
 	height: 50px;
 	border-radius: 50%;
 	object-fit: cover;
 	margin-right: 10px;
+	flex-shrink: 0;
+}
+
+.conversationInfo {
+	flex: 1;
+	min-width: 0;
 }
 
 .conversationTitle {
@@ -30,4 +50,23 @@
 .conversationSnippet {
 	font-size: var(--font-size-xs);
 	color: var(--border-color);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Unread message count badge */
+.unreadBadge {
+	flex-shrink: 0;
+	min-width: 20px;
+	height: 20px;
+	padding: 0 5px;
+	border-radius: 10px;
+	background-color: var(--button-auth);
+	color: var(--stable-light-color, #fff);
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 20px;
+	text-align: center;
+	margin-left: 8px;
 }

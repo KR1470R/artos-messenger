@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MessagesRepository } from './messages.repository';
 import { MessagesService } from './messages.service';
 import { MessagesGateway } from './messages.gateway';
@@ -9,7 +9,7 @@ import { UsersModule } from '#api/users/users.module';
 import { JwtAuthWsGuard } from '#api/auth/guards';
 
 @Module({
-  imports: [ChatsModule, UsersModule],
+  imports: [forwardRef(() => ChatsModule), UsersModule],
   providers: [
     MessagesGateway,
     MessagesService,
@@ -20,5 +20,6 @@ import { JwtAuthWsGuard } from '#api/auth/guards';
       useClass: MessagesRepository,
     },
   ],
+  exports: [MessagesService],
 })
 export class MessagesModule {}

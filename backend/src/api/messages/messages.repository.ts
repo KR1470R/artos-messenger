@@ -40,6 +40,7 @@ export class MessagesRepository implements IMessagesRepository {
       this.db(this.entity)
         .select(
           'id',
+          'chat_id',
           'sender_id',
           'content',
           'is_read',

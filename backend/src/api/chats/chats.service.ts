@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  forwardRef,
   Inject,
   Injectable,
   NotFoundException,
@@ -9,6 +10,7 @@ import { ChatTypesEnum, ChatUserRolesEnum } from '#core/db/types';
 import { ChatsRepositoryToken, ChatsUsersRepositoryToken } from './constants';
 import { IChatsRepository, IChatsUsersRepository } from './interfaces';
 import { FilterChatsQueryDto } from './dto/requests';
+import { MessagesService } from '#api/messages/messages.service';
 
 @Injectable()
 export class ChatsService {
@@ -17,6 +19,8 @@ export class ChatsService {
     private readonly chatsRepository: IChatsRepository,
     @Inject(ChatsUsersRepositoryToken)
     private readonly chatsUsersRepository: IChatsUsersRepository,
+    @Inject(forwardRef(() => MessagesService))
+    private readonly messagesService: MessagesService,
   ) {}
 
   public async processCreate(logginedUserId: number, targetUserId: number) {
@@ -48,6 +52,12 @@ export class ChatsService {
 
   public async processDelete(logginedUserId: number, chatId: number) {
     await this.processFindOne(logginedUserId, chatId);
+
+    // Notify all members via WebSocket BEFORE deleting the DB rows so we
+    // can still look up the member list. Each recipient's frontend will
+    // remove the chat from its sidebar without a page refresh.
+    await this.messagesService.notifyChatDeleted(chatId);
+
     await this.chatsUsersRepository.deleteMany(chatId);
     await this.chatsRepository.delete(chatId);
   }
@@ -71,7 +81,6 @@ export class ChatsService {
     const targetChat = await this.chatsRepository.findOne(chatId);
     if (!targetChat) throw new NotFoundException('Chat not found.');
 
-    // Verify the requesting user is actually a member of this chat
     const userMembership = await this.chatsUsersRepository.findOne(
       logginedUserId,
       chatId,
@@ -79,7 +88,6 @@ export class ChatsService {
     if (!userMembership)
       throw new ForbiddenException('User does not persist in this chat.');
 
-    // Fetch ALL members of the chat (not filtered by userId)
     const chatMembers =
       await this.chatsUsersRepository.findManyByChatId(chatId);
 

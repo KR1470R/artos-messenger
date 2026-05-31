@@ -121,6 +121,43 @@ export const unsubscribeFromDeleteMessage = (
 ) => {
 	socket.off('deleted_message', callback)
 }
+
+// ── New-chat notification ─────────────────────────────────────────────────────
+// Emitted by the server when the first message arrives in a chat the client
+// hasn't joined yet. Carries enough data to update the sidebar immediately
+// (preview snippet + unread badge) before the React Query refetch completes.
+export interface INewChatNotification {
+	chat_id: number
+	sender_id: number
+	content: string
+	message_id: number
+}
+export const subscribeToNewChatNotification = (
+	callback: (data: INewChatNotification) => void,
+) => {
+	socket.on('new_chat_notification', callback)
+}
+export const unsubscribeFromNewChatNotification = (
+	callback: (data: INewChatNotification) => void,
+) => {
+	socket.off('new_chat_notification', callback)
+}
+
 export const disconnectSocket = () => {
 	if (socket.connected) socket.disconnect()
+}
+
+// ── Chat deleted notification ─────────────────────────────────────────────────
+// Emitted by the server to all chat members when the chat is deleted.
+// Both the deleter and their opponent receive this so their sidebars
+// update in real-time without a page refresh.
+export const subscribeToChatDeleted = (
+	callback: (data: { chat_id: number }) => void,
+) => {
+	socket.on('chat_deleted', callback)
+}
+export const unsubscribeFromChatDeleted = (
+	callback: (data: { chat_id: number }) => void,
+) => {
+	socket.off('chat_deleted', callback)
 }

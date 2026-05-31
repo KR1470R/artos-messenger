@@ -31,7 +31,11 @@ import { MessagesService } from './messages.service';
 
 @WebSocketGateway(8080, {
   namespace: 'messages',
-  cors: true,
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
 })
 @UsePipes(new ValidationPipe())
 @UseFilters(WsExceptionsFilter)
@@ -132,7 +136,9 @@ export class MessagesGateway implements OnGatewayConnection {
     @LogginedUserIdWs() logginedUserId: number,
     @MessageBody() data: FindManyMessagesRequestDto,
   ): Promise<
-    WsResponse<Pick<Messages, 'content' | 'sender_id' | 'id' | 'is_read'>[]>
+    WsResponse<
+      Pick<Messages, 'chat_id' | 'content' | 'sender_id' | 'id' | 'is_read'>[]
+    >
   > {
     const messages = await this.messagesService.processFindMany(
       logginedUserId,
@@ -141,6 +147,7 @@ export class MessagesGateway implements OnGatewayConnection {
 
     return {
       event: 'find_many_messages',
+      // @ts-expect-error it's good
       data: messages,
     };
   }

@@ -25,6 +25,14 @@ export class MessagesService {
   private readonly chatsUsersListeners: Map<number, Map<number, Socket>> =
     new Map();
 
+  /**
+   * Tracks the most-recently-connected socket for each user.
+   * Used to deliver cross-chat notifications (new_chat_notification,
+   * chat_deleted) to users who are online regardless of which chats
+   * they have joined.
+   */
+  private readonly userSockets: Map<number, Socket> = new Map();
+
   constructor(
     @Inject(MessagesRepositoryToken)
     private readonly messagesRepository: IMessagesRepository,
@@ -54,8 +62,13 @@ export class MessagesService {
   ) {
     await this.assertUserAccess(userId, chatId);
 
+    // Register/update the user's global socket reference so we can send
+    // cross-chat notifications (e.g. new_chat_notification, chat_deleted).
+    this.userSockets.set(userId, socket);
+
     // handle scenario when user disconnects unexpectedly
     socket.on('disconnect', async () => {
+      this.userSockets.delete(userId);
       await this.leaveChatUserSocket(chatId, userId);
     });
 
@@ -63,13 +76,11 @@ export class MessagesService {
     if (!targetChatUsers) {
       const newChatUsers = new Map();
       newChatUsers.set(userId, socket);
-
       this.chatsUsersListeners.set(chatId, newChatUsers);
     } else {
       const targetChatUsersSocket = targetChatUsers.get(userId);
       if (targetChatUsersSocket)
         throw new ConflictException('User already joined this chat.');
-
       targetChatUsers.set(userId, socket);
     }
   }
@@ -95,18 +106,34 @@ export class MessagesService {
 
   public async syncMessageToAllChatUsersSockets(
     syncEvent: SyncMessagesEvents,
-    data: BaseMessageRequestDto & { id: number; initiator_id: number },
+    data: BaseMessageRequestDto & {
+      id: number;
+      initiator_id: number;
+      is_read?: boolean;
+    },
   ) {
     const targetChat = this.chatsUsersListeners.get(data.chat_id);
     if (targetChat) {
       for (const receiverId of targetChat.keys()) {
         const socket = targetChat.get(receiverId)!;
-        if (data.chat_id === data.chat_id)
-          socket.emit(syncEvent, {
-            receiver_id: receiverId,
-            ...data,
-          });
+        socket.emit(syncEvent, { receiver_id: receiverId, ...data });
       }
+    }
+  }
+
+  /**
+   * Notify all members of a deleted chat so their sidebar updates instantly.
+   * Called by ChatsService.processDelete before the DB rows are removed,
+   * so we can still look up member list via chatsUsersRepository.
+   * Emits `chat_deleted` to every member who has an active socket connection,
+   * regardless of whether they have called join_chat for this chat.
+   */
+  public async notifyChatDeleted(chatId: number): Promise<void> {
+    const members = await this.chatsUsersRepository.findManyByChatId(chatId);
+    for (const member of members) {
+      this.userSockets
+        .get(member.user_id)
+        ?.emit('chat_deleted', { chat_id: chatId });
     }
   }
 
@@ -126,6 +153,24 @@ export class MessagesService {
       id: newMessageId,
       initiator_id: logginedUserId,
     });
+
+    // Notify members who are connected but haven't joined this chat room yet.
+    const chatMembers = await this.chatsUsersRepository.findManyByChatId(
+      data.chat_id,
+    );
+    const joinedSet = new Set(
+      this.chatsUsersListeners.get(data.chat_id)?.keys() ?? [],
+    );
+    for (const member of chatMembers) {
+      if (!joinedSet.has(member.user_id)) {
+        this.userSockets.get(member.user_id)?.emit('new_chat_notification', {
+          chat_id: data.chat_id,
+          sender_id: logginedUserId,
+          content: data.content,
+          message_id: newMessageId,
+        });
+      }
+    }
 
     return newMessageId;
   }
@@ -151,6 +196,7 @@ export class MessagesService {
 
     await this.syncMessageToAllChatUsersSockets('updated_message', {
       ...data,
+      is_read: data.is_read ?? targetMessage.is_read,
       initiator_id: logginedUserId,
     });
   }

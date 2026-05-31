@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ChatsRepository } from './chats.repository';
 import { ChatsUsersRepository } from './chats-users.repository';
 import { ChatsController } from './chats.controller';
 import { ChatsService } from './chats.service';
 import { ChatsRepositoryToken, ChatsUsersRepositoryToken } from './constants';
+import { MessagesModule } from '#api/messages/messages.module';
 
 const repositoriesProviders = [
   {
@@ -17,6 +18,7 @@ const repositoriesProviders = [
 ];
 
 @Module({
+  imports: [forwardRef(() => MessagesModule)],
   controllers: [ChatsController],
   providers: [ChatsService, ...repositoriesProviders],
   exports: repositoriesProviders,
