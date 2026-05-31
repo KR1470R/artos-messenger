@@ -95,17 +95,17 @@ export class MessagesService {
 
   public async syncMessageToAllChatUsersSockets(
     syncEvent: SyncMessagesEvents,
-    data: BaseMessageRequestDto & { id: number; initiator_id: number },
+    data: BaseMessageRequestDto & {
+      id: number;
+      initiator_id: number;
+      is_read?: boolean;
+    },
   ) {
     const targetChat = this.chatsUsersListeners.get(data.chat_id);
     if (targetChat) {
       for (const receiverId of targetChat.keys()) {
         const socket = targetChat.get(receiverId)!;
-        if (data.chat_id === data.chat_id)
-          socket.emit(syncEvent, {
-            receiver_id: receiverId,
-            ...data,
-          });
+        socket.emit(syncEvent, { receiver_id: receiverId, ...data });
       }
     }
   }
@@ -151,6 +151,7 @@ export class MessagesService {
 
     await this.syncMessageToAllChatUsersSockets('updated_message', {
       ...data,
+      is_read: data.is_read ?? targetMessage.is_read,
       initiator_id: logginedUserId,
     });
   }

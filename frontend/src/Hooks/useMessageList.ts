@@ -94,14 +94,15 @@ const useMessageList = () => {
           const messageId = target.getAttribute('data-id')
           const isMine = target.classList.contains('mine')
           const message = messages.find(msg => msg.id === Number(messageId))
-          if (isIntersecting && messageId && !isMine) {
+
+          if (messageId && !isMine && !message.is_read) {
             if (message && message.initiator_id !== user?.id) {
               markMessageAsRead(chatId, Number(messageId), true)
             }
           }
         })
       },
-      { threshold: 1.0 },
+      { threshold: 0 },
     )
     return observer
   }, [chatId, messages, user?.id])
