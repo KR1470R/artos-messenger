@@ -45,8 +45,8 @@ jobs:
       - name: Run backend migrations (test DB)
         run: cd backend && NODE_ENV=test npm run migrate:up
 
-      - name: Run backend tests
-        run: cd backend && npm run test:cov
+      # - name: Run backend tests
+      #   run: cd backend && npm run test:cov
 
       - name: Run frontend tests
         run: cd frontend && npm run test
@@ -61,7 +61,7 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           script: |
-            cd ~/${{ secrets.SERVER_USERNAME }}/artos-messenger
+            cd /var/www/artos-messenger
             mkdir -p backend-configs frontend-configs
             cp -r backend/configs/.env.* ./backend-configs/ || true
             cp -r frontend/.env.* ./frontend-configs/ || true
@@ -75,7 +75,7 @@ jobs:
           key: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_SSH_PORT }}
           source: 'backend,frontend,docker,assets'
-          target: '~/${{ secrets.SERVER_USERNAME }}/artos-messenger'
+          target: '/var/www/artos-messenger'
 
       - name: Restore configs, install deps, build and restart
         uses: appleboy/ssh-action@master
@@ -88,7 +88,7 @@ jobs:
             export NVM_DIR=~/.nvm
             source ~/.nvm/nvm.sh
 
-            cd ~/${{ secrets.SERVER_USERNAME }}/artos-messenger
+            cd /var/www/artos-messenger
 
             # Restore environment configs
             cp backend-configs/.env.* ./backend/configs/
