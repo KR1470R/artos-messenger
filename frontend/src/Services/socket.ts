@@ -2,14 +2,24 @@ import { TokenService } from '@/Services/authorization/AccessTokenMemory'
 import { IMessageType } from '@/Types/Messages.interface'
 import { io, Socket } from 'socket.io-client'
 
+// export const socket: Socket = io(
+// 	`${import.meta.env.VITE_WS_URL}${import.meta.env.VITE_WS_MESSAGES_ROUTE}`,
+// 	{
+// 		autoConnect: false,
+// 		extraHeaders: {
+// 			token: `${TokenService.getToken()}`,
+// 		},
+// 	},
+// )
+
 export const socket: Socket = io(
-	`${import.meta.env.VITE_WS_URL}${import.meta.env.VITE_WS_MESSAGES_ROUTE}`,
-	{
-		autoConnect: false,
-		extraHeaders: {
-			token: `${TokenService.getToken()}`,
-		},
-	},
+  `${import.meta.env.VITE_WS_URL}/messages`,
+  {
+    path: '/ws/socket.io',
+    extraHeaders: {
+      token: `${TokenService.getToken()}`,
+    },
+  },
 )
 export const connectSocket = () => {
 	const token = TokenService.getToken()

@@ -1,4 +1,4 @@
-name: artos-app
+# name: artos-app
 
 services:
   app:
