@@ -111,6 +111,23 @@ export const unsubscribeFromDeleteMessage = (
 ) => {
 	socket.off('deleted_message', callback)
 }
+
+// ── New-chat notification ─────────────────────────────────────────────────────
+// Emitted by the server when a message arrives in a chat the client hasn't
+// joined yet (e.g. someone opened a DM with you for the very first time).
+// The frontend uses this to re-fetch the chat list so the new conversation
+// appears automatically without a page reload.
+export const subscribeToNewChatNotification = (
+	callback: (data: { chat_id: number }) => void,
+) => {
+	socket.on('new_chat_notification', callback)
+}
+export const unsubscribeFromNewChatNotification = (
+	callback: (data: { chat_id: number }) => void,
+) => {
+	socket.off('new_chat_notification', callback)
+}
+
 export const disconnectSocket = () => {
 	if (socket.connected) socket.disconnect()
 }

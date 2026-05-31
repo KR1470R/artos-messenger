@@ -14,6 +14,8 @@ export interface IConversationItem {
 	isActive: boolean
 	lastMessage?: string
 	activeTab: string
+	/** Number of unread messages in this chat. Used to show a badge. */
+	unreadCount?: number
 }
 
 export interface IToolbarButton {

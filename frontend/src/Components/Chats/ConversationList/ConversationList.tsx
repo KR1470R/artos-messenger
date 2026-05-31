@@ -22,6 +22,7 @@ const ConversationList: React.FC<{ onSelectChat?: () => void }> = React.memo(
       handleItemClickUsers,
       handleItemClickChats,
       lastMessages,
+      unreadCounts,
     } = useConversationList(decryptFrom)
 		const { chatId, selectedUser } = useChatStore()
 		return (
@@ -45,6 +46,7 @@ const ConversationList: React.FC<{ onSelectChat?: () => void }> = React.memo(
 										isActive={chatId === item.id}
 										activeTab={activeTab}
 										lastMessage={lastMessages[item.id]}
+										unreadCount={unreadCounts[item.id] ?? 0}
 										onClick={() => {
 											handleItemClickChats(item.id)
 											onSelectChat?.()

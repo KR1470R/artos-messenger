@@ -25,6 +25,13 @@ export class MessagesService {
   private readonly chatsUsersListeners: Map<number, Map<number, Socket>> =
     new Map();
 
+  /**
+   * Tracks the most-recently-connected socket for each user.
+   * Used to deliver `new_chat_notification` to users who are online
+   * but haven't called join_chat for a newly-created chat yet.
+   */
+  private readonly userSockets: Map<number, Socket> = new Map();
+
   constructor(
     @Inject(MessagesRepositoryToken)
     private readonly messagesRepository: IMessagesRepository,
@@ -54,8 +61,13 @@ export class MessagesService {
   ) {
     await this.assertUserAccess(userId, chatId);
 
+    // Register/update the user's global socket reference so we can send
+    // cross-chat notifications (e.g. new_chat_notification) to them.
+    this.userSockets.set(userId, socket);
+
     // handle scenario when user disconnects unexpectedly
     socket.on('disconnect', async () => {
+      this.userSockets.delete(userId);
       await this.leaveChatUserSocket(chatId, userId);
     });
 
@@ -126,6 +138,24 @@ export class MessagesService {
       id: newMessageId,
       initiator_id: logginedUserId,
     });
+
+    // Notify chat members who are connected (userSockets) but have not yet
+    // joined this chat room (chatsUsersListeners). This covers the case where
+    // someone receives a message in a brand-new chat and their sidebar needs
+    // to refresh without a manual page reload.
+    const chatMembers = await this.chatsUsersRepository.findManyByChatId(
+      data.chat_id,
+    );
+    const joinedSet = new Set(
+      this.chatsUsersListeners.get(data.chat_id)?.keys() ?? [],
+    );
+    for (const member of chatMembers) {
+      if (!joinedSet.has(member.user_id)) {
+        this.userSockets
+          .get(member.user_id)
+          ?.emit('new_chat_notification', { chat_id: data.chat_id });
+      }
+    }
 
     return newMessageId;
   }

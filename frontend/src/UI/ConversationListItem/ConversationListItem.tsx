@@ -14,6 +14,7 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 	isActive,
 	lastMessage,
 	activeTab,
+	unreadCount = 0,
 }) => {
 	const closeContextMenu = () => setContextMenu({ visible: false, x: 0, y: 0 })
 	const { deleteChat } = useContextMenu(data)
@@ -61,7 +62,7 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 	return (
 		<>
 			<div
-				className={`conversationListItem ${isActive ? 'active' : ''}`}
+				className={`conversationListItem ${isActive ? 'active' : ''} ${unreadCount > 0 && !isActive ? 'unread' : ''}`}
 				onClick={onClick}
 				onContextMenu={handleContextMenu}
 			>
@@ -77,6 +78,9 @@ const ConversationListItem: React.FC<IConversationItem> = ({
 					</h1>
 					<p className='conversationSnippet'>{shortenedMessage}</p>
 				</div>
+				{unreadCount > 0 && !isActive && (
+					<span className='unreadBadge'>{unreadCount > 99 ? '99+' : unreadCount}</span>
+				)}
 			</div>
 			<ContextMenu
 				visible={contextMenu.visible}
