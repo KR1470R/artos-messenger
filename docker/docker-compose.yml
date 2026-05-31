@@ -24,8 +24,10 @@ services:
     restart: always
     command: --default-authentication-plugin=caching_sha2_password
     environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes" # for test, remove on prod
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASS}
     volumes:
       - db-data:/var/lib/mysql
     ports:

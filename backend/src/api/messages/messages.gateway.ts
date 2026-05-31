@@ -31,7 +31,11 @@ import { MessagesService } from './messages.service';
 
 @WebSocketGateway(8080, {
   namespace: 'messages',
-  cors: true,
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
 })
 @UsePipes(new ValidationPipe())
 @UseFilters(WsExceptionsFilter)
