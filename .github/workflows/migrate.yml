@@ -1,11 +1,11 @@
 name: Migrate & Seed Database On Remote Server
 
-on: 
+on:
   workflow_dispatch:
     inputs:
       environment:
         type: environment
-        description: 'Environment to deploy the application'
+        description: 'Environment to run migrations against'
         required: true
 
 jobs:
@@ -14,33 +14,44 @@ jobs:
     environment: ${{ inputs.environment }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
-      - name: Install Dependencies
-        run: |
-          cd backend
-          npm install
+      - name: Install dependencies
+        run: cd backend && npm install
 
-      - name: Create SSH Tunnel for DB Migration
+      - name: Open SSH tunnel to remote database
         env:
           SSH_PRIVATE_KEY: ${{ secrets.REMOTE_SSH_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh -o StrictHostKeyChecking=no -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -L ${{ secrets.DB_PORT }}:127.0.0.1:${{ secrets.DB_PORT }} ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} -p ${{ secrets.SERVER_SSH_PORT }} -i ~/.ssh/id_ed25519 -N &
+          ssh -o StrictHostKeyChecking=no \
+              -o ExitOnForwardFailure=yes \
+              -o ServerAliveInterval=30 \
+              -L ${{ secrets.DB_PORT }}:127.0.0.1:${{ secrets.DB_PORT }} \
+              ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} \
+              -p ${{ secrets.SERVER_SSH_PORT }} \
+              -i ~/.ssh/id_ed25519 \
+              -N &
+          # Wait for the tunnel port to be ready before proceeding
+          for i in $(seq 1 15); do
+            nc -z 127.0.0.1 ${{ secrets.DB_PORT }} && echo "Tunnel ready" && break
+            echo "Waiting for tunnel... ($i/15)"
+            sleep 1
+          done
 
-      - name: Run Migrations and Seeds
-        run: |
-          cd backend
-          npm run migrate:rollback
-          npm run migrate:up
-          npm run seed:run
+      - name: Run migrations
+        # NOTE: migrate:rollback is intentionally NOT run here.
+        # Rolling back before every deploy risks leaving the database in a
+        # broken state if migrate:up fails halfway. Run rollback manually
+        # only when you need to undo a specific migration.
+        run: cd backend && npm run migrate:up && npm run seed:run
         env:
           NODE_ENV: ${{ inputs.environment }}
           DB_HOST: ${{ secrets.DB_HOST }}
