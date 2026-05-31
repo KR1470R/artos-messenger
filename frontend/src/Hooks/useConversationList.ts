@@ -3,6 +3,7 @@ import { GetChat } from '@/Services/chats/GetChat.service'
 import { GetChats } from '@/Services/chats/GetChats.service'
 import {
   fetchMessages,
+  INewChatNotification,
   joinChat,
   subscribeToFetchMessages,
   subscribeToNewChatNotification,
@@ -30,13 +31,11 @@ const useConversationList = (
   const { user } = useAuthStore()
   const queryClient = useQueryClient()
 
-  // Keep a stable ref to decryptFrom so the new_message handler below can
-  // always call the latest version without needing it as an effect dependency.
+  // Stable refs so socket handlers always read the latest values without
+  // needing to be torn down and re-subscribed on every render.
   const decryptFromRef = useRef(decryptFrom)
   useEffect(() => { decryptFromRef.current = decryptFrom }, [decryptFrom])
 
-  // Same for chatsData — the new_message handler needs to look up the chat's
-  // user_id (partner) for decryption without re-subscribing on every fetch.
   const chatsDataRef = useRef<IChat[] | undefined>(undefined)
 
   const { data: chatsData, isLoading: isChatsLoading } = useQuery<IChat[]>({
@@ -97,27 +96,20 @@ const useConversationList = (
   }, [chatsData])
 
   // ── Real-time: new_message → update preview + unread badge ───────────────────
-  // Intentionally has NO chatsData/user dependency so it is set up once on
-  // mount and stays active. Using refs for chatsData and decryptFrom means we
-  // always read the latest values without re-subscribing (which would cause the
-  // very first message on a brand-new chat to be missed while React Query is
-  // still refetching after new_chat_notification fires).
+  // Empty deps: subscribe once on mount, read latest values via refs.
+  // This handles messages in chats the user has already joined.
   useEffect(() => {
     const handleNewMessage = async (msg: IMessageType) => {
-      // --- decrypt the snippet if needed ---
       let content = msg.content
       const chat = chatsDataRef.current?.find(c => c.id === msg.chat_id)
-      // chat.user_id is the partner's userId stored in the chat row
       const partnerId = chat?.user_id ?? msg.sender_id
       if (decryptFromRef.current && content?.startsWith('e2ee:')) {
         content = await decryptFromRef.current(msg.sender_id, content, partnerId)
         if (content === '[decryption failed]') return
       }
 
-      // --- update last-message preview ---
       setLastMessages(prev => ({ ...prev, [msg.chat_id]: content }))
 
-      // --- increment unread badge (only for messages from others, in non-active chats) ---
       const currentUserId = useAuthStore.getState().user?.id
       const activeChatId = useChatStore.getState().chatId
       if (msg.sender_id !== currentUserId && msg.chat_id !== activeChatId) {
@@ -130,12 +122,38 @@ const useConversationList = (
 
     subscribeToNewMessages(handleNewMessage)
     return () => unsubscribeFromNewMessages(handleNewMessage)
-  }, []) // empty deps — subscribe once, read latest values via refs
+  }, [])
 
-  // ── Auto-refresh chat list when a brand-new chat is created for us ───────────
+  // ── New-chat notification: first message in a chat we haven't joined yet ─────
+  // The server sends this instead of new_message when the recipient hasn't
+  // called join_chat for the chat (i.e. it's brand new to them). It carries
+  // the content and sender_id so we can update the sidebar immediately, then
+  // we invalidate the query to fetch the full chat metadata.
   useEffect(() => {
-    const handleNewChatNotification = () => {
+    const handleNewChatNotification = async (data: INewChatNotification) => {
+      // Immediately invalidate so the chat row appears in the list
       queryClient.invalidateQueries({ queryKey: ['chats'] })
+
+      // Decrypt the preview snippet if needed.
+      // For a brand-new chat we don't have a chatsData entry yet, so we use
+      // sender_id as the partnerId — correct for direct chats.
+      let content = data.content
+      if (decryptFromRef.current && content?.startsWith('e2ee:')) {
+        content = await decryptFromRef.current(data.sender_id, content, data.sender_id)
+        if (content === '[decryption failed]') return
+      }
+
+      // Set the preview and the unread badge right away, before the refetch
+      // resolves. This is what makes the first message show up highlighted.
+      setLastMessages(prev => ({ ...prev, [data.chat_id]: content }))
+
+      const activeChatId = useChatStore.getState().chatId
+      if (data.chat_id !== activeChatId) {
+        setUnreadCounts(prev => ({
+          ...prev,
+          [data.chat_id]: (prev[data.chat_id] ?? 0) + 1,
+        }))
+      }
     }
 
     subscribeToNewChatNotification(handleNewChatNotification)

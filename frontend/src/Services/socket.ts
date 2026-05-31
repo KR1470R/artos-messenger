@@ -113,17 +113,22 @@ export const unsubscribeFromDeleteMessage = (
 }
 
 // ── New-chat notification ─────────────────────────────────────────────────────
-// Emitted by the server when a message arrives in a chat the client hasn't
-// joined yet (e.g. someone opened a DM with you for the very first time).
-// The frontend uses this to re-fetch the chat list so the new conversation
-// appears automatically without a page reload.
+// Emitted by the server when the first message arrives in a chat the client
+// hasn't joined yet. Carries enough data to update the sidebar immediately
+// (preview snippet + unread badge) before the React Query refetch completes.
+export interface INewChatNotification {
+	chat_id: number
+	sender_id: number
+	content: string
+	message_id: number
+}
 export const subscribeToNewChatNotification = (
-	callback: (data: { chat_id: number }) => void,
+	callback: (data: INewChatNotification) => void,
 ) => {
 	socket.on('new_chat_notification', callback)
 }
 export const unsubscribeFromNewChatNotification = (
-	callback: (data: { chat_id: number }) => void,
+	callback: (data: INewChatNotification) => void,
 ) => {
 	socket.off('new_chat_notification', callback)
 }

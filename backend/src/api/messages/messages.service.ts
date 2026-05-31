@@ -143,6 +143,9 @@ export class MessagesService {
     // joined this chat room (chatsUsersListeners). This covers the case where
     // someone receives a message in a brand-new chat and their sidebar needs
     // to refresh without a manual page reload.
+    // We include sender_id and content so the frontend can immediately show
+    // the correct preview snippet and unread badge without waiting for the
+    // query refetch to complete.
     const chatMembers = await this.chatsUsersRepository.findManyByChatId(
       data.chat_id,
     );
@@ -151,9 +154,12 @@ export class MessagesService {
     );
     for (const member of chatMembers) {
       if (!joinedSet.has(member.user_id)) {
-        this.userSockets
-          .get(member.user_id)
-          ?.emit('new_chat_notification', { chat_id: data.chat_id });
+        this.userSockets.get(member.user_id)?.emit('new_chat_notification', {
+          chat_id: data.chat_id,
+          sender_id: logginedUserId,
+          content: data.content,
+          message_id: newMessageId,
+        });
       }
     }
 
